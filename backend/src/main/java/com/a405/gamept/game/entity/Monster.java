@@ -36,9 +36,9 @@ public class Monster extends BaseEntity {
     private String exp;
 
     /**
-     * [fk] stat : 이 종족이 어떤 스토리에서 사용되는지
+     * [fk] stat : 이 몬스터가 어떤 스토리에서 나오는지
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stat_id")
-    private Stat stat;
+    @JoinColumn(name = "story_id")
+    private Story story;
 }
