@@ -14,15 +14,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Story extends BaseEntity {
 
-    /*
+    /**
     * code : pk
-    * name : 스토리 이름
-    * desc : 스토리 설명
     * */
     @Id
     private String code;
 
+    /**
+     * name : 스토리 이름
+     * */
     private String name;
-    
+
+    /**
+     * desc : 스토리 설명
+     * */
     private String desc;
 }
