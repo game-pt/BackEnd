@@ -33,7 +33,7 @@ public class Event extends BaseEntity {
     private String prompt;
 
     /**
-     * story : 이 이벤트가 사용되는 스토리
+     * [fk] story : 이 이벤트가 사용되는 스토리
      * */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "story_id")
