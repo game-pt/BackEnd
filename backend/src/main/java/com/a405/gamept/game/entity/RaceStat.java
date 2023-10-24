@@ -21,12 +21,19 @@ public class RaceStat extends BaseEntity {
     private String code;
 
     /**
-     * name : 종족명
+     * stat_value : 스탯 값
      * */
-    private String name;
+    private int statValue;
 
     /**
-     * [fk] stat : 이 종족이 어떤 스토리에서 사용되는지
+     * [fk] race : 종족이 무엇인지
+     * */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "race_id")
+    private Race race;
+
+    /**
+     * [fk] stat : 이 종족이 어떤 스탯을 가지는지
      * */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stat_id")
