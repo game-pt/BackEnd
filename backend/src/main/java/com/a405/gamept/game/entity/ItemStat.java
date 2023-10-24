@@ -2,6 +2,7 @@ package com.a405.gamept.game.entity;
 
 import com.a405.gamept.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "item_stat")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ItemStat extends BaseEntity {
 
