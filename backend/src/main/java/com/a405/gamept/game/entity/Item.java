@@ -16,14 +16,32 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Item {
 
+    /**
+     * [pk] code: Item의 고유한 코드
+     */
     @Id
     private String code;
+    /**
+     * [fk] story_code: Story의 고유한 코드
+     */
     @ManyToOne
     @JoinColumn(name = "story_code")
     private Story story;
+    /**
+     * name: Item의 이름
+     */
     private String name;
+    /**
+     * desc: Item의 설명
+     */
     private String desc;
+    /**
+     * img: 아이템의 이미지명
+     */
     private String img;
+    /**
+     * weight: 아이템의 무게
+     */
     private Short weight;
 
     @Builder
