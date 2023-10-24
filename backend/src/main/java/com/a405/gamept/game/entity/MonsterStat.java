@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RaceStat extends BaseEntity {
+public class MonsterStat extends BaseEntity {
     /**
      * code : pk
      * */
@@ -26,14 +26,14 @@ public class RaceStat extends BaseEntity {
     private int statValue;
 
     /**
-     * [fk] race : 종족이 무엇인지
+     * [fk] Monster : 어떤 몬스터인지
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "race_id")
-    private Race race;
+    @JoinColumn(name = "monster_id")
+    private Monster Monster;
 
     /**
-     * [fk] stat : 이 종족이 어떤 스탯을 가지는지
+     * [fk] stat : 이 몬스터가 어떤 스탯을 가지는지
      * */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stat_id")
