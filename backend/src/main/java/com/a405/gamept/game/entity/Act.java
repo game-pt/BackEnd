@@ -36,16 +36,16 @@ public class Act extends BaseEntity {
     private int extreme_std;
 
     /**
-     * event : 이 행동이 사용되는 이벤트
+     * [fk] event : 이 행동이 사용되는 이벤트
      * */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
 
     /**
-     * stat : 이 행동에 영향을 주는 스탯
+     * [fk] stat : 이 행동에 영향을 주는 스탯
      * */
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "stat_id")
-//    private Stat stat;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stat_id")
+    private Stat stat;
 }
