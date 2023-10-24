@@ -1,1 +1,49 @@
+spring:
+  profiles:
+    group:
+      "local" : "local"
+    active : local
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "local"
+#  datasource:
+#    url: ${db_url}
+#    username: ${db_user}
+#    password: ${db_password}
+#    driver-class-name: ${db_driver}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/test
+    username: sa
+    password:
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    hibernate:
+      ddl-auto: create-drop
 
