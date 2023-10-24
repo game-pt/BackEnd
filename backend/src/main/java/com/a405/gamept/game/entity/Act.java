@@ -5,9 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Event extends BaseEntity {
+public class Act extends BaseEntity {
     /**
      * code : pk
      * */
@@ -23,19 +21,31 @@ public class Event extends BaseEntity {
     private String code;
 
     /**
-     * name : 이벤트 이름
+     * name : 행동명
      * */
     private String name;
 
     /**
-     * prompt : ChatGpt 명령어
+     * success_std : 성공 기준치
      * */
-    private String prompt;
+    private int success_std;
 
     /**
-     * story : 이 이벤트가 사용되는 스토리
+     * extreme_std : 대실패, 실패, 성공, 대성공 차이 기준치
+     * */
+    private int extreme_std;
+
+    /**
+     * event : 이 행동이 사용되는 이벤트
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "story_id")
-    private Story story;
+    @JoinColumn(name = "event_id")
+    private Event event;
+
+    /**
+     * stat : 이 행동에 영향을 주는 스탯
+     * */
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "stat_id")
+//    private Stat stat;
 }
