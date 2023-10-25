@@ -29,6 +29,12 @@ public class Skill {
     @JoinColumn(name = "job_code")
     private Job job;
     /**
+     * [fk] stat_code: 주사위에 보너스 점수를 줄 스탯의 고유 코드
+     */
+    @ManyToOne
+    @JoinColumn(name = "stat_code")
+    private Stat stat;
+    /**
      * name: Skill의 이름
      */
     private String name;
