@@ -29,13 +29,13 @@ public class ActStat extends BaseEntity {
      * [fk] act : 이 행동이 어떤 행동인지
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "act_id")
+    @JoinColumn(name = "act_code")
     private Act act;
 
     /**
      * [fk] stat : 이 행동이 영향을 주는 스탯
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stat_id")
+    @JoinColumn(name = "stat_code")
     private Stat stat;
 }
