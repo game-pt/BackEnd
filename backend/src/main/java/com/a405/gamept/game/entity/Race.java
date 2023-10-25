@@ -29,6 +29,6 @@ public class Race extends BaseEntity {
      * [fk] stat : 이 종족이 어떤 스토리에서 사용되는지
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "story_id")
+    @JoinColumn(name = "story_code")
     private Story story;
 }
