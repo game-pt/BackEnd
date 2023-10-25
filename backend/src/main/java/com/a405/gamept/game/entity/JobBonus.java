@@ -1,6 +1,10 @@
 package com.a405.gamept.game.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * JobBonus
@@ -9,6 +13,8 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "job_bonus")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class JobBonus {
 
     /**
@@ -32,5 +38,13 @@ public class JobBonus {
      * stat_bonus: 추가로 획득할 스탯의 양
      */
     private short stat_bonus;
+
+    @Builder
+    public JobBonus(String code, Job job, Stat stat, short stat_bonus) {
+        this.code = code;
+        this.job = job;
+        this.stat = stat;
+        this.stat_bonus = stat_bonus;
+    }
 
 }
