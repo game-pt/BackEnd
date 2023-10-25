@@ -1,6 +1,5 @@
 package com.a405.gamept.game.entity;
 
-import com.a405.gamept.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,42 +7,42 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * ItemStat Entity
+ * JobBonus
  *
- * 아이템 별로 추가로 증가하는 스탯 정의.
+ * 직업 별 추가 스탯을 정의.
  */
 @Entity
-@Table(name = "item_stat")
+@Table(name = "job_bonus")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ItemStat extends BaseEntity {
+public class JobBonus {
 
     /**
-     * [pk] code: 아이템 추가 스탯 코드
+     * [pk] code: 직업 별 Bonus Stat의 고유 코드
      */
     @Id
     private String code;
     /**
-     * [fk] item_code: 아이템의 code
+     * [fk] job_code: 직업의 고유 코드
      */
     @ManyToOne
-    @JoinColumn(name = "item_code")
-    private Item item;
+    @JoinColumn(name = "job_code")
+    private Job job;
     /**
-     * [fk] stat_code: 스탯의 code
+     * [fk] stat_code: 직업에 따라 추가로 획득할 스탯의 고유 코드
      */
     @ManyToOne
     @JoinColumn(name = "stat_code")
     private Stat stat;
     /**
-     * stat_bonus: 추가 스탯
+     * stat_bonus: 추가로 획득할 스탯의 양
      */
     private short stat_bonus;
 
     @Builder
-    public ItemStat(String code, Item item, Stat stat, short stat_bonus) {
+    public JobBonus(String code, Job job, Stat stat, short stat_bonus) {
         this.code = code;
-        this.item = item;
+        this.job = job;
         this.stat = stat;
         this.stat_bonus = stat_bonus;
     }
