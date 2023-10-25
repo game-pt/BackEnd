@@ -27,9 +27,9 @@ public class Level extends BaseEntity {
     private int level;
     
     /**
-     * exe : 필요 경험치
+     * exp : 필요 경험치
      */
-    private int exe;
+    private int exp;
 
     /**
      * [fk] story : 이 레벨이 적용되는 스토리
