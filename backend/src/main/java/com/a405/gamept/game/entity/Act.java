@@ -39,13 +39,13 @@ public class Act extends BaseEntity {
      * [fk] event : 이 행동이 사용되는 이벤트
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "event_code")
     private Event event;
 
     /**
      * [fk] stat : 이 행동에 영향을 주는 스탯
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stat_id")
+    @JoinColumn(name = "stat_code")
     private Stat stat;
 }

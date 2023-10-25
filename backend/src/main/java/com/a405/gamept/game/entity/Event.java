@@ -36,6 +36,6 @@ public class Event extends BaseEntity {
      * [fk] story : 이 이벤트가 사용되는 스토리
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "story_id")
+    @JoinColumn(name = "story_code")
     private Story story;
 }

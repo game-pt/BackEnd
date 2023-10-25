@@ -29,13 +29,13 @@ public class MonsterStat extends BaseEntity {
      * [fk] Monster : 어떤 몬스터인지
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "monster_id")
+    @JoinColumn(name = "monster_code")
     private Monster Monster;
 
     /**
      * [fk] stat : 이 몬스터가 어떤 스탯을 가지는지
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stat_id")
+    @JoinColumn(name = "stat_code")
     private Stat stat;
 }

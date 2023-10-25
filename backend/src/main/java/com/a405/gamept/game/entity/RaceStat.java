@@ -29,13 +29,13 @@ public class RaceStat extends BaseEntity {
      * [fk] race : 종족이 무엇인지
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "race_id")
+    @JoinColumn(name = "race_code")
     private Race race;
 
     /**
      * [fk] stat : 이 종족이 어떤 스탯을 가지는지
      * */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stat_id")
+    @JoinColumn(name = "stat_code")
     private Stat stat;
 }
