@@ -13,20 +13,26 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Race extends BaseEntity {
+public class Level extends BaseEntity {
+
     /**
      * code : pk
-     * */
+     */
     @Id
     private String code;
 
     /**
-     * name : 종족명
-     * */
-    private String name;
+     * level : 해당 레벨
+     */
+    private int level;
+    
+    /**
+     * exp : 필요 경험치
+     */
+    private int exp;
 
     /**
-     * [fk] stat : 이 종족이 어떤 스토리에서 사용되는지
+     * [fk] story : 이 레벨이 적용되는 스토리
      * */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "story_id")
