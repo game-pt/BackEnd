@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import '../dice.css';
-import { IDiceComponent } from '../types/components/DiceComponent.types';
+import { IDiceComponent } from '../types/components/Dice.types';
 
 let allVal = {
   x: 0,
