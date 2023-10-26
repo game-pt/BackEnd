@@ -46,7 +46,10 @@ public class GameServiceImpl implements GameService {
         for(int key : FinalData.monsterRate.keySet()) {
             sum += FinalData.monsterRate.get(key);  // 확률 더하기
             if(randNum < sum) {  // 확률에 해당할 경우
-                monsterList = monsterRepository.findAllByStoryAndLevel(story, monsterGetCommandDto.getLevel() + key);
+                int playerLevel = monsterGetCommandDto.getLevel() + key;
+                if(playerLevel < 0) playerLevel = 0;
+                else if(10 < playerLevel) playerLevel = 10;
+                monsterList = monsterRepository.findAllByStoryAndLevel(story, playerLevel);
                 break;
             }
         }
