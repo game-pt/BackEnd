@@ -1,10 +1,10 @@
 package com.a405.gamept.play.entity;
 
-import jakarta.persistence.Id;
 import java.util.List;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @Getter
@@ -26,7 +26,7 @@ public class Game {
     /**
      * memory : 프롬포트 저장 
      */
-    private Objects memory;
+    private Prompt memory;
 
     /**
      * turn : 이 게임의 진행 상황

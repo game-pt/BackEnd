@@ -1,9 +1,9 @@
 package com.a405.gamept.play.entity;
 
-import jakarta.persistence.Id;
 import java.util.HashMap;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @Getter
