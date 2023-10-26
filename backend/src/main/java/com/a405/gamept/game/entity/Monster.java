@@ -1,6 +1,7 @@
 package com.a405.gamept.game.entity;
 
 import com.a405.gamept.global.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -33,11 +34,13 @@ public class Monster extends BaseEntity {
     /**
      * rank : 몬스터의 수준
      * */
+    @Column(columnDefinition = "TINYINT(10)")
     private int rank;
 
     /**
      * exp : 몬스터를 물리쳤을 때 얻는 경험치의 량
      * */
+    @Column(columnDefinition = "TINYINT")
     private String exp;
 
     /**

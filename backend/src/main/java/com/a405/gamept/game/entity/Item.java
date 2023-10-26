@@ -49,10 +49,11 @@ public class Item extends BaseEntity {
     /**
      * weight: 아이템의 무게
      */
-    private Short weight;
+    @Column(columnDefinition = "TINYINT")
+    private int weight;
 
     @Builder
-    public Item(String code, Story story, String name, String desc, String img, short weight) {
+    public Item(String code, Story story, String name, String desc, String img, int weight) {
         this.code = code;
         this.story = story;
         this.name = name;

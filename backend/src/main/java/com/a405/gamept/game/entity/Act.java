@@ -27,14 +27,16 @@ public class Act extends BaseEntity {
     private String name;
 
     /**
-     * success_std : 성공 기준치
+     * successStd : 성공 기준치
      * */
-    private int success_std;
+    @Column(columnDefinition = "TINYINT(10)")
+    private int successStd;
 
     /**
-     * extreme_std : 대실패, 실패, 성공, 대성공 차이 기준치
+     * extremeStd : 대실패, 실패, 성공, 대성공 차이 기준치
      * */
-    private int extreme_std;
+    @Column(columnDefinition = "TINYINT(10)")
+    private int extremeStd;
 
     /**
      * [fk] event : 이 행동이 사용되는 이벤트

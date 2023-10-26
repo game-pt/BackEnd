@@ -1,6 +1,7 @@
 package com.a405.gamept.game.entity;
 
 import com.a405.gamept.global.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 /**
  * ActStat
  *
- * 행동에 따라 증감하는 스탯을 정의.
+ * 행동에서 대성공 시 증가, 대실패 시 감소하는 스탯을 정의.
  */
 @Getter
 @Entity
@@ -26,9 +27,10 @@ public class ActStat extends BaseEntity {
     private String code;
 
     /**
-     * stat_bonus : 증감하는 스탯의 양
+     * statBonus : 스탯 증감량
      * */
-    private int stat_bonus;
+    @Column(columnDefinition = "TINYINT")
+    private int statBonus;
 
     /**
      * [fk] act : 이 행동이 어떤 행동인지
