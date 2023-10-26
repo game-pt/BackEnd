@@ -10,6 +10,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * ActStat
+ *
+ * 행동에 따라 증감하는 스탯을 정의.
+ */
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,7 +26,7 @@ public class ActStat extends BaseEntity {
     private String code;
 
     /**
-     * stat_bonus : 증가하는 스탯의 양
+     * stat_bonus : 증감하는 스탯의 양
      * */
     private int stat_bonus;
 

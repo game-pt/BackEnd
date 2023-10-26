@@ -23,18 +23,21 @@ public class ItemStat extends BaseEntity {
      */
     @Id
     private String code;
+
     /**
      * [fk] item_code: 아이템의 code
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_code")
     private Item item;
+
     /**
      * [fk] stat_code: 스탯의 code
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stat_code")
     private Stat stat;
+
     /**
      * stat_bonus: 추가 스탯
      */
