@@ -1,15 +1,11 @@
 package com.a405.gamept.game.entity;
 
 import com.a405.gamept.global.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.Comment;
+
+import java.util.List;
 
 /**
  * Monster
@@ -23,30 +19,40 @@ public class Monster extends BaseEntity {
     /**
      * code : pk
      * */
-    @Id
-    private String code;
+    @Column(name = "code")
+    @Comment("고유 코드")
+    @Id private String code;
 
     /**
      * name : 몬스터 명
      * */
+    @Column(name = "name", nullable = false, columnDefinition = "VARCHAR(10) CHARACTER SET UTF8")
+    @Comment("몬스터명")
     private String name;
 
     /**
      * rank : 몬스터의 레벨
      * */
-    @Column(columnDefinition = "TINYINT(10)")
+    @Column(name = "level", nullable = false, columnDefinition = "TINYINT", length=10)
+    @Comment("몬스터의 레벨")
     private int level;
 
     /**
      * exp : 몬스터를 물리쳤을 때 얻는 경험치의 량
      * */
-    @Column(columnDefinition = "TINYINT")
-    private String exp;
+    @Column(name = "exp", nullable = false, columnDefinition = "TINYINT", length=100)
+    @Comment("몬스터를 물리쳤을 때 얻는 경험치의 양")
+    private int exp;
+
+    @OneToMany(mappedBy = "monster")
+    @Comment("몬스터 스탯 리스트")
+    private List<MonsterStat> monsterStatList;
 
     /**
      * [fk] stat : 이 몬스터가 어떤 스토리에서 나오는지
      * */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "story_code")
+    @Comment("이 몬스터가 어떤 스토리에서 나오는지")
     private Story story;
 }
