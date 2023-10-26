@@ -18,24 +18,35 @@ import lombok.NoArgsConstructor;
 public class Event extends BaseEntity {
     /**
      * code : pk
-     * */
+     */
     @Id
     private String code;
 
     /**
+     * [fk] story : 이 이벤트가 사용되는 스토리
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "story_code")
+    private Story story;
+
+    /**
      * name : 이벤트 이름
-     * */
+     */
     private String name;
 
     /**
      * prompt : ChatGpt 명령어
-     * */
+     */
     private String prompt;
 
     /**
-     * [fk] story : 이 이벤트가 사용되는 스토리
-     * */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "story_code")
-    private Story story;
+     * item_yn : 아이템 획득 가능 여부
+     */
+    private char item_yn;
+
+    /**
+     * weight : 이벤트 랜덤 발생 가중치
+     */
+    private short weight;
+
 }
