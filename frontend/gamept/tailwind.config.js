@@ -10,12 +10,16 @@ export default {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
+
       width: {
-        'xs' : '15vw',
-        's' : '30vw',
-        'm': '50vw',
-        'l': '70vw',
-        'xl': '98vw',
+        xs: '15vw',
+        s: '30vw',
+        m: '50vw',
+        l: '70vw',
+        xl: '98vw',
         300: '300px',
         350: '350px',
         400: '400px',
@@ -178,7 +182,7 @@ export default {
       },
       dropShadow: {
         nobg: '0 0 0px 1000px #fff inset',
-      }
+      },
     },
   },
   plugins: [],
