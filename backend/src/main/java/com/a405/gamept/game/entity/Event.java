@@ -1,6 +1,7 @@
 package com.a405.gamept.game.entity;
 
 import com.a405.gamept.global.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -47,11 +48,11 @@ public class Event extends BaseEntity {
     /**
      * item_yn : 아이템 획득 가능 여부
      */
-    private char item_yn;
+    private char itemYn;
 
     /**
      * weight : 이벤트 랜덤 발생 가중치
      */
-    private short weight;
-
+    @Column(columnDefinition = "TINYINT")
+    private int weight;
 }

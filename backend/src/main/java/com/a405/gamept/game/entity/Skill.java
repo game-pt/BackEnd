@@ -46,20 +46,22 @@ public class Skill extends BaseEntity {
     /**
      * success_std: 스킬의 성공 판정을 가리기 위한 기준치
      */
-    private short success_std;
+    @Column(columnDefinition = "TINYINT")
+    private int successStd;
     /**
-     * extreme_std: 스킬의 대성공, 대실패 판정을 가리기 위한 기준치
+     * extremeStd: 스킬의 대성공, 대실패 판정을 가리기 위한 기준치
      */
-    private short extreme_std;
+    @Column(columnDefinition = "TINYINT(10)")
+    private int extremeStd;
 
     @Builder
-    public Skill(String code, Job job, String name, String desc, short success_std, short extreme_std) {
+    public Skill(String code, Job job, String name, String desc, int success_std, int extreme_std) {
         this.code = code;
         this.job = job;
         this.name = name;
         this.desc = desc;
-        this.success_std = success_std;
-        this.extreme_std = extreme_std;
+        this.successStd = success_std;
+        this.extremeStd = extreme_std;
     }
 
 }

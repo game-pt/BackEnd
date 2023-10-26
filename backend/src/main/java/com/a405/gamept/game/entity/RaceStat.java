@@ -1,6 +1,7 @@
 package com.a405.gamept.game.entity;
 
 import com.a405.gamept.global.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -28,6 +29,7 @@ public class RaceStat extends BaseEntity {
     /**
      * stat_value : 스탯 값
      * */
+    @Column(columnDefinition = "TINYINT(10)")
     private int statValue;
 
     /**

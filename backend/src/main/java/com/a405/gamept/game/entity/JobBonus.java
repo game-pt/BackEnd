@@ -39,16 +39,17 @@ public class JobBonus extends BaseEntity {
     private Stat stat;
 
     /**
-     * stat_bonus: 추가로 획득할 스탯의 양
+     * statBonus: 추가로 획득할 스탯의 양
      */
-    private short stat_bonus;
+    @Column(columnDefinition = "SMALLINT")
+    private int statBonus;
 
     @Builder
-    public JobBonus(String code, Job job, Stat stat, short stat_bonus) {
+    public JobBonus(String code, Job job, Stat stat, int statBonus) {
         this.code = code;
         this.job = job;
         this.stat = stat;
-        this.stat_bonus = stat_bonus;
+        this.statBonus = statBonus;
     }
 
 }
