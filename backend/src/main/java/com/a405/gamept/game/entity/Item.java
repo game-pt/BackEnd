@@ -1,5 +1,6 @@
 package com.a405.gamept.game.entity;
 
+import com.a405.gamept.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,31 +16,36 @@ import lombok.NoArgsConstructor;
 @Table(name = "item")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Item {
+public class Item extends BaseEntity {
 
     /**
      * [pk] code: Item의 고유한 코드
      */
     @Id
     private String code;
+
     /**
      * [fk] story_code: Story의 고유한 코드
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "story_code")
     private Story story;
+
     /**
      * name: Item의 이름
      */
     private String name;
+
     /**
      * desc: Item의 설명
      */
     private String desc;
+
     /**
      * img: 아이템의 이미지명
      */
     private String img;
+
     /**
      * weight: 아이템의 무게
      */

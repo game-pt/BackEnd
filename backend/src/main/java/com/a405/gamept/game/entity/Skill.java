@@ -1,5 +1,6 @@
 package com.a405.gamept.game.entity;
 
+import com.a405.gamept.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "skill")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Skill {
+public class Skill extends BaseEntity {
 
     /**
      * [pk] code: Skill의 고유 코드
@@ -25,13 +26,13 @@ public class Skill {
     /**
      * [fk] job_code: 직업의 고유 코드
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_code")
     private Job job;
     /**
      * [fk] stat_code: 주사위에 보너스 점수를 줄 스탯의 고유 코드
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stat_code")
     private Stat stat;
     /**
