@@ -1,10 +1,10 @@
 import './App.css'
-import DiceModalComponent from './oragnisms/DiceModalComponent'
 
 function App() {
   return (
     <div className="App">
-      <DiceModalComponent />
+      <h1>GamePT + TRPG</h1>
+      <h2>React + Typescript + Vite</h2>
     </div>
   )
 }
