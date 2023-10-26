@@ -25,7 +25,7 @@ public class EventServiceImpl implements EventService {
     public List<Event> findAllEventByStoryCode(FindEventByStoryCodeReq storyDto) {
         String storyCode = storyDto.getStoryCode();
 
-        return eventRepository.findByStory_StoryCode(storyCode);
+        return eventRepository.findByStoryCode(storyCode);
     }
 
     /**

@@ -25,7 +25,7 @@ public class EventController {
                         .code(event.getCode())
                         .name(event.getName())
                         .prompt(event.getPrompt())
-                        .item_yn(event.getItem_yn())
+                        .item_yn(event.getItemYn())
                         .weight(event.getWeight())
                         .build());
     }
