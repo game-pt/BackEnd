@@ -12,7 +12,7 @@ const DiceModalComponent = () => {
   })
 
   return (
-    <div className="card w-full h-96">
+    <div className="card w-full h-96 bg-backgroud">
       <h1>주사위 결과</h1>
       <div className="diceCard relative flex justify-center mt-10">
         <DiceComponent throw={throwDice} />
