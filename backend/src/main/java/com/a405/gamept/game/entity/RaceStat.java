@@ -10,6 +10,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * RaceStat
+ *
+ * 각 종족마다 세부적인 스탯을 정의.
+ */
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
