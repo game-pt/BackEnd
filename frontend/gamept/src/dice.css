@@ -133,11 +133,11 @@
 }
 
 .diceWrap::before {
-  /* position: absolute; */
+  position: absolute;
   content: "";
   width: 110%;
   height: 40%;
-  top: 55%;
+  top: 35%;
   background: rgba(0, 0, 0, 0.5);
   border-radius: 100%;
   filter: blur(20px);

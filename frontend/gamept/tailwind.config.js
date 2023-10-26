@@ -102,7 +102,6 @@ export default {
       },
       fontFamily: {
         hol: ['HOL', 'sans-serif'],
-        kreon: ['KREON', 'sans-serif'],
       },
       fontSize: {
         10: '10px',
