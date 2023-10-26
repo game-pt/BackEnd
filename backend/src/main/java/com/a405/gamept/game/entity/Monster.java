@@ -32,10 +32,10 @@ public class Monster extends BaseEntity {
     private String name;
 
     /**
-     * rank : 몬스터의 수준
+     * rank : 몬스터의 레벨
      * */
     @Column(columnDefinition = "TINYINT(10)")
-    private int rank;
+    private int level;
 
     /**
      * exp : 몬스터를 물리쳤을 때 얻는 경험치의 량
