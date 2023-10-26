@@ -9,11 +9,11 @@ spring:
   config:
     activate:
       on-profile: "local"
-#  datasource:
-#    url: ${db_url}
-#    username: ${db_user}
-#    password: ${db_password}
-#    driver-class-name: ${db_driver}
+  datasource:
+    url: ${db_url}
+    username: ${db_user}
+    password: ${db_password}
+    driver-class-name: ${db_driver}
   jpa:
     hibernate:
       ddl-auto: update

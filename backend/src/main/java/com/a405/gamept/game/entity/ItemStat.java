@@ -39,16 +39,17 @@ public class ItemStat extends BaseEntity {
     private Stat stat;
 
     /**
-     * stat_bonus: 추가 스탯
+     * statBonus: 추가 스탯
      */
-    private short stat_bonus;
+    @Column(columnDefinition = "SMALLINT")
+    private int statBonus;
 
     @Builder
-    public ItemStat(String code, Item item, Stat stat, short stat_bonus) {
+    public ItemStat(String code, Item item, Stat stat, int statBonus) {
         this.code = code;
         this.item = item;
         this.stat = stat;
-        this.stat_bonus = stat_bonus;
+        this.statBonus = statBonus;
     }
 
 }

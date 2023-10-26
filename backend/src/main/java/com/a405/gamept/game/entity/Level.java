@@ -1,6 +1,7 @@
 package com.a405.gamept.game.entity;
 
 import com.a405.gamept.global.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -34,6 +35,7 @@ public class Level extends BaseEntity {
     /**
      * exp : 필요 경험치
      */
+    @Column(columnDefinition = "TINYINT")
     private int exp;
 
     /**
