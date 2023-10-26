@@ -1,6 +1,7 @@
 package com.a405.gamept.game.entity;
 
 import com.a405.gamept.global.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -28,6 +29,7 @@ public class MonsterStat extends BaseEntity {
     /**
      * stat_value : 스탯 값
      * */
+    @Column(columnDefinition = "TINYINT")
     private int statValue;
 
     /**
@@ -35,7 +37,7 @@ public class MonsterStat extends BaseEntity {
      * */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "monster_code")
-    private Monster Monster;
+    private Monster monster;
 
     /**
      * [fk] stat : 이 몬스터가 어떤 스탯을 가지는지

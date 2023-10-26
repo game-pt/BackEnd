@@ -9,18 +9,19 @@ spring:
   config:
     activate:
       on-profile: "local"
-#  datasource:
-#    url: ${db_url}
-#    username: ${db_user}
-#    password: ${db_password}
-#    driver-class-name: ${db_driver}
+  datasource:
+    url: ${db_url}
+    username: ${db_user}
+    password: ${db_password}
+    driver-class-name: ${db_driver}
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        globally_quoted_identifiers: true
-        format_sql: true
+        # To comments for TINYINT
+        # globally_quoted_identifiers: true
+        # format_sql: true
     show-sql: true
   mvc:
     pathmatch:
