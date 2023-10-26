@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import "../dice.css";
 
 let allVal = {
@@ -18,6 +18,9 @@ const perFace = [
 
 interface IDiceComponent {
   throw: boolean;
+  dice1: number;
+  dice2: number;
+  dice3: number;
 }
 
 /**
@@ -58,10 +61,9 @@ const DiceComponent = (props: IDiceComponent) => {
   }, []);
 
   const throwDice = useCallback(() => {
-
-    const diceVal1 = Math.floor(Math.random() * 6) + 1;
-    const diceVal2 = Math.floor(Math.random() * 6) + 1;
-    const diceVal3 = Math.floor(Math.random() * 6) + 1;
+    const diceVal1 = props.dice1;
+    const diceVal2 = props.dice2;
+    const diceVal3 = props.dice3;
     const diceVal = diceVal1 + diceVal2 + diceVal3;
     document.querySelectorAll('.dice').forEach((diceElement) => {
       diceElement.classList.remove('throw');
@@ -94,18 +96,14 @@ const DiceComponent = (props: IDiceComponent) => {
         diceValElement.innerHTML = `${diceVal}`;
       }, 700);
     }
-  }, [setDice, setVal1, setVal2, setVal3]);
+  }, [setDice, setVal1, setVal2, setVal3, props]);
 
   useEffect(() => {
     setDice();
     setVal1(1);
     setVal2(1);
     setVal3(1);
-    console.log(props.throw);
-    if (props.throw) {
-      console.log('throw!');
-      throwDice();
-    }
+    if (props.throw) throwDice();
   }, [props, setDice, setVal1, setVal2, setVal3]);
   return (
     <div className="diceWrap">
