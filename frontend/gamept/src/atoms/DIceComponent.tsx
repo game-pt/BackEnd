@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
-import "../dice.css";
+import '../dice.css';
+import { IDiceComponent } from '../types/components/DiceComponent.types';
 
 let allVal = {
   x: 0,
@@ -15,13 +16,6 @@ const perFace = [
   [0.3, 0.45, 0.9],
   [-0.16, 0.6, 0.18],
 ];
-
-interface IDiceComponent {
-  throw: boolean;
-  dice1: number;
-  dice2: number;
-  dice3: number;
-}
 
 /**
  * throw => 주사위가 던져지는지에 대한 props
