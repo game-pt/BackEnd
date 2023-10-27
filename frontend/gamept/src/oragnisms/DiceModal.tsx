@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import DiceComponent from "../atoms/DiceComponent";
+import Dice from "../atoms/Dice";
 
 const DiceModalComponent = () => {
   const [throwDice, setThrowDice] = useState(false);
@@ -25,7 +25,7 @@ const DiceModalComponent = () => {
     <div className="card w-2/3 h-full bg-backgroud rounded-lg bg-opacity-80 border-primary border-4">
       <p className="font-hol text-32 text-primary">주사위 결과</p>
       <div className="diceCard relative flex justify-center mt-20">
-        <DiceComponent throw={throwDice} dice1={dice.dice1} dice2={dice.dice2} dice3={dice.dice3} />
+        <Dice throw={throwDice} dice1={dice.dice1} dice2={dice.dice2} dice3={dice.dice3} />
       </div>
       <p className="font-hol text-24 text-primary">선택을 성공할 확률이 높아졌습니다.</p>
       <button className="mt-4">버튼 컴포넌트</button>
