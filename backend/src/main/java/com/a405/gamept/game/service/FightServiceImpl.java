@@ -17,13 +17,13 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class GameServiceImpl implements GameService {
+public class FightServiceImpl implements FightService {
 
     private final MonsterRepository monsterRepository;
     private final StoryRepository storyRepository;
 
     @Autowired
-    public GameServiceImpl(MonsterRepository monsterRepository, StoryRepository storyRepository) {
+    public FightServiceImpl(MonsterRepository monsterRepository, StoryRepository storyRepository) {
         this.monsterRepository = monsterRepository;
         this.storyRepository = storyRepository;
     }
