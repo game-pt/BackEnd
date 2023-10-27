@@ -5,7 +5,7 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FindEventByStoryCodeRes {
+public class FindEventByStoryCodeResponse {
 
     /**
      * code: 이벤트의 고유 코드
@@ -33,7 +33,7 @@ public class FindEventByStoryCodeRes {
     private int weight;
 
     @Builder
-    public FindEventByStoryCodeRes(String code, String name, String prompt, char item_yn, int weight) {
+    public FindEventByStoryCodeResponse(String code, String name, String prompt, char item_yn, int weight) {
         this.code = code;
         this.name = name;
         this.prompt = prompt;

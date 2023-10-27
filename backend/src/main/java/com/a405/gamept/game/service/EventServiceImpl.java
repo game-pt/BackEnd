@@ -1,6 +1,6 @@
 package com.a405.gamept.game.service;
 
-import com.a405.gamept.game.dto.FindEventByStoryCodeReq;
+import com.a405.gamept.game.dto.FindEventByStoryCodeRequest;
 import com.a405.gamept.game.entity.Event;
 import com.a405.gamept.game.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class EventServiceImpl implements EventService {
      * @return List&lt;Event&gt;
      */
     @Override
-    public List<Event> findAllEventByStoryCode(FindEventByStoryCodeReq storyDto) {
+    public List<Event> findAllEventByStoryCode(FindEventByStoryCodeRequest storyDto) {
         String storyCode = storyDto.getStoryCode();
 
         return eventRepository.findByStoryCode(storyCode);
@@ -35,7 +35,7 @@ public class EventServiceImpl implements EventService {
      * @param storyDto
      * @return Event
      */
-    public Event pickAtRandomEventByStoryCode(FindEventByStoryCodeReq storyDto) {
+    public Event pickAtRandomEventByStoryCode(FindEventByStoryCodeRequest storyDto) {
         List<Event> eventList = findAllEventByStoryCode(storyDto);
 
         double randomStandard = Math.random();

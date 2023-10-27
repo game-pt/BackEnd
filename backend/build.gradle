@@ -23,6 +23,11 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+	// Jackson (JSON)
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.16.0-rc1'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.0-rc1'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.16.0-rc1'
+
 	//DB
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
