@@ -9,6 +9,8 @@ import com.a405.gamept.game.repository.StoryRepository;
 import com.a405.gamept.game.util.FinalData;
 import com.a405.gamept.game.util.exception.GameInvalidException;
 import com.a405.gamept.game.util.exception.MonsterInvalidException;
+import com.a405.gamept.global.error.exception.BadRequestException;
+import com.a405.gamept.global.error.exception.InternalServerException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,7 @@ public class FightServiceImpl implements FightService {
     }
 
     @Override
-    public MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameInvalidException, MonsterInvalidException {
+    public MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws InternalServerException {
         Story story = storyRepository.findById(monsterGetCommandDto.getStoryCode()).orElseThrow(GameInvalidException::new);
         List<Monster> monsterList = null;
 

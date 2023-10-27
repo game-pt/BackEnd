@@ -4,6 +4,8 @@ import com.a405.gamept.game.dto.command.MonsterGetCommandDto;
 import com.a405.gamept.game.dto.response.MonsterGetResponseDto;
 import com.a405.gamept.game.util.exception.GameInvalidException;
 import com.a405.gamept.game.util.exception.MonsterInvalidException;
+import com.a405.gamept.global.error.exception.BadRequestException;
+import com.a405.gamept.global.error.exception.InternalServerException;
 
 public interface FightService {
 
@@ -15,5 +17,5 @@ public interface FightService {
      * @return : 랜덤으로 뽑아져나온 몬스터의 값
      * @author : 유영
      */
-    MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameInvalidException, MonsterInvalidException;
+    MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws InternalServerException;
 }
