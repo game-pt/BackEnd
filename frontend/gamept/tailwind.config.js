@@ -7,7 +7,15 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      width: {
+        '300': '300px',
+        '400': '400px'
+      },
+      backgroundColor: {
+        '1B1212': '#1B1212',
+      },
+    },
   },
   plugins: [],
 }
