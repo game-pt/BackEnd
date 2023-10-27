@@ -10,9 +10,7 @@ const Prompt = (props: IPropmpt) => {
   return (
     <div className="max-w-[1000px] min-w-[20vw] h-[400px] relative bg-transparent">
       <p
-        className={`w-full h-full absolute overflow-y-scroll px-10 text-32 text-primary font-hol ${
-          props.type === 'in-game' && `text-left`
-        }`}
+        className={props.type}
       >
         <p>
           의 내부규율과 사무처리에 관한 규칙을 제정할 수 있다. 법률이 헌법에
