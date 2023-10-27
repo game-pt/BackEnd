@@ -11,8 +11,8 @@ import org.antlr.v4.runtime.misc.NotNull;
 @Getter
 @Slf4j
 public class MonsterGetCommandDto {
-    String storyCode;
-    int level;
+    private String storyCode;
+    private int level;
 
     public static MonsterGetCommandDtoBuilder builder() {
         return MonsterGetCommandDto.innerBuilder();
