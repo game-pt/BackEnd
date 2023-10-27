@@ -1,5 +1,6 @@
 package com.a405.gamept.game.dto.command;
 
+import com.a405.gamept.game.util.FinalData;
 import com.a405.gamept.game.util.exception.GameInvalidException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class MonsterGetCommandDto {
     }
 
     public MonsterGetCommandDtoBuilder level(int level) throws GameInvalidException {
-        if(level <= 0 || 10 < level) {
+        if(level <= 0 || FinalData.MONSTER_MAX_LEVEL < level) {
             log.error("GameInvalidException : { MonsterGetCommandDto 레벨 삽입 실패 }");
             throw new GameInvalidException();
         }
