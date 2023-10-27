@@ -1,5 +1,5 @@
 // DiceComponent PropsInterface
-export interface IDiceComponent {
+export interface IDice {
   throw: boolean;
   dice1: number;
   dice2: number;

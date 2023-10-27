@@ -46,6 +46,25 @@
   } */
 }
 
+/* 스크롤바 숨기기 */
+::-webkit-scrollbar {
+  width: 0.4em;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+/* Firefox용 스크롤바 숨기기 */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
