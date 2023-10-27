@@ -5,7 +5,7 @@ import com.a405.gamept.game.dto.response.MonsterGetResponseDto;
 import com.a405.gamept.game.util.exception.GameInvalidException;
 import com.a405.gamept.game.util.exception.MonsterInvalidException;
 
-public interface FightService {  // 추후 변경 가능
+public interface FightService {
 
     /**
      * 플레이어의 레벨에 맞는 몬스터를 조회한다.
