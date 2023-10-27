@@ -6,7 +6,7 @@ import { IPropmpt } from '@/types/components/Prompt.types';
  * 프롬프트 받아오는 서비스 로직 선에서 br 태그를 추가한 문자열을 반환해야할 듯 => 보안 측면에서 악질적인 코드
  * 데이터를 문장마다 배열로 받는 식으로 해서 map 돌려서 p 태그로 문장마다 구분하면 될듯
  */
-const PromptComponent = (props: IPropmpt) => {
+const Prompt = (props: IPropmpt) => {
   return (
     <div className="max-w-[1000px] min-w-[20vw] h-[400px] relative bg-transparent">
       <p
@@ -37,4 +37,4 @@ const PromptComponent = (props: IPropmpt) => {
   );
 };
 
-export default PromptComponent;
+export default Prompt;
