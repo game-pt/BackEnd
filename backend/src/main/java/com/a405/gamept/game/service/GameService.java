@@ -1,6 +1,8 @@
 package com.a405.gamept.game.service;
 
+import com.a405.gamept.game.dto.command.DiceGetCommandDto;
 import com.a405.gamept.game.dto.command.MonsterGetCommandDto;
+import com.a405.gamept.game.dto.response.DiceGetResponseDto;
 import com.a405.gamept.game.dto.response.MonsterGetResponseDto;
 import com.a405.gamept.game.util.exception.GameInvalidException;
 import com.a405.gamept.game.util.exception.MonsterInvalidException;
@@ -16,4 +18,13 @@ public interface GameService {  // 추후 변경 가능
      * @author : 유영
      */
     MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameInvalidException, MonsterInvalidException;
+
+    /**
+     * 주사위(1~6) 2개를 돌린다
+     * @param diceGetCommandDto : 게임 정보
+     *                          gameCode : 현재 진행중인 게임 코드
+     * @return : 랜덤으로 나온 주사위 값
+     * @author : 지환
+     */
+    DiceGetResponseDto RollOfDice(DiceGetCommandDto diceGetCommandDto);
 }
