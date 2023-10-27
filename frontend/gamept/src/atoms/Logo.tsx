@@ -15,6 +15,7 @@ const Logo = ({ className }: { className?: string }) => {
       className={`w-[245px] h-[65px] ${
         className ? className : 'absolute left-[30px] top-[30px]'
       }`}
+      alt="GamePT 로고"
     />
   );
 };
