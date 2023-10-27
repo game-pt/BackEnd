@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Dice from "../atoms/Dice";
 
-const DiceModalComponent = () => {
+const DiceModal = () => {
   const [throwDice, setThrowDice] = useState(false);
   const [dice, setDice] = useState({
     dice1: 3,
@@ -33,4 +33,4 @@ const DiceModalComponent = () => {
   );
 }
 
-export default DiceModalComponent;
+export default DiceModal;
