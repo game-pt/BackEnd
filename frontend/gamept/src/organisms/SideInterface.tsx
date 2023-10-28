@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './SideInterface.css'; // Import your CSS file
 
 function SideInterface() {
   const [selectedTab, setSelectedTab] = useState('스탯'); // 초기 탭 설정
-  const [tabContents, setTabContents] = useState({
+  const tabContents: Record<string, string> = {
     '스탯': '스탯 내용',
     '스킬': '스킬 내용',
     '채팅': '채팅 내용',
     '장비': '장비 내용',
-  });
+  };
 
-  const changeTab = (tabName) => {
+  const changeTab = (tabName: string) => {
     setSelectedTab(tabName);
   };
   const [selectedTabColor, setSelectedTabColor] = useState('#331812'); // 초기 탭 색상 설정
