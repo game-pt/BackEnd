@@ -35,48 +35,15 @@ public class GameServiceImpl implements GameService {
 
     private final Validator validator;
     Set<ConstraintViolation<Object>> violations;
-    private final RaceRepository raceRepository;
-    private final StoryRepository storyRepository;
     private final GameRedisRepository gameRedisRepository;
     private final PlayerRedisRepository playerRedisRepository;
 
     @Autowired
-    public GameServiceImpl(RaceRepository raceRepository, StoryRepository storyRepository, GameRedisRepository gameRedisRepository, PlayerRedisRepository playerRedisRepository) {
+    public GameServiceImpl(GameRedisRepository gameRedisRepository, PlayerRedisRepository playerRedisRepository) {
         this.validator = Validation.buildDefaultValidatorFactory().getValidator();
-        this.raceRepository = raceRepository;
-        this.storyRepository = storyRepository;
         this.gameRedisRepository = gameRedisRepository;
         this.playerRedisRepository = playerRedisRepository;
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<RaceGetResponseDto> getRaceList(RaceGetCommandDto raceGetCommandDto) throws GameException {
-        Story story = storyRepository.findById(raceGetCommandDto.storyCode())
-                .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
-
-        List<Race> raceList = raceRepository.findAllByStory(story)
-                .orElseThrow(() -> new GameException(GameErrorMessage.RACE_INVALID));
-        if(raceList.size() == 0) {
-            throw new GameException(GameErrorMessage.RACE_INVALID);
-        }
-        // DTO 리스트로 변환
-        List<RaceGetResponseDto> raceGetResponseDtoList = new ArrayList<>();
-        for (Race race : raceList) {  // 각각의 DTO에 대해 유효성 검사 진행
-            raceGetResponseDtoList.add(RaceGetResponseDto.from(race));
-
-            // 유효성 검사
-            violations = validator.validate(raceGetResponseDtoList.get(raceGetResponseDtoList.size() - 1));
-
-            if (!violations.isEmpty()) {  // 유효성 검사 실패 시
-                for (ConstraintViolation<Object> violation : violations) {
-                    throw new GameException(violation.getMessage());
-                }
-            }
-        }
-        return raceGetResponseDtoList;
-    }
-
     @Override
     public DiceGetResponseDto rollOfDice(DiceGetCommandDto diceGetCommandDto) {
         // 랜덤 객체 생성
