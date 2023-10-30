@@ -1,37 +1,23 @@
 package com.a405.gamept.game.dto.response;
 
-import com.a405.gamept.game.util.exception.MonsterInvalidException;
+import com.a405.gamept.game.entity.Monster;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-@Builder(builderMethodName = "innerBuilder")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
+@Builder(access = AccessLevel.PRIVATE)
 @Slf4j
-public class MonsterGetResponseDto {
-    private String name;
-    private int level;
-
-    public static MonsterGetResponseDtoBuilder builder() {
-        return MonsterGetResponseDto.innerBuilder();
-    }
-
-    public MonsterGetResponseDtoBuilder name(String name) throws MonsterInvalidException {
-        if(name == null || name.trim().isEmpty()) {
-            log.error("MonsterInvalidException : { MonsterGetResponseDto 몬스터 이름 삽입 실패 }");
-            throw new MonsterInvalidException();
-        }
-
-        return innerBuilder().name(name.trim());
-    }
-
-    public MonsterGetResponseDtoBuilder level(int level) throws MonsterInvalidException {
-        if(level <= 0 || 10 < level) {
-            log.error("GameInvalidException : { MonsterGetCommandDto 레벨 삽입 실패 }");
-            throw new MonsterInvalidException();
-        }
-
-        return innerBuilder().level(level);
+public record MonsterGetResponseDto(
+        @JsonProperty("name") @NotBlank(message = "몬스터 이름이 올바르지 않습니다.") String monsterName,
+        @JsonProperty("level") @Positive(message = "몬스터 레벨은 양수여야 합니다.") @Max(value = 10, message = "몬스터 레벨은 10을 넘을 수 없습니다.") int monsterLevel
+) {
+    public static MonsterGetResponseDto from(Monster monster) {
+        return MonsterGetResponseDto.builder()
+                .monsterName(monster.getName())
+                .monsterLevel(monster.getLevel())
+                .build();
     }
 }

@@ -19,9 +19,8 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        # To comments for TINYINT
-        # globally_quoted_identifiers: true
-        # format_sql: true
+        auto_quote_keyword: true
+        format_sql: true
     show-sql: true
   mvc:
     pathmatch:
