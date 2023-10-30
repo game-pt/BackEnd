@@ -2,23 +2,36 @@ package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.DiceGetCommandDto;
 import com.a405.gamept.game.dto.command.MonsterGetCommandDto;
+import com.a405.gamept.game.dto.command.RaceGetCommandDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
 import com.a405.gamept.game.dto.response.MonsterGetResponseDto;
+import com.a405.gamept.game.dto.response.RaceGetResponseDto;
 import com.a405.gamept.game.entity.Monster;
+import com.a405.gamept.game.entity.Race;
 import com.a405.gamept.game.entity.Story;
 import com.a405.gamept.game.repository.MonsterRepository;
+import com.a405.gamept.game.repository.RaceRepository;
 import com.a405.gamept.game.repository.StoryRepository;
 import com.a405.gamept.game.util.FinalData;
 import com.a405.gamept.game.util.exception.GameInvalidException;
 import com.a405.gamept.game.util.exception.MonsterInvalidException;
+import com.a405.gamept.game.util.exception.RaceInvalidException;
+import com.a405.gamept.game.util.exception.StoryNotFoundException;
 import com.a405.gamept.global.error.enums.ErrorMessage;
+import com.a405.gamept.global.error.exception.BadRequestException;
+import com.a405.gamept.global.error.exception.InternalServerException;
 import com.a405.gamept.global.error.exception.custom.BusinessException;
 import com.a405.gamept.play.entity.Game;
 import com.a405.gamept.play.entity.Player;
 import com.a405.gamept.play.repository.GameRedisRepository;
 import com.a405.gamept.play.repository.PlayerRedisRepository;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,57 +42,49 @@ import java.util.List;
 @Slf4j
 public class GameServiceImpl implements GameService {
 
-    private final MonsterRepository monsterRepository;
+    private final Validator validator;
+    Set<ConstraintViolation<Object>> violations;
+    private final RaceRepository raceRepository;
     private final StoryRepository storyRepository;
     private final GameRedisRepository gameRedisRepository;
     private final PlayerRedisRepository playerRedisRepository;
 
     @Autowired
-    public GameServiceImpl(MonsterRepository monsterRepository, StoryRepository storyRepository, GameRedisRepository gameRedisRepository, PlayerRedisRepository playerRedisRepository) {
-        this.monsterRepository = monsterRepository;
+    public GameServiceImpl(RaceRepository raceRepository, StoryRepository storyRepository, GameRedisRepository gameRedisRepository, PlayerRedisRepository playerRedisRepository) {
+        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
+        this.raceRepository = raceRepository;
         this.storyRepository = storyRepository;
         this.gameRedisRepository = gameRedisRepository;
         this.playerRedisRepository = playerRedisRepository;
     }
 
     @Override
-    public MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameInvalidException, MonsterInvalidException {
-        Story story = storyRepository.findById(monsterGetCommandDto.getStoryCode()).orElseThrow(GameInvalidException::new);
-        List<Monster> monsterList = null;
-
-        /** 몬스터 레벨 난수 뽑기 **/
-        int sum = 0;  // 랜덤하게 돌릴 숫자
-        for(int i : FinalData.monsterRate.values()) {
-            sum += i;  // 각 확률 더하기
+    public List<RaceGetResponseDto> getRaceList(RaceGetCommandDto raceGetCommandDto) throws BadRequestException, InternalServerException {
+        Story story = storyRepository.findById(raceGetCommandDto.storyCode()).orElseThrow(() -> {
+            log.error("StoryNotFoundException: { GameService 스토리 조회 실패 }");
+            return new StoryNotFoundException();
+        });
+        List<Race> raceList = raceRepository.findAllByStory(story);
+        if(raceList.size() == 0) {
+            log.error("RaceInvalidException: { GameService 종족 조회 실패 }");
+            throw new RaceInvalidException();
         }
+        // DTO 리스트로 변환
+        List<RaceGetResponseDto> raceGetResponseDtoList = new ArrayList<>();
+        for (Race race : raceList) {  // 각각의 DTO에 대해 유효성 검사 진행
+            raceGetResponseDtoList.add(RaceGetResponseDto.from(race));
 
-        log.info("몬스터 등장확률 총합: " + sum);
-        int randNum = (int) Math.floor(Math.random() * sum);  // 몬스터 레벨 확률
+            // 유효성 검사
+            violations = validator.validate(raceGetResponseDtoList.get(raceGetResponseDtoList.size() - 1));
 
-        sum = 0;
-        for(int key : FinalData.monsterRate.keySet()) {
-            sum += FinalData.monsterRate.get(key);  // 확률 더하기
-            if(randNum < sum) {  // 확률에 해당할 경우
-                int playerLevel = monsterGetCommandDto.getLevel() + key;
-                if(playerLevel < 0) playerLevel = 0;
-                else if(10 < playerLevel) playerLevel = 10;
-                monsterList = monsterRepository.findAllByStoryAndLevel(story, playerLevel);
-                break;
+            if (!violations.isEmpty()) {  // 유효성 검사 실패 시
+                for (ConstraintViolation<Object> violation : violations) {
+                    log.error("RaceInvalidException: { GameService " + violation.getMessage() + " }");
+                }
+                throw new RaceInvalidException();
             }
         }
-
-        // 레벨에 해당하는 몬스터가 존재하지 않을 경우
-        if(monsterList.size() == 0) throw new MonsterInvalidException();
-
-        // 랜덤한 몬스터 뽑기
-        Monster monster = monsterList.get((int) Math.floor(Math.random() * monsterList.size()));
-        log.info("등장 몬스터: { 이름: " + monster.getName() + ", 레벨: " + monster.getLevel() + " }");
-
-
-        return MonsterGetResponseDto.builder()
-                .name(monster.getName())
-                .level(monster.getLevel())
-                .build();
+        return raceGetResponseDtoList;
     }
 
     @Override

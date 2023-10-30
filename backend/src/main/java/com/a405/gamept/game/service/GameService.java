@@ -6,18 +6,20 @@ import com.a405.gamept.game.dto.response.DiceGetResponseDto;
 import com.a405.gamept.game.dto.response.MonsterGetResponseDto;
 import com.a405.gamept.game.util.exception.GameInvalidException;
 import com.a405.gamept.game.util.exception.MonsterInvalidException;
-
-public interface GameService {  // 추후 변경 가능
-
+import com.a405.gamept.game.dto.command.RaceGetCommandDto;
+import com.a405.gamept.game.dto.response.RaceGetResponseDto;
+import com.a405.gamept.global.error.exception.BadRequestException;
+import com.a405.gamept.global.error.exception.InternalServerException;
+import java.util.List;
+public interface GameService {
     /**
-     * 플레이어의 레벨에 맞는 몬스터를 조회한다.
-     * @param monsterGetCommandDto : 게임 정보
-     *                             storyCode    : 현재 진행중인 스토리
-     *                             level        : 현재 플레이어의 레벨
-     * @return : 랜덤으로 뽑아져나온 몬스터의 값
-     * @author : 유영
+     * (진행중)
+     * 스토리 별 종족 리스트를 조회한다
+     * @param   : void
+     * @return RaceGetResponseDto
+     * @author  : 유영
      */
-    MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameInvalidException, MonsterInvalidException;
+    List<RaceGetResponseDto> getRaceList(RaceGetCommandDto raceGetCommandDto) throws BadRequestException, InternalServerException;
 
     /**
      * 주사위(1~6) 2개를 돌린다
@@ -32,4 +34,6 @@ public interface GameService {  // 추후 변경 가능
      * 게임 코드를 기반으로 Player가 플레이하는 게임이 맞는지 체크
      */
     boolean gameCheck(String gameCode, String playerCode);
+
+    // void putRace(RacePutCommandDto racePutCommandDto) throws BadRequestException, InternalServerException;
 }
