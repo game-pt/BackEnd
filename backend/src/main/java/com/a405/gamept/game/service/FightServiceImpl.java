@@ -9,30 +9,36 @@ import com.a405.gamept.game.repository.StoryRepository;
 import com.a405.gamept.game.util.FinalData;
 import com.a405.gamept.game.util.exception.GameInvalidException;
 import com.a405.gamept.game.util.exception.MonsterInvalidException;
-import com.a405.gamept.global.error.exception.BadRequestException;
 import com.a405.gamept.global.error.exception.InternalServerException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
 public class FightServiceImpl implements FightService {
 
+    private final Validator validator;
+    Set<ConstraintViolation<Object>> violations;
     private final MonsterRepository monsterRepository;
     private final StoryRepository storyRepository;
 
     @Autowired
-    public FightServiceImpl(MonsterRepository monsterRepository, StoryRepository storyRepository) {
+    public FightServiceImpl(Validator validator, MonsterRepository monsterRepository, StoryRepository storyRepository) {
+        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
         this.monsterRepository = monsterRepository;
         this.storyRepository = storyRepository;
     }
 
     @Override
     public MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws InternalServerException {
-        Story story = storyRepository.findById(monsterGetCommandDto.getStoryCode()).orElseThrow(GameInvalidException::new);
+        Story story = storyRepository.findById(monsterGetCommandDto.storyCode()).orElseThrow(GameInvalidException::new);
         List<Monster> monsterList = null;
 
         /** 몬스터 레벨 난수 뽑기 **/
@@ -48,7 +54,7 @@ public class FightServiceImpl implements FightService {
         for(int key : FinalData.monsterRate.keySet()) {
             sum += FinalData.monsterRate.get(key);  // 확률 더하기
             if(randNum < sum) {  // 확률에 해당할 경우
-                int playerLevel = monsterGetCommandDto.getLevel() + key;
+                int playerLevel = monsterGetCommandDto.level() + key;
                 if(playerLevel < 0) playerLevel = 0;
                 else if(10 < playerLevel) playerLevel = 10;
                 monsterList = monsterRepository.findAllByStoryAndLevel(story, playerLevel);
@@ -63,10 +69,18 @@ public class FightServiceImpl implements FightService {
         Monster monster = monsterList.get((int) Math.floor(Math.random() * monsterList.size()));
         log.info("등장 몬스터: { 이름: " + monster.getName() + ", 레벨: " + monster.getLevel() + " }");
 
+        MonsterGetResponseDto monsterGetResponseDto = MonsterGetResponseDto.from(monster);
 
-        return MonsterGetResponseDto.builder()
-                .name(monster.getName())
-                .level(monster.getLevel())
-                .build();
+        // 유효성 검사
+        violations = validator.validate(monsterGetResponseDto);
+
+        if (!violations.isEmpty()) {  // 유효성 검사 실패 시
+            for (ConstraintViolation<Object> violation : violations) {
+                log.error("MonsterInvalidException: { FightService " + violation.getMessage() + " }");
+            }
+            throw new MonsterInvalidException();
+        }
+
+        return monsterGetResponseDto;
     }
 }
