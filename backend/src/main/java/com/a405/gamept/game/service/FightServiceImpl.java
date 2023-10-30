@@ -50,14 +50,18 @@ public class FightServiceImpl implements FightService {
         log.info("몬스터 등장확률 총합: " + sum);
         int randNum = (int) Math.floor(Math.random() * sum);  // 몬스터 레벨 확률
 
-        sum = 0;
+        sum = 0;  // 각 확률 더하기
         for(int key : FinalData.monsterRate.keySet()) {
             sum += FinalData.monsterRate.get(key);  // 확률 더하기
             if(randNum < sum) {  // 확률에 해당할 경우
-                int playerLevel = monsterGetCommandDto.level() + key;
-                if(playerLevel < 0) playerLevel = 0;
-                else if(10 < playerLevel) playerLevel = 10;
-                monsterList = monsterRepository.findAllByStoryAndLevel(story, playerLevel);
+                int monsterLevel = monsterGetCommandDto.playerLevel() + key;
+                if(monsterLevel <= 0){  // 몬스터 레벨이 0 이하일 경우
+                    monsterLevel = 1;  // 몬스터 레벨 1로 설정
+                } else if(10 < monsterLevel) {  // 몬스터 레벨이 10 초과일 경우
+                    monsterLevel = 10;  // 몬스터 레벨 10으로 설정
+                }
+                // 레벨에 해당하는 몬스터 리스트
+                monsterList = monsterRepository.findAllByStoryAndLevel(story, monsterLevel);
                 break;
             }
         }
