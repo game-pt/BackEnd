@@ -1,7 +1,7 @@
 import { IInput } from '@/types/components/Input.types';
 
 /**
- * @param props 
+ * @param props
  * {
  * width, height => 너비와 높이
  * placeholder => 플레이스홀더
@@ -16,7 +16,10 @@ const Input = (props: IInput) => {
   };
 
   return (
-    <div className="min-w-400 min-h-[40px] mx-auto relative flex justify-end items-center" style={inputStyle}>
+    <div
+      className="min-w-400 min-h-[40px] mx-auto relative flex justify-end items-center"
+      style={inputStyle}
+    >
       <input
         placeholder={props.placeholder}
         className={`w-full h-full px-2 pr-7 bg-backgroud border-primary border-2 rounded-sm font-hol text-white text-18`}
