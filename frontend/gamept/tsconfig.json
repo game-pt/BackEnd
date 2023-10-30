@@ -24,9 +24,6 @@
     /* Root */
     "baseUrl": ".",
     "paths": {
-      "@atoms/*": ["src/atoms/*"],
-      "@organisms/*": ["src/organisms/*"],
-      "@pages/*": ["src/pages/*"],
       "@/*": ["src/*"]
     }
   },
