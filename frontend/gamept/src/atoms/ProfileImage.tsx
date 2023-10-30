@@ -8,6 +8,7 @@ import ProfileBorder from '../assets/ProfileBorder.svg';
  * imgCode : 이미지 코드값, 종족/직업/성별에 따라 이미지 코드를 생성 단계에서 부여하고, jotai를 통해 관리할 예정
  * size : 원하는 이미지 사이즈
  * alt : alt 텍스트
+ * className: 위치 조정용 커스텀 className
  */
 
 const ProfileImage = ({
@@ -16,12 +17,14 @@ const ProfileImage = ({
   size,
   imgCode,
   alt,
+  className,
 }: {
   onClick?: any;
   hasBorderAsset?: boolean;
   size: number;
   imgCode: number;
   alt: string;
+  className?: string;
 }) => {
   const profileImgUrl = new URL(
     `../assets/profile${imgCode}.svg`,
@@ -31,7 +34,7 @@ const ProfileImage = ({
   return (
     <div
       onClick={onClick}
-      className="relative"
+      className={`relative ${className}`}
       style={{ width: size, height: size }}
     >
       <img
