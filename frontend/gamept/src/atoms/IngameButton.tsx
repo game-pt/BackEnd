@@ -1,5 +1,16 @@
 import { IIngameButton } from '@/types/components/IngameButton.types';
 
+/**
+ * 
+ * @param props 
+ *  width: string;
+ *  height: string;
+ *  type: string;
+ *  text: string;
+ *  onClickEvent: () => void;
+ *
+ * @returns
+ */
 const IngameButton = (props: IIngameButton) => {
   const buttonStyle = {
     width: props.width,
