@@ -96,6 +96,17 @@ public class GameServiceImpl implements GameService {
         int dice1 = random.nextInt(6) + 1;
         int dice2 = random.nextInt(6) + 1;
 
+        DiceGetResponseDto diseResult = DiceGetResponseDto.of(dice1, dice2);
+
+        violations = validator.validate(diseResult);
+
+        if (!violations.isEmpty()) {  // 유효성 검사 실패 시
+            for (ConstraintViolation<Object> violation : violations) {
+                log.error("DiceInvalidException: { GameService " + violation.getMessage() + " }");
+            }
+            throw new BusinessException(ErrorMessage.DICE_NOT_FOUND);
+        }
+
         return DiceGetResponseDto.of(dice1, dice2);
     }
 
