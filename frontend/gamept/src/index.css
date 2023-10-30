@@ -14,8 +14,8 @@
 
 @font-face {
   font-family: 'HOL';
-  src: url(./assets/font/HeirofLightRegular.ttf) format('truetype');
-  font-weight: 600;
+  src: url(./assets/font/HeirofLightBold.ttf) format('truetype');
+  font-weight: 700;
   font-style: normal;
 }
 
@@ -129,12 +129,13 @@ button {
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
+  font-family: 'HOL';
   cursor: pointer;
   transition: all 0.25s;
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px auto #DD8A5A;
 }
 
 @media (prefers-color-scheme: light) {
