@@ -1,19 +1,29 @@
 package com.a405.gamept.game.service;
 
-import com.a405.gamept.game.dto.command.MonsterGetCommandDto;
-import com.a405.gamept.game.dto.response.MonsterGetResponseDto;
-import com.a405.gamept.game.util.exception.GameInvalidException;
-import com.a405.gamept.game.util.exception.MonsterInvalidException;
+import com.a405.gamept.game.dto.command.RaceGetCommandDto;
+import com.a405.gamept.game.dto.response.RaceGetResponseDto;
+import com.a405.gamept.global.error.exception.BadRequestException;
+import com.a405.gamept.global.error.exception.InternalServerException;
+import java.util.List;
 
-public interface GameService {  // 추후 변경 가능
+public interface GameService {
+    /**
+     * (진행중)
+     * 스토리 별 종족 리스트를 조회한다
+     * @param   : void
+     * @return RaceGetResponseDto
+     * @author  : 유영
+     */
+    List<RaceGetResponseDto> getRaceList(RaceGetCommandDto raceGetCommandDto) throws BadRequestException, InternalServerException;
 
     /**
-     * 플레이어의 레벨에 맞는 몬스터를 조회한다.
-     * @param monsterGetCommandDto : 게임 정보
-     *                             storyCode    : 현재 진행중인 스토리
-     *                             level        : 현재 플레이어의 레벨
-     * @return : 랜덤으로 뽑아져나온 몬스터의 값
+     * (진행예정)
+     * 유저의 선택 종족을 유저 정보에 저장한다.
+     * @param racePutCommandDto :   roomCode    - 방 코드
+     *                              playerCode  - 플레이어 코드
+     *                              raceCode    - 종족 코드
+     * @return : void
      * @author : 유영
      */
-    MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameInvalidException, MonsterInvalidException;
+    // void putRace(RacePutCommandDto racePutCommandDto) throws BadRequestException, InternalServerException;
 }
