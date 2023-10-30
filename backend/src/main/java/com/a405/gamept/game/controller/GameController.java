@@ -1,5 +1,6 @@
 package com.a405.gamept.game.controller;
 
+import com.a405.gamept.game.dto.command.RaceGetCommandDto;
 import com.a405.gamept.game.dto.request.RaceGetRequestDto;
 import com.a405.gamept.game.service.GameService;
 import com.a405.gamept.global.error.exception.BadRequestException;
@@ -24,6 +25,6 @@ public class GameController {
 
     @GetMapping("player/race")
     public ResponseEntity<?> getRaceList(@Valid RaceGetRequestDto raceGetRequestDto) throws InternalServerException, BadRequestException {
-        return ResponseEntity.ok(gameService.getRaceList(RaceGetRequestDto.of(raceGetRequestDto)));
+        return ResponseEntity.ok(gameService.getRaceList(RaceGetCommandDto.from(raceGetRequestDto)));
     }
 }
