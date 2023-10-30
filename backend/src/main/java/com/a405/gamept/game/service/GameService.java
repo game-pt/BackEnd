@@ -2,8 +2,8 @@ package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.RaceGetCommandDto;
 import com.a405.gamept.game.dto.response.RaceGetResponseDto;
-import com.a405.gamept.global.error.exception.BadRequestException;
-import com.a405.gamept.global.error.exception.InternalServerException;
+import com.a405.gamept.game.util.exception.GameException;
+
 import java.util.List;
 
 public interface GameService {
@@ -14,7 +14,7 @@ public interface GameService {
      * @return RaceGetResponseDto
      * @author  : 유영
      */
-    List<RaceGetResponseDto> getRaceList(RaceGetCommandDto raceGetCommandDto) throws BadRequestException, InternalServerException;
+    List<RaceGetResponseDto> getRaceList(RaceGetCommandDto raceGetCommandDto) throws GameException;
 
     /**
      * (진행예정)

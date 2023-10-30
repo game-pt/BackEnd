@@ -7,10 +7,8 @@ import com.a405.gamept.game.entity.Race;
 import com.a405.gamept.game.entity.Story;
 import com.a405.gamept.game.repository.RaceRepository;
 import com.a405.gamept.game.repository.StoryRepository;
-import com.a405.gamept.game.util.exception.RaceInvalidException;
-import com.a405.gamept.game.util.exception.StoryNotFoundException;
-import com.a405.gamept.global.error.exception.BadRequestException;
-import com.a405.gamept.global.error.exception.InternalServerException;
+import com.a405.gamept.game.util.exception.GameException;
+import com.a405.gamept.game.util.enums.GameErrorMessage;
 import jakarta.validation.ConstraintViolation;
 
 import java.util.ArrayList;
@@ -19,10 +17,10 @@ import java.util.Set;
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -40,16 +38,16 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<RaceGetResponseDto> getRaceList(RaceGetCommandDto raceGetCommandDto) throws BadRequestException, InternalServerException {
-        Story story = storyRepository.findById(raceGetCommandDto.storyCode()).orElseThrow(() -> {
-            log.error("StoryNotFoundException: { GameService 스토리 조회 실패 }");
-            return new StoryNotFoundException();
-        });
+    @Transactional(readOnly = true)
+    public List<RaceGetResponseDto> getRaceList(RaceGetCommandDto raceGetCommandDto) throws GameException {
+        Story story = storyRepository.findById(raceGetCommandDto.storyCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
 
-        List<Race> raceList = raceRepository.findAllByStory(story);
+        List<Race> raceList = raceRepository.findAllByStory(story)
+                .orElseThrow(() -> new GameException(GameErrorMessage.RACE_INVALID));
+
         if(raceList.size() == 0) {
-            log.error("RaceInvalidException: { GameService 종족 조회 실패 }");
-            throw new RaceInvalidException();
+            throw new GameException(GameErrorMessage.RACE_INVALID);
         }
 
         // DTO 리스트로 변환
@@ -62,9 +60,8 @@ public class GameServiceImpl implements GameService {
 
             if (!violations.isEmpty()) {  // 유효성 검사 실패 시
                 for (ConstraintViolation<Object> violation : violations) {
-                    log.error("RaceInvalidException: { GameService " + violation.getMessage() + " }");
+                    throw new GameException(violation.getMessage());
                 }
-                throw new RaceInvalidException();
             }
         }
 
