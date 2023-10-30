@@ -11,6 +11,13 @@ import com.a405.gamept.game.repository.StoryRepository;
 import com.a405.gamept.game.util.FinalData;
 import com.a405.gamept.game.util.exception.GameInvalidException;
 import com.a405.gamept.game.util.exception.MonsterInvalidException;
+import com.a405.gamept.global.error.enums.ErrorMessage;
+import com.a405.gamept.global.error.exception.custom.BusinessException;
+import com.a405.gamept.play.entity.Game;
+import com.a405.gamept.play.entity.Player;
+import com.a405.gamept.play.repository.GameRedisRepository;
+import com.a405.gamept.play.repository.PlayerRedisRepository;
+import java.util.Optional;
 import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +31,15 @@ public class GameServiceImpl implements GameService {
 
     private final MonsterRepository monsterRepository;
     private final StoryRepository storyRepository;
+    private final GameRedisRepository gameRedisRepository;
+    private final PlayerRedisRepository playerRedisRepository;
 
     @Autowired
-    public GameServiceImpl(MonsterRepository monsterRepository, StoryRepository storyRepository) {
+    public GameServiceImpl(MonsterRepository monsterRepository, StoryRepository storyRepository, GameRedisRepository gameRedisRepository, PlayerRedisRepository playerRedisRepository) {
         this.monsterRepository = monsterRepository;
         this.storyRepository = storyRepository;
+        this.gameRedisRepository = gameRedisRepository;
+        this.playerRedisRepository = playerRedisRepository;
     }
 
     @Override
@@ -72,7 +83,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public DiceGetResponseDto RollOfDice(DiceGetCommandDto diceGetCommandDto) {
+    public DiceGetResponseDto rollOfDice(DiceGetCommandDto diceGetCommandDto) {
         // 랜덤 객체 생성
         Random random = new Random();
 
@@ -81,5 +92,24 @@ public class GameServiceImpl implements GameService {
         int dice2 = random.nextInt(6) + 1;
 
         return DiceGetResponseDto.of(dice1, dice2);
+    }
+
+    @Override
+    public boolean gameCheck(String gameCode, String playerCode){
+        Game game = gameRedisRepository.findById(gameCode)
+                .orElseThrow(() -> new BusinessException(ErrorMessage.GAME_NOT_FOUND));
+        Player player = playerRedisRepository.findById(playerCode)
+                .orElseThrow(() -> new BusinessException(ErrorMessage.PLAYER_NOT_FOUND));
+
+        List<Player> playerList = game.getPlayerList();
+        boolean pass = false;
+        for(Player p : playerList){
+            if (p.getCode().equals(playerCode)) {
+                pass = true;
+                break;
+            }
+        }
+
+        return pass;
     }
 }

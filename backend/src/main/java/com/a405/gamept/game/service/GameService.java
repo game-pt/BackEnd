@@ -26,5 +26,10 @@ public interface GameService {  // 추후 변경 가능
      * @return : 랜덤으로 나온 주사위 값
      * @author : 지환
      */
-    DiceGetResponseDto RollOfDice(DiceGetCommandDto diceGetCommandDto);
+    DiceGetResponseDto rollOfDice(DiceGetCommandDto diceGetCommandDto);
+
+    /**
+     * 게임 코드를 기반으로 Player가 플레이하는 게임이 맞는지 체크
+     */
+    boolean gameCheck(String gameCode, String playerCode);
 }
