@@ -100,6 +100,7 @@ export default {
         fontWhite: '#FFFFFF',
         fontBlack: '#0D1321',
         backgroud: '#230802',
+        secondaryHover: '#AC6D49',
         secondaryContainer: '#F0B279',
         secondary: '#DD8A5A',
         black: '#21120D',
