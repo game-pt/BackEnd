@@ -12,7 +12,7 @@ const IngameButton = (props: IIngameButton) => {
         className={`w-full h-full font-bold bg-secondaryContainer bg-button-background hover:bg-secondary text-24`}
         onClick={props.onClickEvent}
       >
-        + 멀티플레이 생성
+        {props.text}
         {props.type === 'multi' && (
           /** 투표한 플레이어가 있다면 프로필 이미지 띄워주기. */
           <div className="logo"></div>
