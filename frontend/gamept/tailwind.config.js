@@ -129,7 +129,8 @@ export default {
         rose: colors.rose,
 
         primary: '#FBCB73',
-        'background-deep': '#240903',
+        backgroundDeep: '#240903',
+        containerLight: '#422721',
       },
       fontFamily: {
         hol: ['HOL', 'sans-serif'],
