@@ -1,6 +1,8 @@
 package com.a405.gamept.game.controller;
 
+import com.a405.gamept.game.dto.command.JobGetCommandDto;
 import com.a405.gamept.game.dto.command.RaceGetCommandDto;
+import com.a405.gamept.game.dto.request.JobGetRequestDto;
 import com.a405.gamept.game.dto.request.RaceGetRequestDto;
 import com.a405.gamept.game.service.GameStartService;
 import com.a405.gamept.game.util.exception.GameException;
@@ -25,5 +27,10 @@ public class GameStartController {
     @GetMapping("race")
     public ResponseEntity<?> getRaceList(@Valid RaceGetRequestDto raceGetRequestDto) throws GameException {
         return ResponseEntity.ok(gameStartService.getRaceList(RaceGetCommandDto.from(raceGetRequestDto)));
+    }
+
+    @GetMapping("job")
+    public ResponseEntity<?> getJobList(@Valid JobGetRequestDto jobGetRequestDto) throws GameException {
+        return ResponseEntity.ok(gameStartService.getJobList(JobGetCommandDto.from(jobGetRequestDto)));
     }
 }
