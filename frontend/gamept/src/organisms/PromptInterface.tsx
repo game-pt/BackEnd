@@ -13,9 +13,11 @@ const PromptInterface = () => {
         className="absolute inset-0 bg-[url(./assets/interface/PromptInterface.png)] bg-no-repeat bg-auto pointer-events-none"
         style={{ zIndex: 21 }}
       ></div>
-
+      {/* 프롬프트에 data 추가하면 프롬프트 내용 출력 */}
       <Prompt type="in-game" data={null} />
+      {/* 선택지 버튼 출력할 Area */}
       <div className="w-full h-[255px]"></div>
+      {/* 프롬프트 입력할 인풋 */}
       <Input
         width={'1072px'}
         height={'40px'}

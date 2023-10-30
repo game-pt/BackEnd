@@ -3,8 +3,6 @@ import { IPropmpt } from '@/types/components/Prompt.types';
 /**
  * props => data (프롬프트 출력 데이터), type (인게임, 엔딩 여부)
  * 현재 더미 데이터로 출력 중 / props.data 를 출력해줘야함
- * 프롬프트 받아오는 서비스 로직 선에서 br 태그를 추가한 문자열을 반환해야할 듯 => 보안 측면에서 악질적인 코드
- * 데이터를 문장마다 배열로 받는 식으로 해서 map 돌려서 p 태그로 문장마다 구분하면 될듯
  */
 const Prompt = (props: IPropmpt) => {
   return (
