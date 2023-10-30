@@ -1,4 +1,10 @@
 export interface IMakeCharacterStat {
-  baseStat: Number[];
-  correctionStat?: Number[];
+  baseStats: number[];
+  correctionStats: number[];
+}
+
+export interface IStatText {
+  statType: string;
+  baseStat: number;
+  correctionStat: number;
 }
