@@ -12,13 +12,14 @@ import com.a405.gamept.game.util.exception.StoryNotFoundException;
 import com.a405.gamept.global.error.exception.BadRequestException;
 import com.a405.gamept.global.error.exception.InternalServerException;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class GameServiceImpl implements GameService {
     private final Validator validator;
+    Set<ConstraintViolation<Object>> violations;
     private final RaceRepository raceRepository;
     private final StoryRepository storyRepository;
-    Set<ConstraintViolation<Object>> violations;
 
     @Autowired
     public GameServiceImpl(RaceRepository raceRepository, StoryRepository storyRepository) {
@@ -46,9 +47,14 @@ public class GameServiceImpl implements GameService {
         });
 
         List<Race> raceList = raceRepository.findAllByStory(story);
-        List<RaceGetResponseDto> raceGetResponseDtoList = new ArrayList<>();
+        if(raceList.size() == 0) {
+            log.error("RaceInvalidException: { GameService 종족 조회 실패 }");
+            throw new RaceInvalidException();
+        }
 
-        for (Race race : raceList) {
+        // DTO 리스트로 변환
+        List<RaceGetResponseDto> raceGetResponseDtoList = new ArrayList<>();
+        for (Race race : raceList) {  // 각각의 DTO에 대해 유효성 검사 진행
             raceGetResponseDtoList.add(RaceGetResponseDto.from(race));
 
             // 유효성 검사
