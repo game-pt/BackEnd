@@ -22,11 +22,11 @@ const Input = (props: IInput) => {
     >
       <input
         placeholder={props.placeholder}
-        className={`w-full h-full px-2 pr-7 bg-backgroud border-primary border-2 rounded-sm font-hol text-white text-18`}
-        onChange={(e) => props.setValue(e.target.value)}
+        className={`w-full h-full mx-2 px-2 pr-7 bg-backgroud border-primary border-2 rounded-sm font-hol text-white text-18`}
+        onChange={(e) => props.setValue('이우석 : ' + e.target.value)}
       />
       <img
-        className="absolute h-1/2 mr-3 hover:scale-110 duration-normal"
+        className="absolute h-1/2 mr-5 hover:scale-110 duration-normal"
         src="./src/assets/InputButton.svg"
         alt="Input_Button"
         onClick={props.onClickEvent}
