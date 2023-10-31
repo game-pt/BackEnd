@@ -1,11 +1,11 @@
-import { ITextButton } from "@/types/components/Button.types";
+import { ITextButton } from '@/types/components/Button.types';
 
 /**
- * 
- * @param props 
+ *
+ * @param props
  * text => string, 버튼에 들어갈 문구
- * onClickEvent => () => void, 버튼 클릭 시 이벤트 
- * @returns 
+ * onClickEvent => () => void, 버튼 클릭 시 이벤트
+ * @returns
  */
 
 const TextButton = (props: ITextButton) => {
@@ -16,6 +16,6 @@ const TextButton = (props: ITextButton) => {
       </a>
     </div>
   );
-}
+};
 
 export default TextButton;

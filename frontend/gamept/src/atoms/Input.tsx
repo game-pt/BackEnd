@@ -22,7 +22,7 @@ const Input = (props: IInput) => {
     >
       <input
         placeholder={props.placeholder}
-        className={`w-full h-full mx-2 px-2 pr-7 bg-backgroud border-primary border-2 rounded-sm font-hol text-white text-18`}
+        className="w-full h-full mx-2 px-2 pr-7 bg-backgroud border-primary border-2 rounded-sm font-hol text-white text-18"
         onChange={(e) => props.setValue('이우석 : ' + e.target.value)}
       />
       <img

@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import '../dice.css';
-import { IDice } from '../types/components/Dice.types';
+import { IDice, IDiceFace } from '../types/components/Dice.types';
 
 let allVal = {
   x: 0,
@@ -16,6 +16,19 @@ const perFace = [
   [0.3, 0.45, 0.9],
   [-0.16, 0.6, 0.18],
 ];
+
+const DiceFace = (props: IDiceFace) => {
+  return (
+    <div className={`dice${props.idx} dice`}>
+      <div className="diceFace front"></div>
+      <div className="diceFace up"></div>
+      <div className="diceFace left"></div>
+      <div className="diceFace right"></div>
+      <div className="diceFace bottom"></div>
+      <div className="diceFace back"></div>
+    </div>
+  );
+};
 
 /**
  * throw => 주사위가 던져지는지에 대한 props
@@ -99,32 +112,14 @@ const Dice = (props: IDice) => {
     setVal3(1);
     if (props.throw) throwDice();
   }, [props, setDice, setVal1, setVal2, setVal3]);
+
+  const diceList = [1, 2, 3];
+
   return (
     <div className="diceWrap">
-      <div className="dice1 dice">
-        <div className="diceFace front"></div>
-        <div className="diceFace up"></div>
-        <div className="diceFace left"></div>
-        <div className="diceFace right"></div>
-        <div className="diceFace bottom"></div>
-        <div className="diceFace back"></div>
-      </div>
-      <div className="dice2 dice">
-        <div className="diceFace front"></div>
-        <div className="diceFace up"></div>
-        <div className="diceFace left"></div>
-        <div className="diceFace right"></div>
-        <div className="diceFace bottom"></div>
-        <div className="diceFace back"></div>
-      </div>
-      <div className="dice3 dice">
-        <div className="diceFace front"></div>
-        <div className="diceFace up"></div>
-        <div className="diceFace left"></div>
-        <div className="diceFace right"></div>
-        <div className="diceFace bottom"></div>
-        <div className="diceFace back"></div>
-      </div>
+      {diceList.map((num) => (
+        <DiceFace idx={num} />
+      ))}
       <span id="diceVal"></span>
     </div>
   );
