@@ -1,11 +1,11 @@
-package com.a405.gamept.game.dto;
+package com.a405.gamept.game.dto.response;
 
 import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class FindEventByStoryCodeResponse {
+public class FindEventByStoryCodeResponseDto {
 
     /**
      * code: 이벤트의 고유 코드
@@ -33,7 +33,7 @@ public class FindEventByStoryCodeResponse {
     private int weight;
 
     @Builder
-    public FindEventByStoryCodeResponse(String code, String name, String prompt, char item_yn, int weight) {
+    public FindEventByStoryCodeResponseDto(String code, String name, String prompt, char item_yn, int weight) {
         this.code = code;
         this.name = name;
         this.prompt = prompt;
