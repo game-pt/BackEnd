@@ -1,8 +1,8 @@
 import { IIngameButton } from '@/types/components/IngameButton.types';
 
 /**
- * 
- * @param props 
+ *
+ * @param props
  *  width: string;
  *  height: string;
  *  type: string;
