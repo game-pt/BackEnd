@@ -7,9 +7,8 @@ import com.a405.gamept.game.entity.Story;
 import com.a405.gamept.game.repository.MonsterRepository;
 import com.a405.gamept.game.repository.StoryRepository;
 import com.a405.gamept.game.util.FinalData;
-import com.a405.gamept.game.util.exception.GameInvalidException;
-import com.a405.gamept.game.util.exception.MonsterInvalidException;
-import com.a405.gamept.global.error.exception.InternalServerException;
+import com.a405.gamept.game.util.enums.GameErrorMessage;
+import com.a405.gamept.game.util.exception.GameException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -37,8 +36,8 @@ public class FightServiceImpl implements FightService {
     }
 
     @Override
-    public MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws InternalServerException {
-        Story story = storyRepository.findById(monsterGetCommandDto.storyCode()).orElseThrow(GameInvalidException::new);
+    public MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameException {
+        Story story = storyRepository.findById(monsterGetCommandDto.storyCode()).orElseThrow(() -> new GameException(GameErrorMessage.MONSTER_INVALID));
         List<Monster> monsterList = null;
 
         /** 몬스터 레벨 난수 뽑기 **/
@@ -61,13 +60,16 @@ public class FightServiceImpl implements FightService {
                     monsterLevel = 10;  // 몬스터 레벨 10으로 설정
                 }
                 // 레벨에 해당하는 몬스터 리스트
-                monsterList = monsterRepository.findAllByStoryAndLevel(story, monsterLevel);
+                monsterList = monsterRepository.findAllByStoryAndLevel(story, monsterLevel)
+                        .orElseThrow(() -> new GameException(GameErrorMessage.MONSTER_INVALID));
                 break;
             }
         }
 
         // 레벨에 해당하는 몬스터가 존재하지 않을 경우
-        if(monsterList.size() == 0) throw new MonsterInvalidException();
+        if(monsterList == null || monsterList.size() == 0) {
+            throw new GameException(GameErrorMessage.MONSTER_INVALID);
+        }
 
         // 랜덤한 몬스터 뽑기
         Monster monster = monsterList.get((int) Math.floor(Math.random() * monsterList.size()));
@@ -80,9 +82,8 @@ public class FightServiceImpl implements FightService {
 
         if (!violations.isEmpty()) {  // 유효성 검사 실패 시
             for (ConstraintViolation<Object> violation : violations) {
-                log.error("MonsterInvalidException: { FightService " + violation.getMessage() + " }");
+                throw new GameException(violation.getMessage());
             }
-            throw new MonsterInvalidException();
         }
 
         return monsterGetResponseDto;

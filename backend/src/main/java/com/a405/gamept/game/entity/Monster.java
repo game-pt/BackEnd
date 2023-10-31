@@ -53,6 +53,6 @@ public class Monster extends BaseEntity {
      * */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "story_code")
-    @Comment("이 몬스터가 어떤 스토리에서 나오는지")
+    @Comment("스토리 코드")
     private Story story;
 }
