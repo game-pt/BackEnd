@@ -49,7 +49,7 @@ const isByteExceed = (input: string) => {
   let size = 0;
 
   for (let i = 0; i < length; i++) {
-    size += input.charCodeAt(i) >> 7 ? 2 : 1;
+    size += input.charCodeAt(i) >> 7 ? 2 : 1; // 아스키 코드 범위 벗어나면 2바이트 취급
     if (size > MAX_BYTE) return true;
   }
   return false;
