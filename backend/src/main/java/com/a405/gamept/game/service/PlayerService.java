@@ -4,6 +4,7 @@ import com.a405.gamept.game.dto.command.JobGetCommandDto;
 import com.a405.gamept.game.dto.command.PlayerSetCommandDto;
 import com.a405.gamept.game.dto.command.RaceGetCommandDto;
 import com.a405.gamept.game.dto.response.JobGetResponseDto;
+import com.a405.gamept.game.dto.response.PlayerSetResponseDto;
 import com.a405.gamept.game.dto.response.RaceGetResponseDto;
 import com.a405.gamept.game.util.exception.GameException;
 
@@ -35,5 +36,5 @@ public interface PlayerService {
      * @return JobGetResponseDto
      * @author  : 유영
      */
-    // List<JobGetResponseDto> setPlayer(PlayerSetCommandDto playerSetCommandDto) throws GameException;
+    PlayerSetResponseDto setPlayer(PlayerSetCommandDto playerSetCommandDto) throws GameException;
 }

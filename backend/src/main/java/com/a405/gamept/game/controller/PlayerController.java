@@ -11,9 +11,7 @@ import com.a405.gamept.game.util.exception.GameException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("player")
@@ -36,9 +34,8 @@ public class PlayerController {
         return ResponseEntity.ok(playerService.getJobList(JobGetCommandDto.from(jobGetRequestDto)));
     }
 
-    @GetMapping
-    public ResponseEntity<?> setPlayer(@Valid PlayerSetRequestDto playerSetRequestDto) throws GameException {
-        return ResponseEntity.ok("");
-        // return ResponseEntity.ok(playerService.setPlayer(PlayerSetCommandDto.from(playerSetRequestDto)));
+    @PostMapping
+    public ResponseEntity<?> setPlayer(@Valid @RequestBody PlayerSetRequestDto playerSetRequestDto) throws GameException {
+        return ResponseEntity.ok(playerService.setPlayer(PlayerSetCommandDto.from(playerSetRequestDto)));
     }
 }
