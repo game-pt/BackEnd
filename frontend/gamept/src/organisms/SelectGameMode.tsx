@@ -1,3 +1,15 @@
+/**
+ * 게임 모드 선택 카드 구현
+ * @param props
+ * modeName : string;
+ * modeType: number;
+ * imgUrl: string;
+ * onClickEvent: () => void;
+ *
+ * @returns void;
+ * 백 API reponse 구성에 따라 변경될 여지가 있음
+ */
+
 import CardImage from '@/atoms/CardImage';
 import { ISelectGameMode } from '@/types/components/SelectGameMode.type';
 
