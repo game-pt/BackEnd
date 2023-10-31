@@ -1,19 +1,22 @@
 package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.JobGetCommandDto;
+import com.a405.gamept.game.dto.command.PlayerSetCommandDto;
 import com.a405.gamept.game.dto.command.RaceGetCommandDto;
 import com.a405.gamept.game.dto.response.JobGetResponseDto;
+import com.a405.gamept.game.dto.response.PlayerSetResponseDto;
 import com.a405.gamept.game.dto.response.RaceGetResponseDto;
-import com.a405.gamept.game.entity.Job;
-import com.a405.gamept.game.entity.Race;
-import com.a405.gamept.game.entity.Story;
+import com.a405.gamept.game.entity.*;
 import com.a405.gamept.game.repository.JobRepository;
 import com.a405.gamept.game.repository.RaceRepository;
 import com.a405.gamept.game.repository.StoryRepository;
+import com.a405.gamept.game.util.FinalData;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.play.entity.Game;
+import com.a405.gamept.play.entity.Player;
 import com.a405.gamept.play.repository.GameRedisRepository;
+import com.a405.gamept.util.ValidateUtil;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -22,16 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j
 public class PlayerServiceImpl implements PlayerService {
-
-    private final Validator validator;
-    Set<ConstraintViolation<Object>> violations;
     private final GameRedisRepository gameRepository;
     private final StoryRepository storyRepository;
     private final RaceRepository raceRepository;
@@ -40,7 +38,6 @@ public class PlayerServiceImpl implements PlayerService {
     @Autowired
     public PlayerServiceImpl(GameRedisRepository gameRepository, StoryRepository storyRepository, RaceRepository raceRepository, JobRepository jobRepository) {
         this.gameRepository = gameRepository;
-        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
         this.storyRepository = storyRepository;
         this.raceRepository = raceRepository;
         this.jobRepository = jobRepository;
@@ -49,6 +46,8 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     @Transactional(readOnly = true)
     public List<RaceGetResponseDto> getRaceList(RaceGetCommandDto raceGetCommandDto) throws GameException {
+        ValidateUtil.validate(raceGetCommandDto);
+
         Game game = gameRepository.findById(raceGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
@@ -63,17 +62,10 @@ public class PlayerServiceImpl implements PlayerService {
         }
         // DTO 리스트로 변환
         List<RaceGetResponseDto> raceGetResponseDtoList = new ArrayList<>();
-        for (Race race : raceList) {  // 각각의 DTO에 대해 유효성 검사 진행
+        for (Race race : raceList) {
             raceGetResponseDtoList.add(RaceGetResponseDto.from(race));
-
             // 유효성 검사
-            violations = validator.validate(raceGetResponseDtoList.get(raceGetResponseDtoList.size() - 1));
-
-            if (!violations.isEmpty()) {  // 유효성 검사 실패 시
-                for (ConstraintViolation<Object> violation : violations) {
-                    throw new GameException(violation.getMessage());
-                }
-            }
+            ValidateUtil.validate(raceGetResponseDtoList.get(raceGetResponseDtoList.size() - 1));
         }
         return raceGetResponseDtoList;
     }
@@ -81,6 +73,8 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     @Transactional(readOnly = true)
     public List<JobGetResponseDto> getJobList(JobGetCommandDto jobGetCommandDto) throws GameException {
+        ValidateUtil.validate(jobGetCommandDto);
+
         Game game = gameRepository.findById(jobGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
@@ -95,18 +89,59 @@ public class PlayerServiceImpl implements PlayerService {
         }
         // DTO 리스트로 변환
         List<JobGetResponseDto> jobGetResponseDtoList = new ArrayList<>();
-        for (Job job : jobList) {  // 각각의 DTO에 대해 유효성 검사 진행
+        for (Job job : jobList) {
             jobGetResponseDtoList.add(JobGetResponseDto.from(job));
-
             // 유효성 검사
-            violations = validator.validate(jobGetResponseDtoList.get(jobGetResponseDtoList.size() - 1));
+            ValidateUtil.validate(jobGetResponseDtoList.get(jobGetResponseDtoList.size() - 1));
+        }
+        return jobGetResponseDtoList;
+    }
 
-            if (!violations.isEmpty()) {  // 유효성 검사 실패 시
-                for (ConstraintViolation<Object> violation : violations) {
-                    throw new GameException(violation.getMessage());
+    @Override
+    public PlayerSetResponseDto setPlayer(PlayerSetCommandDto playerSetCommandDto) throws GameException {
+        ValidateUtil.validate(playerSetCommandDto);
+
+        Game game = gameRepository.findById(playerSetCommandDto.gameCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+
+        // 플레이어 코드를 위한 현재 플레이어 순서
+        int playerNum = game.getPlayerList().size() + 1;
+        Race race = raceRepository.findById(playerSetCommandDto.raceCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.RACE_NOT_FOUND));
+        Job job = jobRepository.findById(playerSetCommandDto.jobCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.JOB_NOT_FOUND));
+
+        // 스탯 설정
+        Map<String, Integer> stat = new HashMap<>();
+
+        int statValue;
+        for (RaceStat raceStat : race.getRaceStatList()) {
+            for (JobBonus jobBonus : job.getJobBonusList()) {  // 종족 별 스탯과 직업 별 추가 스탯 순회
+                if(raceStat.getStat().equals(jobBonus.getStat())) {  // 종족별 스탯과 직업 별 추가 스탯이 일치할 경우
+                    statValue = raceStat.getStatValue() + jobBonus.getStatBonus();  // 연산
+                    if(statValue < 0) statValue = 0;
+                    else if(FinalData.MAX_STAT < statValue) statValue = FinalData.MAX_STAT;  // 숫자 범위 처리
+
+                    stat.put(raceStat.getStat().getCode(), statValue);  // 플레이어 스탯에 삽입
+                    break;
                 }
             }
         }
-        return jobGetResponseDtoList;
+
+        log.info("생성된 플레이어 스탯: " + stat);
+
+
+        Player player = Player.builder()
+                .code("PLAYER" + playerNum)  // 임의의 코드 생성
+                .race(race)
+                .job(job)
+                .nickname(playerSetCommandDto.nickname())
+                .stat(stat)
+                .build();
+
+        PlayerSetResponseDto playerSetResponseDto = PlayerSetResponseDto.from(player);
+        ValidateUtil.validate(playerSetResponseDto);  // 유효성 검사
+
+        return playerSetResponseDto;
     }
 }
