@@ -1,5 +1,16 @@
 import { IIngameButton } from '@/types/components/IngameButton.types';
 
+/**
+ *
+ * @param props
+ *  width: string;
+ *  height: string;
+ *  type: string;
+ *  text: string;
+ *  onClickEvent: () => void;
+ *
+ * @returns void;
+ */
 const IngameButton = (props: IIngameButton) => {
   const buttonStyle = {
     width: props.width,
@@ -9,7 +20,7 @@ const IngameButton = (props: IIngameButton) => {
   return (
     <div className="button-area" style={buttonStyle}>
       <button
-        className={`w-full h-full font-bold bg-secondaryContainer bg-button-background hover:bg-primary text-24`}
+        className={`w-full h-full font-bold bg-secondaryContainer bg-button-background hover:bg-secondaryHover text-24 text-left`}
         onClick={props.onClickEvent}
       >
         {props.text}
