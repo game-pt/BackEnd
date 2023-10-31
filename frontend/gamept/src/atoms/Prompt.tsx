@@ -6,7 +6,7 @@ import { IPropmpt } from '@/types/components/Prompt.types';
  */
 const Prompt = (props: IPropmpt) => {
   return (
-    <div className="max-w-[1100px] min-w-[500px] h-[350px] mx-auto relative bg-transparent">
+    <div className="max-w-[1100px] min-w-[500px] h-[330px] mx-auto relative bg-transparent">
       {props.type && (
         <div className={props.type}>
           <p>

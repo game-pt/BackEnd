@@ -45,17 +45,17 @@
     @apply font-suit w-40 h-16 text-20 font-medium text-white bg-mainblue rounded-xl;
   } */
   .in-game {
-    @apply w-full h-full absolute overflow-y-scroll px-10 text-32 text-primary font-hol text-left;
+    @apply w-full h-full absolute overflow-y-scroll px-10 text-24 text-primary font-hol text-left;
   }
 
   .ending {
-    @apply w-full h-full absolute overflow-y-scroll px-10 text-32 text-primary font-hol text-center;
+    @apply w-full h-full absolute overflow-y-scroll px-10 text-24 text-primary font-hol text-center;
   }
 }
 
 /* 스크롤바 숨기기 */
 ::-webkit-scrollbar {
-  width: 0.4em;
+  width: 0em;
 }
 
 ::-webkit-scrollbar-track {
@@ -103,8 +103,8 @@ input:-webkit-autofill:active {
 
 a {
   font-weight: 500;
-  color: #646cff;
   text-decoration: inherit;
+  transition: all .5s;
 }
 a:hover {
   color: #535bf2;
@@ -112,6 +112,7 @@ a:hover {
 
 body {
   margin: 0;
+  padding: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
