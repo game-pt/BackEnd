@@ -1,7 +1,7 @@
 // import React from 'react';
-import Logo from '../assets/logo/logo.png';
-import ProfileInterface from '../assets/interface/profile_interface.png';
-import SideInterface from '../organisms/SideInterface';
+import Logo from '@/assets/logo/logo.png';
+import ProfileInterface from '@/assets/interface/profile_interface.png';
+import SideInterface from '@/organisms/SideInterface';
 import PromptInterface from '@/organisms/PromptInterface';
 import TextButton from '@/atoms/TextButton';
 // import './SinglePlay.css'; // CSS 파일 가져오기
