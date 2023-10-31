@@ -10,7 +10,7 @@ import { ITextButton } from "@/types/components/Button.types";
 
 const TextButton = (props: ITextButton) => {
   return (
-    <div className="text-[#FFA727] font-hol text-24">
+    <div className="w-fit h-fit text-[#FFA727] font-hol text-24">
       <a href="#" onClick={() => props.onClickEvent}>
         {props.text}
       </a>
