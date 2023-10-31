@@ -1,19 +1,24 @@
 package com.a405.gamept.game.service;
 
-import com.a405.gamept.game.dto.command.MonsterGetCommandDto;
-import com.a405.gamept.game.dto.response.MonsterGetResponseDto;
-import com.a405.gamept.game.util.exception.GameInvalidException;
-import com.a405.gamept.game.util.exception.MonsterInvalidException;
+import com.a405.gamept.game.dto.command.DiceGetCommandDto;
+import com.a405.gamept.game.dto.response.DiceGetResponseDto;
+import com.a405.gamept.game.dto.command.RaceGetCommandDto;
+import com.a405.gamept.game.dto.response.RaceGetResponseDto;
+import com.a405.gamept.game.util.exception.GameException;
 
-public interface GameService {  // 추후 변경 가능
+import java.util.List;
+public interface GameService {
+    /**
+     * 주사위(1~6) 2개를 돌린다
+     * @param diceGetCommandDto : 게임 정보
+     *                          gameCode : 현재 진행중인 게임 코드
+     * @return : 랜덤으로 나온 주사위 값
+     * @author : 지환
+     */
+    DiceGetResponseDto rollOfDice(DiceGetCommandDto diceGetCommandDto);
 
     /**
-     * 플레이어의 레벨에 맞는 몬스터를 조회한다.
-     * @param monsterGetCommandDto : 게임 정보
-     *                             storyCode    : 현재 진행중인 스토리
-     *                             level        : 현재 플레이어의 레벨
-     * @return : 랜덤으로 뽑아져나온 몬스터의 값
-     * @author : 유영
+     * 게임 코드를 기반으로 Player가 플레이하는 게임이 맞는지 체크
      */
-    MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameInvalidException, MonsterInvalidException;
+    boolean gameCheck(String gameCode, String playerCode);
 }
