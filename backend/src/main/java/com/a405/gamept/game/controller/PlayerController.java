@@ -1,10 +1,12 @@
 package com.a405.gamept.game.controller;
 
 import com.a405.gamept.game.dto.command.JobGetCommandDto;
+import com.a405.gamept.game.dto.command.PlayerSetCommandDto;
 import com.a405.gamept.game.dto.command.RaceGetCommandDto;
 import com.a405.gamept.game.dto.request.JobGetRequestDto;
+import com.a405.gamept.game.dto.request.PlayerSetRequestDto;
 import com.a405.gamept.game.dto.request.RaceGetRequestDto;
-import com.a405.gamept.game.service.GameStartService;
+import com.a405.gamept.game.service.PlayerService;
 import com.a405.gamept.game.util.exception.GameException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,23 +16,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("start")
-public class GameStartController {
+@RequestMapping("player")
+public class PlayerController {
 
-    private final GameStartService gameStartService;
+    private final PlayerService playerService;
 
     @Autowired
-    public GameStartController(GameStartService gameStartService) {
-        this.gameStartService = gameStartService;
+    public PlayerController(PlayerService playerService) {
+        this.playerService = playerService;
     }
 
     @GetMapping("race")
     public ResponseEntity<?> getRaceList(@Valid RaceGetRequestDto raceGetRequestDto) throws GameException {
-        return ResponseEntity.ok(gameStartService.getRaceList(RaceGetCommandDto.from(raceGetRequestDto)));
+        return ResponseEntity.ok(playerService.getRaceList(RaceGetCommandDto.from(raceGetRequestDto)));
     }
 
     @GetMapping("job")
     public ResponseEntity<?> getJobList(@Valid JobGetRequestDto jobGetRequestDto) throws GameException {
-        return ResponseEntity.ok(gameStartService.getJobList(JobGetCommandDto.from(jobGetRequestDto)));
+        return ResponseEntity.ok(playerService.getJobList(JobGetCommandDto.from(jobGetRequestDto)));
+    }
+
+    @GetMapping
+    public ResponseEntity<?> setPlayer(@Valid PlayerSetRequestDto playerSetRequestDto) throws GameException {
+        return ResponseEntity.ok("");
+        // return ResponseEntity.ok(playerService.setPlayer(PlayerSetCommandDto.from(playerSetRequestDto)));
     }
 }

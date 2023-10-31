@@ -12,6 +12,8 @@ import com.a405.gamept.game.repository.RaceRepository;
 import com.a405.gamept.game.repository.StoryRepository;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.game.util.exception.GameException;
+import com.a405.gamept.play.entity.Game;
+import com.a405.gamept.play.repository.GameRedisRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -26,16 +28,18 @@ import java.util.Set;
 
 @Service
 @Slf4j
-public class GameStartServiceImpl implements GameStartService {
+public class PlayerServiceImpl implements PlayerService {
 
     private final Validator validator;
     Set<ConstraintViolation<Object>> violations;
+    private final GameRedisRepository gameRepository;
     private final StoryRepository storyRepository;
     private final RaceRepository raceRepository;
     private final JobRepository jobRepository;
 
     @Autowired
-    public GameStartServiceImpl(StoryRepository storyRepository, RaceRepository raceRepository, JobRepository jobRepository) {
+    public PlayerServiceImpl(GameRedisRepository gameRepository, StoryRepository storyRepository, RaceRepository raceRepository, JobRepository jobRepository) {
+        this.gameRepository = gameRepository;
         this.validator = Validation.buildDefaultValidatorFactory().getValidator();
         this.storyRepository = storyRepository;
         this.raceRepository = raceRepository;
@@ -45,7 +49,11 @@ public class GameStartServiceImpl implements GameStartService {
     @Override
     @Transactional(readOnly = true)
     public List<RaceGetResponseDto> getRaceList(RaceGetCommandDto raceGetCommandDto) throws GameException {
-        Story story = storyRepository.findById(raceGetCommandDto.storyCode())
+        Game game = gameRepository.findById(raceGetCommandDto.gameCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+
+        // 현재 게임의 스토리 조회
+        Story story = storyRepository.findById(game.getStoryCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
 
         List<Race> raceList = raceRepository.findAllByStory(story)
@@ -73,7 +81,11 @@ public class GameStartServiceImpl implements GameStartService {
     @Override
     @Transactional(readOnly = true)
     public List<JobGetResponseDto> getJobList(JobGetCommandDto jobGetCommandDto) throws GameException {
-        Story story = storyRepository.findById(jobGetCommandDto.storyCode())
+        Game game = gameRepository.findById(jobGetCommandDto.gameCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+
+        // 현재 게임의 스토리 조회
+        Story story = storyRepository.findById(game.getStoryCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
 
         List<Job> jobList = jobRepository.findAllByStory(story)
