@@ -12,6 +12,7 @@ export default {
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'button-background': 'url("./src/assets/button-background.png")'
       },
 
       width: {

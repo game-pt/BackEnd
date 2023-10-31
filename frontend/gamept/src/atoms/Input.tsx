@@ -1,4 +1,5 @@
 import { IInput } from '@/types/components/Input.types';
+import inputButton from "@/assets/InputButton.svg";
 
 /**
  * @param props
@@ -27,7 +28,7 @@ const Input = (props: IInput) => {
       />
       <img
         className="absolute h-1/2 mr-5 hover:scale-110 duration-normal"
-        src="./src/assets/InputButton.svg"
+        src={inputButton}
         alt="Input_Button"
         onClick={props.onClickEvent}
       />
