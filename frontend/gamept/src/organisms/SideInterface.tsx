@@ -16,7 +16,7 @@ function SideInterface() {
   const [selectedTabColor, setSelectedTabColor] = useState('#331812'); // 초기 탭 색상 설정
 
   return (
-    <div style={{marginBottom:'45px'}}>
+    <div>
       <div className="tab-header" style={{ display: 'flex' }}>
         <button
           className={`custom-button ${selectedTab === '스탯' ? 'active-tab' : ''}`}

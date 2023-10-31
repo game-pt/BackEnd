@@ -55,7 +55,7 @@
 
 /* 스크롤바 숨기기 */
 ::-webkit-scrollbar {
-  width: 0.4em;
+  width: 0em;
 }
 
 ::-webkit-scrollbar-track {
@@ -112,6 +112,7 @@ a:hover {
 
 body {
   margin: 0;
+  padding: 0;
   display: flex;
   place-items: center;
   min-width: 320px;

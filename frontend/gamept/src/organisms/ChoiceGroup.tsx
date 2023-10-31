@@ -4,7 +4,7 @@ const ChoiceGroup = () => {
   const dummydata = ['1번 선택지asdfas', '2번 선택지', '3번 선택지', '4번 선택지'];
 
   return (
-    <div className="w-3/4 h-3/4 flex py-4 flex-wrap gap-3 my-auto justify-center overflow-y-scroll">
+    <div className="w-3/4 h-3/4 flex py-4 flex-wrap gap-3 my-auto justify-center overflow-y-scroll text-black">
       {dummydata.map((e, i) => (
         <IngameButton
           key={`${i}_choice_button`}
