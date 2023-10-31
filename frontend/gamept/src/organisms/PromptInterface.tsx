@@ -1,6 +1,7 @@
 import Input from '@/atoms/Input';
 import Prompt from '@/atoms/Prompt';
 import { useState } from 'react';
+import ChoiceGroup from './ChoiceGroup';
 
 const PromptInterface = () => {
   const [text, setText] = useState('');
@@ -15,11 +16,13 @@ const PromptInterface = () => {
       {/* 프롬프트에 data 추가하면 프롬프트 내용 출력 */}
       <Prompt type="in-game" data={null} />
       {/* 선택지 버튼 출력할 Area */}
-      <div className="w-full h-[255px]"></div>
+      <div className="w-full h-[255px] flex justify-center self-center">
+        <ChoiceGroup />
+      </div>
       {/* 프롬프트 입력할 인풋 */}
       <Input
         width={'1072px'}
-        height={'40px'}
+        height={'44px'}
         placeholder={`프롬프트를 입력해주세요.`}
         setValue={(e: string) => setText(e)}
         onClickEvent={() => console.log(text, 'Click!')}
