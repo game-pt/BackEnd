@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> allUncaughtHandle(Exception e) {
-        log.error("allUncaughtHandle : {}", e);
+        log.error("allUncaughtHandle : {}", e.getMessage());
         return ResponseEntity.internalServerError().build();
     }
 
