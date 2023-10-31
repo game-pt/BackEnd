@@ -5,3 +5,8 @@ export interface IIngameButton {
   text: string;
   onClickEvent: () => void;
 }
+
+export interface ITextButton {
+  text: string;
+  onClickEvent: () => void;
+}

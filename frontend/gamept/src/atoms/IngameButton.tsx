@@ -1,4 +1,4 @@
-import { IIngameButton } from '@/types/components/IngameButton.types';
+import { IIngameButton } from '@/types/components/Button.types';
 
 /**
  *

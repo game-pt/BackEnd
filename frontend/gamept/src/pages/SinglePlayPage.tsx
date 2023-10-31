@@ -3,6 +3,7 @@ import Logo from '../assets/logo/logo.png';
 import ProfileInterface from '../assets/interface/profile_interface.png';
 import SideInterface from '../organisms/SideInterface';
 import PromptInterface from '@/organisms/PromptInterface';
+import TextButton from '@/atoms/TextButton';
 // import './SinglePlay.css'; // CSS 파일 가져오기
 
 const SinglePlayPage = () => {
@@ -17,6 +18,7 @@ const SinglePlayPage = () => {
         />
       </div>
       <div className="w-full h-full">
+        <TextButton text={`게임 나가기`} onClickEvent={() => console.log('진짜 나가요?')} />
         <PromptInterface />
       </div>
     </div>
