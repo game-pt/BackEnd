@@ -45,11 +45,11 @@
     @apply font-suit w-40 h-16 text-20 font-medium text-white bg-mainblue rounded-xl;
   } */
   .in-game {
-    @apply w-full h-full absolute overflow-y-scroll px-10 text-32 text-primary font-hol text-left;
+    @apply w-full h-full absolute overflow-y-scroll px-10 text-28 text-primary font-hol text-left;
   }
 
   .ending {
-    @apply w-full h-full absolute overflow-y-scroll px-10 text-32 text-primary font-hol text-center;
+    @apply w-full h-full absolute overflow-y-scroll px-10 text-28 text-primary font-hol text-center;
   }
 }
 
