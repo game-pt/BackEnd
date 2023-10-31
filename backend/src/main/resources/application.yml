@@ -19,6 +19,7 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
+        # To comments for TINYINT
         auto_quote_keyword: true
         format_sql: true
     show-sql: true
