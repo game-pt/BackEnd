@@ -11,10 +11,10 @@ const CardImage = ({ url, alt }: { url: string; alt: string }) => {
   const imgUrl = new URL(url, import.meta.url).href;
 
   return (
-    <div className="relative w-[445px] h-[297px]">
+    <div className="relative w-full h-[315px]">
       <img
         src={imgUrl}
-        className="absolute rounded-[10px]  w-full h-full"
+        className="absolute rounded-t-[10px]  w-full h-full"
         alt={alt}
       />
       <div className="absolute bg-gradient-radial from-black/0  to-black/30 rounded-[10px] w-full h-full"></div>
