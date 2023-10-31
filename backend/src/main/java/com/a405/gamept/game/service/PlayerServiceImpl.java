@@ -28,7 +28,7 @@ import java.util.Set;
 
 @Service
 @Slf4j
-public class GameStartServiceImpl implements GameStartService {
+public class PlayerServiceImpl implements PlayerService {
 
     private final Validator validator;
     Set<ConstraintViolation<Object>> violations;
@@ -38,7 +38,7 @@ public class GameStartServiceImpl implements GameStartService {
     private final JobRepository jobRepository;
 
     @Autowired
-    public GameStartServiceImpl(GameRedisRepository gameRepository, StoryRepository storyRepository, RaceRepository raceRepository, JobRepository jobRepository) {
+    public PlayerServiceImpl(GameRedisRepository gameRepository, StoryRepository storyRepository, RaceRepository raceRepository, JobRepository jobRepository) {
         this.gameRepository = gameRepository;
         this.validator = Validation.buildDefaultValidatorFactory().getValidator();
         this.storyRepository = storyRepository;
