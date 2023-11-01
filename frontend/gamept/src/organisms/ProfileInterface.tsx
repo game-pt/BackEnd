@@ -19,8 +19,8 @@ const ProfileInterface = () => {
             <p>Lv.20</p>
             <p>신한 개발자</p>
           </div>
-          <Gauge />
-          <Gauge />
+          <Gauge nowHP={100} totalHP={100} type="hp" />
+          <Gauge nowHP={100} totalHP={100} type="exp" />
         </div>
         <div></div>
       </div>
