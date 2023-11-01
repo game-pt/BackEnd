@@ -22,7 +22,7 @@ const SinglePlayPage = () => {
       <div className="basis-3/4 h-full mr-2">
         <div className="w-full flex justify-end py-1 pr-10">
           <TextButton
-            text={`게임 나가기`}
+            text="게임 나가기"
             onClickEvent={() => console.log('진짜 나가요?')}
           />
         </div>
