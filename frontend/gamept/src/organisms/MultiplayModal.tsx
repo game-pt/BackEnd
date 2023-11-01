@@ -1,3 +1,9 @@
+/**
+ * MultyplayModal 구현
+ * @param
+ * @returns
+ */
+
 import SelectButton from '@/atoms/SelectButton';
 import Input from '@/atoms/Input';
 
