@@ -31,71 +31,37 @@ const SideInterface = () => {
   };
 
   return (
-    <div>
-      <div className="tab-header flex">
-        {}
-        <button
-          className={`custom-button ${selectedTab === '스탯' ? 'active-tab' : ''}`}
+    <div className='w-[350px]'>
+      <div className="tab-header w-full flex">
+        {Object.keys(tabContents).map((e, _i) => (
+          <button
+          // className={`custom-button ${selectedTab === e ? 'active-tab' : ''}`}
+          className={`w-1/${Object.keys(tabContents).length} border-none outline-none rounded-none rounded-t-md focus:outline-transparent focus:outline focus:outline-2`}
           style={{
-            backgroundColor: '#331812',
+            backgroundColor: tabContents[e].color,
           }}
           onClick={() => {
-            changeTab('스탯');
-            setSelectedTabColor('#331812');
+            changeTab(e);
+            setSelectedTabColor(tabContents[e].color);
           }}
         >
-          스탯
+          {e}
         </button>
-        <button
-          className={`custom-button ${selectedTab === '스킬' ? 'active-tab' : ''}`}
-          style={{
-            backgroundColor: '#381D17',
-          }}
-          onClick={() => {
-            changeTab('스킬');
-            setSelectedTabColor('#381D17');
-          }}
-        >
-          스킬
-        </button>
-        <button
-          className={`custom-button ${selectedTab === '채팅' ? 'active-tab' : ''}`}
-          style={{
-            backgroundColor: '#3D221C',
-          }}
-          onClick={() => {
-            changeTab('채팅');
-            setSelectedTabColor('#3D221C');
-          }}
-        >
-          채팅
-        </button>
-        <button
-          className={`custom-button ${selectedTab === '장비' ? 'active-tab' : ''}`}
-          style={{
-            backgroundColor: '#422721',
-          }}
-          onClick={() => {
-            changeTab('장비');
-            setSelectedTabColor('#422721');
-          }}
-        >
-          장비
-        </button>
+        ))}
       </div>
 
       <div className="tab-content">
         {selectedTab in tabContents && (
-          <div className='content-area' style={{ width: '344px', height: '368px', backgroundColor: selectedTabColor }}>
+          <div className='content-area w-[350px] h-[368px]' style={{ backgroundColor: selectedTabColor }}>
             {tabContents[selectedTab].content}
           </div>
         )}
       </div>
 
-      {/* 새로운 영역 추가 */}
+      {/* 새로운 영역 추가 ->>??? 어떤 영역인가요??
       <div className="additional-content">
-        {/* 여기에 추가 탭 내용을 표시할 컴포넌트나 요소를 추가할 수 있습니다. */}
-      </div>
+        여기에 추가 탭 내용을 표시할 컴포넌트나 요소를 추가할 수 있습니다.
+      </div> */}
     </div>
   );
 }
