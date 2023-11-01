@@ -5,3 +5,7 @@ export interface IDice {
   dice2: number;
   dice3: number;
 }
+
+export interface IDiceFace {
+  idx: number;
+}
