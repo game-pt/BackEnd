@@ -19,6 +19,7 @@ public enum GameErrorMessage  {
     INVALID_DICE_RESPONSE(BAD_REQUEST, "다이스의 값이 1~6사이의 값이 아닙니다. 다시 시도해주세요"),
     DICE_NOT_FOUND(NOT_FOUND, "다이스의 값을 찾을 수 없습니다. 다시 시도해주세요"),
     PLAYER_NOT_FOUND(NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
+    PLAYER_FULL(BAD_REQUEST, "게임의 플레이어 정원이 다 찼습니다."),
     INVALID_GAME_REQUEST(BAD_REQUEST, "해당 유저의 게임이 아닙니다."),
     INVALID_ACT_REQUEST(BAD_REQUEST, "해당 이벤트에 관여된 행동을 찾을 수 없습니다.");;
 

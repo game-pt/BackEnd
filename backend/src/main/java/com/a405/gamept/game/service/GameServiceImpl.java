@@ -138,9 +138,9 @@ public class GameServiceImpl implements GameService {
         Player player = playerRedisRepository.findById(playerCode)
                 .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
-        List<Player> playerList = game.getPlayerList();
-        for(Player p : playerList){
-            if (p.getCode().equals(playerCode)) {
+        List<String> playerList = game.getPlayerList();
+        for(String p : playerList){
+            if (p.equals(playerCode)) {
                 return true;
             }
         }
