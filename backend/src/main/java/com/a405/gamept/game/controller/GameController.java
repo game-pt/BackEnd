@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/game")
+@RequestMapping("game")
 public class GameController {
     private final GameService gameService;
 
@@ -41,7 +41,7 @@ public class GameController {
     public ResponseEntity<?> getStory(@PathVariable String storyCode) {
         return ResponseEntity.ok(gameService.getStory(StoryGetCommandDto.of(storyCode)));
     }
-    @PostMapping("game")
+    @PostMapping
     public ResponseEntity<?> setGame(@RequestBody @Valid GameSetRequestDto gameSetRequestDto) {
         return ResponseEntity.ok(gameService.setGame(GameSetCommandDto.from(gameSetRequestDto)));
     }
