@@ -10,19 +10,19 @@ const SideInterface = () => {
   const tabContents: Record<string, TabContent> = {
     '스탯': {
       content: <LoadingSpinner1 />,
-      color: "#441812"
+      color: "#331812"
     },
     '스킬': {
       content: <LoadingSpinner1 />,
-      color: "#441812"
+      color: "#381D17"
     },
     '채팅': {
       content: <LoadingSpinner1 />,
-      color: "#441812"
+      color: "#3D221C"
     },
     '장비': {
       content: <LoadingSpinner1 />,
-      color: "#441812"
+      color: "#422721"
     },
   };
 
