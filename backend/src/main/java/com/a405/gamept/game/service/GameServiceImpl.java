@@ -1,8 +1,10 @@
 package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.DiceGetCommandDto;
+import com.a405.gamept.game.dto.command.GameSetCommandDto;
 import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
+import com.a405.gamept.game.dto.response.GameSetResponseDto;
 import com.a405.gamept.game.dto.response.StoryGetResponseDto;
 import com.a405.gamept.game.entity.Story;
 import com.a405.gamept.game.repository.StoryRepository;
@@ -19,14 +21,12 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -61,6 +61,8 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public StoryGetResponseDto getStory(StoryGetCommandDto storyGetCommandDto) {
+        ValidateUtil.validate(storyGetCommandDto);
+
         Story story = storyRepository.findById(storyGetCommandDto.storyCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
 
@@ -68,6 +70,33 @@ public class GameServiceImpl implements GameService {
         ValidateUtil.validate(storyGetResponseDto);
 
         return storyGetResponseDto;
+    }
+
+    @Override
+    public GameSetResponseDto setGame(GameSetCommandDto gameSetCommandDto) {
+        System.out.println(1);
+        ValidateUtil.validate(gameSetCommandDto);
+        Story story = storyRepository.findById(gameSetCommandDto.storyCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
+        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        String code = new Random().ints(6, 0, CHARACTERS.length())
+                .mapToObj(CHARACTERS::charAt)
+                .map(Object::toString)
+                .collect(Collectors.joining());
+
+        log.info("게임 코드: " + code);
+
+        Game game = Game.builder()
+                .code(code)
+                .storyCode(story.getCode())
+                .build();
+        ValidateUtil.validate(game);
+        gameRedisRepository.save(game);
+
+        GameSetResponseDto gameSetResponseDto = GameSetResponseDto.from(game);
+        ValidateUtil.validate(gameSetResponseDto);
+
+        return gameSetResponseDto;
     }
 
     @Override
