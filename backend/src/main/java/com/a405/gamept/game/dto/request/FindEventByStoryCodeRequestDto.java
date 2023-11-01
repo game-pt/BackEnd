@@ -1,15 +1,11 @@
 package com.a405.gamept.game.dto.request;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class FindEventByStoryCodeRequestDto {
-
-    private String storyCode;
-
-}
+@Builder(access = AccessLevel.PRIVATE)
+@Slf4j
+public record FindEventByStoryCodeRequestDto(
+        String storyCode
+) { }
