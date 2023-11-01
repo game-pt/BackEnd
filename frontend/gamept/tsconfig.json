@@ -24,7 +24,7 @@
     /* Root */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
     }
   },
   "include": ["src", "**/*.ts", "**/*.tsx"],

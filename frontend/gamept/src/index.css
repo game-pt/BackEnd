@@ -50,6 +50,10 @@
   .ending {
     @apply w-full h-full absolute overflow-y-scroll px-10 text-24 text-primary font-hol text-center;
   }
+
+  .gamept-button {
+    @apply w-full h-full font-bold outline-transparent focus:outline-[2px] focus:outline-offset-[-2px] focus:outline focus:border-transparent focus:outline-secondary bg-secondaryContainer bg-button-background bg-right hover:bg-secondaryHover text-24;
+  }
 }
 
 /* 스크롤바 숨기기 */
@@ -133,10 +137,6 @@ button {
   cursor: pointer;
   transition: all 0.25s;
   caret-color: transparent;
-}
-button:focus,
-button:focus-visible {
-  outline: 2px auto #dd8a5a;
 }
 
 @media (prefers-color-scheme: light) {
