@@ -1,23 +1,39 @@
 import { useState } from 'react';
 import './SideInterface.css'; // Import your CSS file
+import { TabContent } from '@/types/components/Tab.types';
+import LoadingSpinner1 from '@/atoms/LoadingSpinner1';
 
-function SideInterface() {
+const SideInterface = () => {
   const [selectedTab, setSelectedTab] = useState('스탯'); // 초기 탭 설정
-  const tabContents: Record<string, string> = {
-    '스탯': '스탯 내용',
-    '스킬': '스킬 내용',
-    '채팅': '채팅 내용',
-    '장비': '장비 내용',
+  const [selectedTabColor, setSelectedTabColor] = useState('#331812'); // 초기 탭 색상 설정
+  
+  const tabContents: Record<string, TabContent> = {
+    '스탯': {
+      content: <LoadingSpinner1 />,
+      color: "#441812"
+    },
+    '스킬': {
+      content: <LoadingSpinner1 />,
+      color: "#441812"
+    },
+    '채팅': {
+      content: <LoadingSpinner1 />,
+      color: "#441812"
+    },
+    '장비': {
+      content: <LoadingSpinner1 />,
+      color: "#441812"
+    },
   };
 
   const changeTab = (tabName: string) => {
     setSelectedTab(tabName);
   };
-  const [selectedTabColor, setSelectedTabColor] = useState('#331812'); // 초기 탭 색상 설정
 
   return (
     <div>
-      <div className="tab-header" style={{ display: 'flex' }}>
+      <div className="tab-header flex">
+        {}
         <button
           className={`custom-button ${selectedTab === '스탯' ? 'active-tab' : ''}`}
           style={{
@@ -71,7 +87,7 @@ function SideInterface() {
       <div className="tab-content">
         {selectedTab in tabContents && (
           <div className='content-area' style={{ width: '344px', height: '368px', backgroundColor: selectedTabColor }}>
-            {tabContents[selectedTab]}
+            {tabContents[selectedTab].content}
           </div>
         )}
       </div>
