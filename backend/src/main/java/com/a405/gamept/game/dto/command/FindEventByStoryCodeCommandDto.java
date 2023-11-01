@@ -10,11 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 @Builder(access = AccessLevel.PRIVATE)
 @Slf4j
 public record FindEventByStoryCodeCommandDto(
-        @NotBlank(message = "게임 코드가 입력되지 않았습니다.") String storyCode
+        @NotBlank(message = "게임 코드가 입력되지 않았습니다.") String code
 ) {
     public static FindEventByStoryCodeCommandDto from(FindEventByStoryCodeRequestDto findEventByStoryCodeRequestDto) {
         return FindEventByStoryCodeCommandDto.builder()
-                .storyCode(findEventByStoryCodeRequestDto.storyCode())
+                .code(findEventByStoryCodeRequestDto.code())
                 .build();
     }
 }

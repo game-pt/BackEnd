@@ -7,5 +7,5 @@ import lombok.extern.slf4j.Slf4j;
 @Builder(access = AccessLevel.PRIVATE)
 @Slf4j
 public record FindEventByStoryCodeRequestDto(
-        String storyCode
+        String code
 ) { }

@@ -46,7 +46,7 @@ public class Game {
     /**
      * eventRate : 이벤트 가중치
      */
-    private int eventRate;
+    private double eventRate;
 
     /**
      * playerList : 이 게임에 참여 중인 사람 목록

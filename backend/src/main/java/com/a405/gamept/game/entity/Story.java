@@ -1,13 +1,13 @@
 package com.a405.gamept.game.entity;
 
 import com.a405.gamept.global.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
+
+import java.util.List;
 
 @Getter
 @Entity
@@ -19,6 +19,13 @@ public class Story extends BaseEntity {
     * */
     @Id
     private String code;
+
+    /**
+     * eventList : 스토리와 연관되어 있는 이벤트들
+     */
+    @OneToMany(mappedBy = "event")
+    @Comment("이벤트 리스트")
+    private List<Event> eventList;
 
     /**
      * name : 스토리 이름
