@@ -10,8 +10,8 @@ const SinglePlayPage = () => {
   return (
     <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary">
       <div className="basis-1/3 h-full flex flex-col justify-between items-start">
-        <img src={Logo} alt="로고" className="w-[300px] m-4 ml-6" />
-        <div className="w-full flex justify-center">
+        <img src={Logo} alt="로고" className="w-[200px] m-4 ml-6" />
+        <div className="w-full h-[400px] flex justify-center">
           <SideInterface />
         </div>
         <ProfileInterface />
