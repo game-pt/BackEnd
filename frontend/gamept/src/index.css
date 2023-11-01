@@ -132,6 +132,7 @@ button {
   font-family: 'HOL';
   cursor: pointer;
   transition: all 0.25s;
+  caret-color: transparent;
 }
 button:focus,
 button:focus-visible {
