@@ -19,7 +19,7 @@ const IngameButton = (props: IIngameButton) => {
   return (
     <div className="button-area" style={buttonStyle}>
       <button
-        className="w-full h-full font-bold bg-secondaryContainer bg-button-background hover:bg-secondaryHover text-24 text-left"
+        className="gamept-button text-left"
         onClick={props.onClickEvent}
       >
         {props.text}

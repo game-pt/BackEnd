@@ -1,7 +1,8 @@
 import IngameButton from '@/atoms/IngameButton';
+import SelectButton from '@/atoms/SelectButton';
 
 const ChoiceGroup = () => {
-  const dummydata = ['1번 선택지', '2번 선택지', '3번 선택지', '4번 선택지'];
+  const dummydata = ['1번 선택지', '2번 선택지', '3번 선택지'];
 
   return (
     <div className="w-3/4 h-3/4 flex py-4 flex-wrap gap-3 my-auto justify-center overflow-y-scroll text-black">
@@ -15,6 +16,11 @@ const ChoiceGroup = () => {
           onClickEvent={() => console.log(i + '번 선택!!')}
         />
       ))}
+      <SelectButton 
+                width="49%"
+                height="fit-content"
+                text="SelectButton"
+                onClickEvent={() => console.log('번 선택!!')}/>
     </div>
   );
 };
