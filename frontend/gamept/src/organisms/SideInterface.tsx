@@ -34,10 +34,12 @@ const SideInterface = () => {
     <div className='w-[350px]'>
       <div className="tab-header w-full flex">
         {Object.keys(tabContents).map((e, _i) => (
+          
           <button
           // className={`custom-button ${selectedTab === e ? 'active-tab' : ''}`}
-          className={`w-1/${Object.keys(tabContents).length} border-none outline-none rounded-none rounded-t-md focus:outline-transparent focus:outline focus:outline-2`}
+          className={`p-[1.5%] border-none outline-none rounded-none rounded-t-md focus:outline-transparent focus:outline focus:outline-2`}
           style={{
+            width: `${100 / Object.keys(tabContents).length}%`,
             backgroundColor: tabContents[e].color,
           }}
           onClick={() => {
