@@ -81,8 +81,8 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameSetResponseDto setGame(GameSetCommandDto gameSetCommandDto) {
-        System.out.println(1);
         ValidateUtil.validate(gameSetCommandDto);
+
         Story story = storyRepository.findById(gameSetCommandDto.storyCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
         String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

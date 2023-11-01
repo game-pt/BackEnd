@@ -43,7 +43,6 @@ public class GameController {
     }
     @PostMapping("game")
     public ResponseEntity<?> setGame(@RequestBody @Valid GameSetRequestDto gameSetRequestDto) {
-        System.out.println(gameSetRequestDto);
         return ResponseEntity.ok(gameService.setGame(GameSetCommandDto.from(gameSetRequestDto)));
     }
 }
