@@ -18,6 +18,7 @@ public class PromptServiceImpl implements PromptService {
 
     @Override
     public GetPromptResultCommandDto getPrmoptResult(GetPromptResultCommandDto getPromptResultCommandDto) {
+        GetPromptResultCommandDto getPromptResultCommandDtoForEventPrompt = eventService.pickAtRandomEvent(getPromptResultCommandDto);
         String promptResult = chatGptClientUtil.enterPrompt(getPromptResultCommandDto.prompt());
         GetPromptResultCommandDto getPromptResultCommandDtoForCheck = GetPromptResultCommandDto.from(getPromptResultCommandDto, promptResult);
 
