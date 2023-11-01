@@ -38,12 +38,9 @@ public class GameServiceImpl implements GameService {
     private final GameRedisRepository gameRedisRepository;
     private final PlayerRedisRepository playerRedisRepository;
     private final ActRepository actRepository;
-
     private final StoryRepository storyRepository;
 
-    @Autowired
-    public Object StoryRepository;
-        GameServiceImpl(GameRedisRepository gameRedisRepository, PlayerRedisRepository playerRedisRepository, StoryRepository storyRepository, ActRepository actRepository) {
+    GameServiceImpl(GameRedisRepository gameRedisRepository, PlayerRedisRepository playerRedisRepository, StoryRepository storyRepository, ActRepository actRepository) {
         this.validator = Validation.buildDefaultValidatorFactory().getValidator();
         this.storyRepository = storyRepository;
         this.gameRedisRepository = gameRedisRepository;

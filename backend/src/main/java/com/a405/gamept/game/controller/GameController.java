@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,12 +23,12 @@ public class GameController {
     }
 
     @GetMapping("/{gameCode}/{eventCode}")
-    public ResponseEntity<?> getRaceList(@RequestBody @Valid ActGetRequestDto actGetRequestDto){
+    public ResponseEntity<?> getActList(@Valid ActGetRequestDto actGetRequestDto){
         return  ResponseEntity.ok(gameService.OptionsGet(actGetRequestDto.toCommand("001")));
     }
 
     @GetMapping("/dices")
-    public ResponseEntity<?> getDicse(@RequestBody @Valid DiceGetRequestDto diceGetRequestDto) {
+    public ResponseEntity<?> getDices(@Valid DiceGetRequestDto diceGetRequestDto) {
         return ResponseEntity.ok(gameService.rollOfDice(diceGetRequestDto.toDto("001")));
     }
     @GetMapping("story")
