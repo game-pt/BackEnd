@@ -16,28 +16,29 @@ import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.play.entity.Game;
 import com.a405.gamept.play.entity.Player;
 import com.a405.gamept.play.repository.GameRedisRepository;
+import com.a405.gamept.play.repository.PlayerRedisRepository;
 import com.a405.gamept.util.ValidateUtil;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class PlayerServiceImpl implements PlayerService {
     private final GameRedisRepository gameRepository;
+    private final PlayerRedisRepository playerRepository;
     private final StoryRepository storyRepository;
     private final RaceRepository raceRepository;
     private final JobRepository jobRepository;
 
     @Autowired
-    public PlayerServiceImpl(GameRedisRepository gameRepository, StoryRepository storyRepository, RaceRepository raceRepository, JobRepository jobRepository) {
+    public PlayerServiceImpl(GameRedisRepository gameRepository, PlayerRedisRepository playerRepository, StoryRepository storyRepository, RaceRepository raceRepository, JobRepository jobRepository) {
         this.gameRepository = gameRepository;
+        this.playerRepository = playerRepository;
         this.storyRepository = storyRepository;
         this.raceRepository = raceRepository;
         this.jobRepository = jobRepository;
@@ -98,6 +99,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    @Transactional
     public PlayerSetResponseDto setPlayer(PlayerSetCommandDto playerSetCommandDto) throws GameException {
         ValidateUtil.validate(playerSetCommandDto);
 
@@ -105,7 +107,16 @@ public class PlayerServiceImpl implements PlayerService {
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
         // 플레이어 코드를 위한 현재 플레이어 순서
-        int playerNum = game.getPlayerList().size() + 1;
+        List<String> playerList = game.getPlayerList();
+        if(playerList == null) {
+            playerList = new ArrayList<>();
+        }
+
+        if(playerList.size() == 4) {
+            throw new GameException(GameErrorMessage.PLAYER_FULL);
+        }
+
+        int playerNum = playerList.size() + 1;
         Race race = raceRepository.findById(playerSetCommandDto.raceCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.RACE_NOT_FOUND));
         Job job = jobRepository.findById(playerSetCommandDto.jobCode())
@@ -128,16 +139,26 @@ public class PlayerServiceImpl implements PlayerService {
             }
         }
 
-        log.info("생성된 플레이어 스탯: " + stat);
-
+        // 플레이어 임의 코드 생성
+        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        String code = new Random().ints(6, 0, CHARACTERS.length())
+                .mapToObj(CHARACTERS::charAt)
+                .map(Object::toString)
+                .collect(Collectors.joining());
 
         Player player = Player.builder()
-                .code("PLAYER" + playerNum)  // 임의의 코드 생성
-                .race(race)
-                .job(job)
+                .code(game.getCode() + "-" + code)  // 임의의 코드 생성
+                .raceCode(race.getCode())
+                .jobCode(job.getCode())
                 .nickname(playerSetCommandDto.nickname())
                 .stat(stat)
                 .build();
+
+        playerList.add(player.getCode());
+        game = game.toBuilder().playerList(playerList).build();
+
+        gameRepository.save(game);
+        playerRepository.save(player);
 
         PlayerSetResponseDto playerSetResponseDto = PlayerSetResponseDto.from(player);
         ValidateUtil.validate(playerSetResponseDto);  // 유효성 검사
