@@ -15,5 +15,6 @@ export interface ISelectButton {
   width: string;
   height: string;
   text: string;
+  isShadow?: boolean;
   onClickEvent: () => void;
 }
