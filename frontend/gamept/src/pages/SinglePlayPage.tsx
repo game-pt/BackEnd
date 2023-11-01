@@ -1,9 +1,9 @@
 // import React from 'react';
 import Logo from '@/assets/GamePTLogo.svg';
-import ProfileInterface from '@/assets/interface/profile_interface.png';
 import SideInterface from '@/organisms/SideInterface';
 import PromptInterface from '@/organisms/PromptInterface';
 import TextButton from '@/atoms/TextButton';
+import ProfileInterface from '@/organisms/ProfileInterface';
 // import './SinglePlay.css'; // CSS 파일 가져오기
 
 const SinglePlayPage = () => {
@@ -14,10 +14,7 @@ const SinglePlayPage = () => {
         <div className="w-full flex justify-center">
           <SideInterface />
         </div>
-        <img
-          src={ProfileInterface}
-          className="bottom-0 profile-interface w-[450px]"
-        />
+        <ProfileInterface />
       </div>
       <div className="basis-3/4 h-full mr-2">
         <div className="w-full flex justify-end py-1 pr-10">
