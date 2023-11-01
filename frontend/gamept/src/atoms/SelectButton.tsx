@@ -7,7 +7,10 @@ const SelectButton = (props: ISelectButton) => {
   };
 
   return (
-    <div className="button-area" style={buttonStyle}>
+    <div
+      className={`button-area ${props.isShadow ? 'shadow-lg' : ''}`}
+      style={buttonStyle}
+    >
       <button
         className={`w-full h-full text-center font-bold bg-secondaryContainer bg-button-background hover:bg-secondaryHover text-24`}
         onClick={props.onClickEvent}
