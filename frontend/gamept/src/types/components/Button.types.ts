@@ -10,3 +10,10 @@ export interface ITextButton {
   text: string;
   onClickEvent: () => void;
 }
+
+export interface ISelectButton {
+  width: string;
+  height: string;
+  text: string;
+  onClickEvent: () => void;
+}
