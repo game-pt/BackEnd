@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PromptRedisRepository extends CrudRepository<Prompt, String> {
-    Optional<Prompt> findByCode(String promptCode);
 }

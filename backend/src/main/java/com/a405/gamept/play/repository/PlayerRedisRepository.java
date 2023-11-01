@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlayerRedisRepository extends CrudRepository<Player, String> {
-    Optional<Player> findByCode(String playerCode);
 }
