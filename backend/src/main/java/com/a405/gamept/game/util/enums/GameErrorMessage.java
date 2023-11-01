@@ -8,9 +8,12 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 @RequiredArgsConstructor
 public enum GameErrorMessage  {
+    GAME_NOT_FOUND(BAD_REQUEST, "게임이 존재하지 않습니다."),
     STORY_NOT_FOUND(BAD_REQUEST, "스토리가 존재하지 않습니다."),
     MONSTER_INVALID(INTERNAL_SERVER_ERROR, "몬스터가 유효하지 않습니다."),
+    RACE_NOT_FOUND(BAD_REQUEST, "종족이 존재하지 않습니다."),
     RACE_INVALID(INTERNAL_SERVER_ERROR, "종족이 유효하지 않습니다."),
+    JOB_NOT_FOUND(BAD_REQUEST, "직업이 존재하지 않습니다."),
     JOB_INVALID(INTERNAL_SERVER_ERROR, "직업이 유효하지 않습니다."),
     STAT_INVALID(INTERNAL_SERVER_ERROR, "스탯이 유효하지 않습니다."),
     INVALID_DICE_RESPONSE(BAD_REQUEST, "다이스의 값이 1~6사이의 값이 아닙니다. 다시 시도해주세요"),

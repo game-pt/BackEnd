@@ -2,11 +2,31 @@ package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.ActGetCommandDto;
 import com.a405.gamept.game.dto.command.DiceGetCommandDto;
+import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.response.ActGetResponseDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
 
+import com.a405.gamept.game.dto.response.StoryGetResponseDto;
 import java.util.List;
 public interface GameService {
+    /**
+     * (완료)
+     * 스토리 리스트를 조회한다.
+     * @param   : void
+     * @return  : 스토리 리스트
+     * @author  : 유영
+     */
+    List<StoryGetResponseDto> getStoryList();
+
+    /**
+     * (완료)
+     * 스토리 코드로 스토리를 조회한다.
+     * @param storyGetCommandDto : 스토리 코드
+     * @return : 스토리
+     * @author : 유영
+     */
+    StoryGetResponseDto getStory(StoryGetCommandDto storyGetCommandDto);
+
     /**
      * 주사위(1~6) 2개를 돌린다
      * @param diceGetCommandDto : 게임 정보

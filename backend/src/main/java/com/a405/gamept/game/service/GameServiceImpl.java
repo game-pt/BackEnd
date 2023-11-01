@@ -2,21 +2,24 @@ package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.ActGetCommandDto;
 import com.a405.gamept.game.dto.command.DiceGetCommandDto;
+import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.response.ActGetResponseDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
+import com.a405.gamept.game.dto.response.StoryGetResponseDto;
 import com.a405.gamept.game.entity.Act;
-import com.a405.gamept.game.entity.Subtask;
+import com.a405.gamept.game.entity.Story;
 import com.a405.gamept.game.repository.ActRepository;
+import com.a405.gamept.game.repository.StoryRepository;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.play.entity.Game;
 import com.a405.gamept.play.entity.Player;
 import com.a405.gamept.play.repository.GameRedisRepository;
 import com.a405.gamept.play.repository.PlayerRedisRepository;
+import com.a405.gamept.util.ValidateUtil;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
@@ -36,13 +39,42 @@ public class GameServiceImpl implements GameService {
     private final PlayerRedisRepository playerRedisRepository;
     private final ActRepository actRepository;
 
+    private final StoryRepository storyRepository;
+
     @Autowired
-    public GameServiceImpl(GameRedisRepository gameRedisRepository, PlayerRedisRepository playerRedisRepository, ActRepository actRepository) {
+    public Object StoryRepository;
+        GameServiceImpl(GameRedisRepository gameRedisRepository, PlayerRedisRepository playerRedisRepository, StoryRepository storyRepository, ActRepository actRepository) {
         this.validator = Validation.buildDefaultValidatorFactory().getValidator();
+        this.storyRepository = storyRepository;
         this.gameRedisRepository = gameRedisRepository;
         this.playerRedisRepository = playerRedisRepository;
         this.actRepository = actRepository;
     }
+
+    @Override
+    public List<StoryGetResponseDto> getStoryList() {
+        List<Story> storyList = storyRepository.findAll();
+
+        List<StoryGetResponseDto> storyGetResponseDtoList = new ArrayList<>();
+
+        for(Story story : storyList) {
+            storyGetResponseDtoList.add(StoryGetResponseDto.from(story));
+            ValidateUtil.validate(storyGetResponseDtoList.get(storyGetResponseDtoList.size() - 1));
+        }
+        return storyGetResponseDtoList;
+    }
+
+    @Override
+    public StoryGetResponseDto getStory(StoryGetCommandDto storyGetCommandDto) {
+        Story story = storyRepository.findById(storyGetCommandDto.storyCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
+
+        StoryGetResponseDto storyGetResponseDto = StoryGetResponseDto.from(story);
+        ValidateUtil.validate(storyGetResponseDto);
+
+        return storyGetResponseDto;
+    }
+
     @Override
     public DiceGetResponseDto rollOfDice(DiceGetCommandDto diceGetCommandDto) {
         // 랜덤 객체 생성
