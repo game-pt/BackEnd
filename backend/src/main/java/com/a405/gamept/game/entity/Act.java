@@ -39,6 +39,12 @@ public class Act extends BaseEntity {
     private int extremeStd;
 
     /**
+     * subtask_yn : 하위 항목 존재 여부
+     */
+    @Enumerated(EnumType.STRING)
+    private Subtask subtask;
+
+    /**
      * [fk] event : 이 행동이 사용되는 이벤트
      * */
     @ManyToOne(fetch = FetchType.LAZY)
