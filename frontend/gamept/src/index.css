@@ -52,7 +52,7 @@
   }
 
   .gamept-button {
-    @apply w-full h-full font-bold outline-transparent focus:outline-[2px] focus:outline-offset-[-2px] focus:outline focus:border-transparent focus:outline-secondary bg-secondaryContainer bg-button-background hover:bg-secondaryHover text-24;
+    @apply w-full h-full font-bold outline-transparent focus:outline-[2px] focus:outline-offset-[-2px] focus:outline focus:border-transparent focus:outline-secondary bg-secondaryContainer bg-button-background bg-right hover:bg-secondaryHover text-24;
   }
 }
 
