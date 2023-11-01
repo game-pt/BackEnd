@@ -1,11 +1,9 @@
 package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.DiceGetCommandDto;
+import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
-import com.a405.gamept.game.dto.command.RaceGetCommandDto;
-import com.a405.gamept.game.dto.response.RaceGetResponseDto;
 import com.a405.gamept.game.dto.response.StoryGetResponseDto;
-import com.a405.gamept.game.util.exception.GameException;
 
 import java.util.List;
 public interface GameService {
@@ -17,6 +15,15 @@ public interface GameService {
      * @author  : 유영
      */
     List<StoryGetResponseDto> getStoryList();
+
+    /**
+     * (완료)
+     * 스토리 코드로 스토리를 조회한다.
+     * @param storyGetCommandDto : 스토리 코드
+     * @return : 스토리
+     * @author : 유영
+     */
+    StoryGetResponseDto getStory(StoryGetCommandDto storyGetCommandDto);
 
     /**
      * 주사위(1~6) 2개를 돌린다

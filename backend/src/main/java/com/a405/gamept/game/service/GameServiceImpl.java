@@ -1,10 +1,13 @@
 package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.DiceGetCommandDto;
+import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
 import com.a405.gamept.game.dto.response.StoryGetResponseDto;
 import com.a405.gamept.game.entity.Story;
 import com.a405.gamept.game.repository.StoryRepository;
+import com.a405.gamept.game.util.enums.GameErrorMessage;
+import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.global.error.enums.ErrorMessage;
 import com.a405.gamept.global.error.exception.custom.BusinessException;
 import com.a405.gamept.play.entity.Game;
@@ -51,9 +54,20 @@ public class GameServiceImpl implements GameService {
 
         for(Story story : storyList) {
             storyGetResponseDtoList.add(StoryGetResponseDto.from(story));
-            ValidateUtil.validate(story);
+            ValidateUtil.validate(storyGetResponseDtoList.get(storyGetResponseDtoList.size() - 1));
         }
         return storyGetResponseDtoList;
+    }
+
+    @Override
+    public StoryGetResponseDto getStory(StoryGetCommandDto storyGetCommandDto) {
+        Story story = storyRepository.findById(storyGetCommandDto.storyCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
+
+        StoryGetResponseDto storyGetResponseDto = StoryGetResponseDto.from(story);
+        ValidateUtil.validate(storyGetResponseDto);
+
+        return storyGetResponseDto;
     }
 
     @Override
