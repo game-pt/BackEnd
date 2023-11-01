@@ -1,5 +1,3 @@
-import ProfileBorder from '../assets/ProfileBorder.svg';
-
 /*
  * 프로필용 이미지 컴포넌트
  * props 설명
@@ -10,43 +8,31 @@ import ProfileBorder from '../assets/ProfileBorder.svg';
  * alt : alt 텍스트
  * className: 위치 조정용 커스텀 className
  */
+import ProfileBorder from '../assets/ProfileBorder.svg';
+import { IProfileImage } from '@/types/components/Image.types';
 
-const ProfileImage = ({
-  onClick,
-  hasBorderAsset,
-  size,
-  imgCode,
-  alt,
-  className,
-}: {
-  onClick?: any;
-  hasBorderAsset?: boolean;
-  size: number;
-  imgCode: number;
-  alt: string;
-  className?: string;
-}) => {
+const ProfileImage = (props: IProfileImage) => {
   const profileImgUrl = new URL(
-    `../assets/profile${imgCode}.svg`,
+    `../assets/profile${props.imgCode}.svg`,
     import.meta.url
   ).href;
 
   return (
     <div
-      onClick={onClick}
-      className={`relative ${className}`}
-      style={{ width: size, height: size }}
+      onClick={props.onClickEvent}
+      className={`relative ${props.className}`}
+      style={{ width: props.size, height: props.size }}
     >
       <img
         src={profileImgUrl}
         className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]"
         style={{
-          width: hasBorderAsset ? size - 10 : '100%',
-          height: hasBorderAsset ? size - 10 : '100%',
+          width: props.hasBorderAsset ? props.size - 10 : '100%',
+          height: props.hasBorderAsset ? props.size - 10 : '100%',
         }}
-        alt={alt}
+        alt={props.alt}
       />
-      {hasBorderAsset && (
+      {props.hasBorderAsset && (
         <img
           src={ProfileBorder}
           className="absolute "

@@ -7,15 +7,17 @@
 }
 */
 
-const CardImage = ({ url, alt }: { url: string; alt: string }) => {
-  const imgUrl = new URL(url, import.meta.url).href;
+import { ICardImage } from '@/types/components/Image.types';
+
+const CardImage = (props: ICardImage) => {
+  const imgUrl = new URL(props.url, import.meta.url).href;
 
   return (
     <div className="relative w-full h-[315px]">
       <img
         src={imgUrl}
         className="absolute rounded-t-[10px]  w-full h-full"
-        alt={alt}
+        alt={props.alt}
       />
       <div className="absolute bg-gradient-radial from-black/0  to-black/30 rounded-[10px] w-full h-full"></div>
     </div>
