@@ -62,17 +62,6 @@ body {
 .talign-center {
   text-align: center;
 }
-a,
-a:visited {
-  text-decoration: none;
-  color: #444;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  transition: color 0.3s;
-}
-a:hover,
-a:active {
-  color: #ccc;
-}
 footer {
   margin-top: 2em;
 }
