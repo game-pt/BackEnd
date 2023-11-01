@@ -7,9 +7,16 @@ import com.a405.gamept.game.service.GameService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.a405.gamept.game.dto.request.ActGetRequestDto;
+import com.a405.gamept.game.dto.request.DiceGetRequestDto;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping
+@RequestMapping("api/game")
 public class GameController {
     private final GameService gameService;
 
@@ -17,6 +24,15 @@ public class GameController {
         this.gameService = gameService;
     }
 
+    @GetMapping("/{gameCode}/{eventCode}")
+    public ResponseEntity<?> getActList(@Valid ActGetRequestDto actGetRequestDto){
+        return  ResponseEntity.ok(gameService.OptionsGet(actGetRequestDto.toCommand("001")));
+    }
+
+    @GetMapping("/dices")
+    public ResponseEntity<?> getDices(@Valid DiceGetRequestDto diceGetRequestDto) {
+        return ResponseEntity.ok(gameService.rollOfDice(diceGetRequestDto.toDto("001")));
+    }
     @GetMapping("story")
     public ResponseEntity<?> getStoryList() {
         return ResponseEntity.ok(gameService.getStoryList());
