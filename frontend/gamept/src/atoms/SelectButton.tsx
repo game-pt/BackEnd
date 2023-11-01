@@ -23,7 +23,7 @@ const SelectButton = (props: ISelectButton) => {
       style={buttonStyle}
     >
       <button
-        className={`w-full h-full font-bold outline-transparent focus:outline-[2px] active:outline-black focus:outline-offset-[-2px] focus:outline focus:border-transparent focus:outline-secondary bg-secondaryContainer bg-button-background hover:bg-secondaryHover text-24 text-center `}
+        className={`w-full h-full bg-right font-bold outline-transparent focus:outline-[2px] active:outline-black focus:outline-offset-[-2px] focus:outline focus:border-transparent focus:outline-secondary bg-secondaryContainer bg-button-background hover:bg-secondaryHover text-24 text-center `}
         onClick={props.onClickEvent}
       >
         {props.text}
