@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(GameException.class)
-    protected ResponseEntity<?> methodArgumentNotValidExceptionHandle(GameException e) {
+    protected ResponseEntity<?> gameExceptionHandle(GameException e) {
         log.error("GameException : {}", e.getMessage());
         return new ResponseEntity<>((e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR)? "서버 오류" : e.getMessage(), e.getCode());
     }

@@ -1,20 +1,22 @@
 package com.a405.gamept.game.controller;
 
+import com.a405.gamept.game.dto.command.GameSetCommandDto;
 import com.a405.gamept.game.dto.command.StoryGetCommandDto;
-import com.a405.gamept.game.dto.request.ActGetRequestDto;
-import com.a405.gamept.game.dto.request.DiceGetRequestDto;
+import com.a405.gamept.game.dto.request.GameSetRequestDto;
 import com.a405.gamept.game.service.GameService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import com.a405.gamept.game.dto.request.ActGetRequestDto;
+import com.a405.gamept.game.dto.request.DiceGetRequestDto;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/game")
+@RequestMapping("game")
 public class GameController {
     private final GameService gameService;
 
@@ -38,5 +40,9 @@ public class GameController {
     @GetMapping("story/{storyCode}")
     public ResponseEntity<?> getStory(@PathVariable String storyCode) {
         return ResponseEntity.ok(gameService.getStory(StoryGetCommandDto.of(storyCode)));
+    }
+    @PostMapping
+    public ResponseEntity<?> setGame(@RequestBody @Valid GameSetRequestDto gameSetRequestDto) {
+        return ResponseEntity.ok(gameService.setGame(GameSetCommandDto.from(gameSetRequestDto)));
     }
 }
