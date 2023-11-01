@@ -1,22 +1,17 @@
 package com.a405.gamept.play.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-@Getter
-@RedisHash
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@RedisHash(value = "game", timeToLive = 14 * 24 * 60 * 60)
 @Builder
+@Getter
 public class Game {
 
     /**
