@@ -4,14 +4,15 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @RedisHash(value = "game", timeToLive = 14 * 24 * 60 * 60)
-@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
 @Getter
+@ToString
 public class Game {
 
     /**
@@ -50,8 +51,8 @@ public class Game {
     /**
      * playerList : 이 게임에 참여 중인 사람 목록
      */
-    @Size(min = 0, max = 4, message = "게임 인원은 4명을 넘을 수 없습니다.")
-    private List<Player> playerList;
+    @Size(max = 4, message = "게임 인원은 4명을 넘을 수 없습니다.")
+    private List<String> playerList;
 
     /**
      * promptList : 최근 prompt 5개
@@ -59,7 +60,7 @@ public class Game {
     private List<Prompt> promptList;
 
     @Builder
-    public Game(String code, String storyCode, Prompt memory, int turn, int eventCnt, int eventRate, List<Player> playerList, List<Prompt> promptList) {
+    public Game(String code, String storyCode, Prompt memory, int turn, int eventCnt, int eventRate, List<String> playerList, List<Prompt> promptList) {
         this.code = code;
         this.storyCode = storyCode;
         this.memory = memory;
