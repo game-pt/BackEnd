@@ -65,4 +65,5 @@ public class Event extends BaseEntity {
      */
     @Column(columnDefinition = "TINYINT")
     private int weight;
+
 }
