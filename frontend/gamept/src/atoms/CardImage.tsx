@@ -16,7 +16,7 @@ const CardImage = (props: ICardImage) => {
     <div className="relative w-full h-[315px]">
       <img
         src={imgUrl}
-        className="absolute rounded-t-[10px]  w-full h-full"
+        className="absolute rounded-t-[10px]  w-full h-full object-cover"
         alt={props.alt}
       />
       <div className="absolute bg-gradient-radial from-black/0  to-black/30 rounded-[10px] w-full h-full"></div>
