@@ -8,9 +8,7 @@ import com.a405.gamept.game.service.PromptService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("prompt")
@@ -19,8 +17,8 @@ public class PromptController {
 
     private final PromptService promptService;
 
-    @GetMapping
-    public ResponseEntity<GetPromptResultResponseDto> getPromptResult(@Valid GetPromptResultRequestDto getPromptResultRequestDto) {
+    @PostMapping
+    public ResponseEntity<GetPromptResultResponseDto> getPromptResult(@Valid @RequestBody GetPromptResultRequestDto getPromptResultRequestDto) {
         return ResponseEntity.ok(promptService.getPrmoptResult(GetPromptResultCommandDto.from(getPromptResultRequestDto)));
     }
 

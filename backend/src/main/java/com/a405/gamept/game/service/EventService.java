@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface EventService {
 
-    List<Event> findAllEventByStoryCode(FindEventByStoryCodeCommandDto findEventByStoryCodeCommandDto);
+    List<Event> findAllEventByStoryCode(String storyCode);
     GetPromptResultCommandDto pickAtRandomEvent(GetPromptResultCommandDto getPromptResultCommandDto);
     GetPromptResultResponseDto checkEventInPrompt(GetPromptResultCommandDto getPromptResultCommandDto);
 

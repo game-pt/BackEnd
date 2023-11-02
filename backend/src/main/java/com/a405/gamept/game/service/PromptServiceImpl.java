@@ -23,7 +23,7 @@ public class PromptServiceImpl implements PromptService {
         GetPromptResultCommandDto getPromptResultCommandDtoForEventPrompt = eventService.pickAtRandomEvent(getPromptResultCommandDto);
         
         // ChatGPT에 프롬프트 전송
-        String promptResult = chatGptClientUtil.enterPrompt(getPromptResultCommandDto.prompt());
+        String promptResult = chatGptClientUtil.enterPrompt(getPromptResultCommandDtoForEventPrompt.prompt());
 
         // 최종적으로 응답에 이벤트를 추가하여 클라이언트에게 반환할 형태로 ResponseDto를 구성
         GetPromptResultCommandDto getPromptResultCommandDtoForCheck = GetPromptResultCommandDto.from(getPromptResultCommandDto, promptResult);

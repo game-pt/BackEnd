@@ -7,7 +7,9 @@ import com.a405.gamept.game.dto.command.GetPromptResultCommandDto;
 import com.a405.gamept.game.dto.response.GetPromptResultResponseDto;
 import com.a405.gamept.game.entity.Act;
 import com.a405.gamept.game.entity.Event;
+import com.a405.gamept.game.entity.Story;
 import com.a405.gamept.game.repository.EventRepository;
+import com.a405.gamept.game.repository.StoryRepository;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.play.entity.Game;
@@ -24,6 +26,7 @@ import java.util.List;
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
+    private final StoryRepository storyRepository;
     private final GameRedisRepository gameRedisRepository;
 
     private final ChatGptClientUtil chatGptClientUtil;
@@ -35,13 +38,11 @@ public class EventServiceImpl implements EventService {
      * findAllEventByStoryCode <br/><br/>
      *
      * storyCode에 관련된 모든 Event를 조회.
-     * @param findEventByStoryCodeCommandDto
+     * @param storyCode
      * @return List&lt;Event&gt;
      */
     @Override
-    public List<Event> findAllEventByStoryCode(FindEventByStoryCodeCommandDto findEventByStoryCodeCommandDto) {
-        String storyCode = findEventByStoryCodeCommandDto.code();
-
+    public List<Event> findAllEventByStoryCode(String storyCode) {;
         return eventRepository.findByStoryCode(storyCode)
                 .orElseThrow(() -> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
     }
@@ -63,7 +64,7 @@ public class EventServiceImpl implements EventService {
 
         // 이벤트가 발생하지 않음
         if (!checkRandomEvent(game.getEventRate())) {
-            return null;
+            return getPromptResultCommandDto;
         }
 
         // 이벤트가 발생한 경우,
@@ -80,11 +81,12 @@ public class EventServiceImpl implements EventService {
     /**
      * occurRandomEvent <br/><br/>
      *
-     *
+     * 랜덤한 이벤트를 발생시키는 알고리즘.
      * @param eventList
-     * @return
+     * @return index (이벤트 리스트 중 발생시킬 이벤트의 인덱스)
      */
     private Event occurRandomEvent(List<Event> eventList) {
+        // 총 가중치 계산
         double randomStandard = Math.random();
         int allSum = 0;
         for (Event event : eventList) {
@@ -125,9 +127,15 @@ public class EventServiceImpl implements EventService {
         // 게임 코드에 따른 게임 객체
         Game game = gameRedisRepository.findById(getPromptResultCommandDto.code())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
-        // 게임 객체에 담겨 있던 스토리 코드에 따른 이벤트 리스트
-        List<Event> eventList = eventRepository.findByStoryCode(game.getStoryCode())
-                .orElseThrow(() -> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
+
+        // 스토리 코드에 따른 이벤트 리스트
+        List<Event> eventList = findAllEventByStoryCode(game.getStoryCode());
+
+//        Story story = storyRepository.findById(game.getStoryCode())
+//                .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
+
+        // 해당 스토리가 갖는 Event 종류들
+//        List<Event> eventList = story.getEventList();
 
         // 텍스트에서 가장 마지막에 등장한 이벤트의 인덱스
         int eventIndex = findLastEventInText(eventList, getPromptResultCommandDto.prompt());
@@ -160,7 +168,7 @@ public class EventServiceImpl implements EventService {
      * >= 0: 이벤트가 텍스트 내에 존재하고, 해당 인덱스에 위치.
      */
     private int findEventInText(String text, String eventName) {
-        return text.lastIndexOf(EVENT_SEPARATOR_PRE + text + EVENT_SEPARATOR_LST);
+        return text.lastIndexOf(EVENT_SEPARATOR_PRE + eventName + EVENT_SEPARATOR_LST);
     }
 
     /**

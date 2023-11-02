@@ -36,4 +36,5 @@ public class Story extends BaseEntity {
      * desc : 스토리 설명
      * */
     private String desc;
+
 }
