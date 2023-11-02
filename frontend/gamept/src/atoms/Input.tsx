@@ -1,5 +1,5 @@
 import { IInput } from '@/types/components/Input.types';
-import inputButton from "@/assets/InputButton.svg";
+import inputButton from '@/assets/InputButton.svg';
 
 /**
  * @param props

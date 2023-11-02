@@ -24,7 +24,10 @@ const IngameButton = (props: IIngameButton) => {
 
   return (
     <div className="button-area" style={buttonStyle}>
-      <button className="gamept-button text-left pr-2" onClick={props.onClickEvent}>
+      <button
+        className="gamept-button text-left pr-2"
+        onClick={props.onClickEvent}
+      >
         {props.type === 'multi' ? (
           <div className="flex">
             <div className="basis-1/2">{props.text}</div>
@@ -46,7 +49,7 @@ const IngameButton = (props: IIngameButton) => {
       </button>
     </div>
   );
-  
+
   // Profile Image 컴포넌트를 사용한다며의 예시 코드
   // return (
   //   <div className="button-area" style={buttonStyle}>
@@ -57,12 +60,13 @@ const IngameButton = (props: IIngameButton) => {
   //           {/* 투표한 플레이어가 있다면 프로필 이미지 띄워주기. */}
   //           <div className="basis-1/2 flex justify-end items-center">
   //             {dummyData.map((e) => (
-  //               <ProfileImage 
+  //               <ProfileImage
   //                 size={32}
   //                 imgCode={Number(e)}
   //                 alt={`player${e}_img`}
   //                 hasBorderAsset
   //                 key={`vote_player_${e}`}
+  //                 onClickEvent={() => {console.log('클릭 시 좌측 탭에 포커스 된 플레이어가 변경')}}
   //               />
   //             ))}
   //           </div>
