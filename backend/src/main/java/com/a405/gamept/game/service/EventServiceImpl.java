@@ -4,7 +4,7 @@ import com.a405.gamept.game.dto.command.ActCommandDto;
 import com.a405.gamept.game.dto.command.EventCommandDto;
 import com.a405.gamept.game.dto.command.FindEventByStoryCodeCommandDto;
 import com.a405.gamept.game.dto.command.GetPromptResultCommandDto;
-import com.a405.gamept.game.dto.request.FindEventByStoryCodeRequestDto;
+import com.a405.gamept.game.dto.response.GetPromptResultResponseDto;
 import com.a405.gamept.game.entity.Act;
 import com.a405.gamept.game.entity.Event;
 import com.a405.gamept.game.repository.EventRepository;
@@ -15,11 +15,9 @@ import com.a405.gamept.play.repository.GameRedisRepository;
 import com.a405.gamept.util.ChatGptClientUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -52,8 +50,9 @@ public class EventServiceImpl implements EventService {
 
     /**
      * pickAtRandomEventByStoryCode <br/><br/>
-     *
+     * <p>
      * storyCode에 관련된 Event 중 하나를 랜덤하게 선택.
+     *
      * @param getPromptResultCommandDto
      * @return Event
      */
@@ -78,6 +77,13 @@ public class EventServiceImpl implements EventService {
         return GetPromptResultCommandDto.from(getPromptResultCommandDto, newPrompt);
     }
 
+    /**
+     * occurRandomEvent <br/><br/>
+     *
+     *
+     * @param eventList
+     * @return
+     */
     private Event occurRandomEvent(List<Event> eventList) {
         double randomStandard = Math.random();
         int allSum = 0;
@@ -115,7 +121,7 @@ public class EventServiceImpl implements EventService {
      * @return
      */
     @Override
-    public GetPromptResultCommandDto checkEventInPrompt(GetPromptResultCommandDto getPromptResultCommandDto) {
+    public GetPromptResultResponseDto checkEventInPrompt(GetPromptResultCommandDto getPromptResultCommandDto) {
         // 게임 코드에 따른 게임 객체
         Game game = gameRedisRepository.findById(getPromptResultCommandDto.code())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
@@ -128,16 +134,18 @@ public class EventServiceImpl implements EventService {
 
         // 이벤트를 찾지 못한 경우,
         if (eventIndex == -1) {
-            return getPromptResultCommandDto;
+            return GetPromptResultResponseDto.from(getPromptResultCommandDto, null);
         }
 
-        // 기존 프롬프트에 이벤트 트리거 프롬프트를 추가하여 반환
+        // 최종적으로 Response에 Event를 추가
         Event occuredEvent = eventList.get(eventIndex);
         ArrayList<ActCommandDto> acts = new ArrayList<ActCommandDto>();
+        for (Act act : occuredEvent.getActList()) {
+            acts.add(ActCommandDto.from(act));
+        }
+        EventCommandDto eventCommandDto = EventCommandDto.from(occuredEvent, acts);
 
-
-        GetPromptResultCommandDto.from(getPromptResultCommandDto, )
-        return GetPromptResultCommandDto.from(getPromptResultCommandDto, newPrompt);
+        return GetPromptResultResponseDto.from(getPromptResultCommandDto, eventCommandDto);
     }
 
 

@@ -14,20 +14,4 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class EventController {
 
-    private final EventService eventService;
-
-    @GetMapping("/api/event/random")
-    public ResponseEntity<FindEventByStoryCodeResponseDto> pickAtRandomEvent(FindEventByStoryCodeRequestDto eventRequest) {
-        Event event = eventService.pickAtRandomEventByStoryCode(eventRequest);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(FindEventByStoryCodeResponseDto.builder()
-                        .code(event.getCode())
-                        .name(event.getName())
-                        .prompt(event.getPrompt())
-                        .item_yn(event.getItemYn())
-                        .weight(event.getWeight())
-                        .build());
-    }
-
 }
