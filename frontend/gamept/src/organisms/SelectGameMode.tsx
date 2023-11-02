@@ -1,5 +1,9 @@
 /**
- *
+ * 싱글/멀티플레이 선택 관련 organism 구성
+ * multiplay 클릭 시 관련 모달 출현
+ * 다음 단계로 넘어가는 로직 미구현
+ * @params
+ * @returns void
  */
 
 import { useState } from 'react';

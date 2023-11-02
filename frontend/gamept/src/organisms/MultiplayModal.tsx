@@ -2,6 +2,7 @@
  * MultyplayModal 구현
  * 로직은 아직 미구현입니다.
  * @param
+ * onClose: () => void;
  * @returns
  */
 
