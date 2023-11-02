@@ -23,7 +23,7 @@ const MultiplayModal = (props: IMultiPlayModal) => {
   useEffect(() => {
     document.addEventListener('mousedown', handleModalClose);
     return () => {
-      document.addEventListener('mousedown', handleModalClose);
+      document.removeEventListener('mousedown', handleModalClose);
     };
   }, []);
 
