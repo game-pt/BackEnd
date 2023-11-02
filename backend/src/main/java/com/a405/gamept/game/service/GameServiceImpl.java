@@ -6,6 +6,7 @@ import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.response.ActGetResponseDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
 import com.a405.gamept.game.dto.response.StoryGetResponseDto;
+import com.a405.gamept.game.dto.response.SubtaskResponseDto;
 import com.a405.gamept.game.entity.Act;
 import com.a405.gamept.game.entity.Story;
 import com.a405.gamept.game.repository.ActRepository;
@@ -115,7 +116,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<ActGetResponseDto> OptionsGet(ActGetCommandDto actGetCommandDto) {
+    public List<ActGetResponseDto> optionsGet(ActGetCommandDto actGetCommandDto) {
 //        if(!gameCheck(actGetCommandDto.gameCode(), actGetCommandDto.playerCode())){
 //            log.error("DiceInvalidException: { PlayerError : player Code를 확인해주세요. }");
 //        }

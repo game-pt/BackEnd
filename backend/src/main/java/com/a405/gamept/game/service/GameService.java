@@ -7,6 +7,7 @@ import com.a405.gamept.game.dto.response.ActGetResponseDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
 
 import com.a405.gamept.game.dto.response.StoryGetResponseDto;
+import com.a405.gamept.game.dto.response.SubtaskResponseDto;
 import java.util.List;
 public interface GameService {
     /**
@@ -52,5 +53,5 @@ public interface GameService {
      * @return : 본인이 해당 게임에 참여 중인지에 대한 여부 : True or False
      * @author : 지환
      */
-    List<ActGetResponseDto> OptionsGet(ActGetCommandDto actGetCommandDto);
+    List<ActGetResponseDto> optionsGet(ActGetCommandDto actGetCommandDto);
 }

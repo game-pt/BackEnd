@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ActRepository extends JpaRepository<Act, String> {
-
     Optional<List<Act>> findAllByEventCode(String eventCode);
 }
