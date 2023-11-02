@@ -1,5 +1,6 @@
 HELP.md
 .gradle
+
 application-local.yml
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -36,3 +37,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### queryDSL ###
+
+generated/
