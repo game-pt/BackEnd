@@ -20,12 +20,12 @@ const IngameButton = (props: IIngameButton) => {
   // 해당 선택지 버튼에 투표한 플레이어의 배열
   // 후에는 props로 받아와서 사용
   // 예상되는 저장 데이터 (플레이어 id, 플레이어 img URL)
-  const dummyData = ['1', '2', '3'];
+  const dummyData = ['1', '2'];
 
   return (
     <div className="button-area" style={buttonStyle}>
       <button
-        className="gamept-button text-left pr-2"
+        className="tall:rounded-xl gamept-button text-left pr-2"
         onClick={props.onClickEvent}
       >
         {props.type === 'multi' ? (
