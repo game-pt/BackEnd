@@ -1,33 +1,64 @@
 /**
- * 게임 모드 선택 카드 구현
- * @param props
- * modeName : string;
- * modeType: number;
- * imgUrl: string;
- * onClickEvent: () => void;
  *
- * @returns void;
- * 백 API reponse 구성에 따라 변경될 여지가 있음
  */
 
-import CardImage from '@/atoms/CardImage';
-import { ISelectGameMode } from '@/types/components/SelectGameMode.type';
+import { useState } from 'react';
+import GameModeCard from './GameModeCard';
+import { IGameModeCard } from '@/types/components/GameModeCard.type';
+import MultiplayModal from './MultiplayModal';
 
-const SelectGameMode = (props: ISelectGameMode) => {
+const SelectGameMode = () => {
+  const [isShowModal, setIsShowModal] = useState(false);
   return (
-    <div
-      className=" w-[470px] h-[445px] bg-containerLight rounded-[10px]"
-      onClick={props.onClickEvent}
-    >
-      <CardImage
-        url={'../assets/' + props.imgUrl}
-        alt={`${props.modeName} 이미지`}
-      />
-      <div className="leading-[130px] items-center h-[130px] font-hol text-28 text-primary shadow-lg">
-        {props.modeName}
+    <div className="pt-[100px] caret-transparent w-full h-full">
+      <div className="text-primary text-32 text-center font-hol mb-[30px]">
+        게임 모드를 선택하세요.
       </div>
+      <div className="flex flex-row gap-10 justify-center w-[60%] mx-auto">
+        {response.map((card, idx) => (
+          // 멀티플레이의 modal 컨트롤을 위해 wrapper 역할을 하는 div를 추가 설정
+          <div
+            className="w-full"
+            onClick={
+              idx === 1 && !isShowModal
+                ? () => {
+                    setIsShowModal(true);
+                  }
+                : undefined
+            }
+          >
+            <GameModeCard
+              imgUrl={card.imgUrl}
+              modeName={card.modeName}
+              modeType={card.modeType}
+              onClickEvent={() => {}}
+              key={idx}
+            />
+          </div>
+        ))}
+      </div>
+      {isShowModal && (
+        <MultiplayModal
+          setIsShowModal={setIsShowModal}
+          closeModal={() => setIsShowModal(false)}
+          isShowModal={isShowModal}
+        />
+      )}
     </div>
   );
 };
+
+const response: IGameModeCard[] = [
+  {
+    imgUrl: 'SinglePlay.svg',
+    modeName: '싱글 플레이',
+    modeType: 0,
+  },
+  {
+    imgUrl: 'MultiPlay.svg',
+    modeName: '멀티 플레이',
+    modeType: 0,
+  },
+];
 
 export default SelectGameMode;
