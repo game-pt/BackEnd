@@ -20,7 +20,7 @@ const IngameButton = (props: IIngameButton) => {
   // 해당 선택지 버튼에 투표한 플레이어의 배열
   // 후에는 props로 받아와서 사용
   // 예상되는 저장 데이터 (플레이어 id, 플레이어 img URL)
-  const dummyData = ['1', '2'];
+  const dummyData = ['1', '2', '3'];
 
   return (
     <div className="button-area" style={buttonStyle}>
@@ -29,10 +29,10 @@ const IngameButton = (props: IIngameButton) => {
         onClick={props.onClickEvent}
       >
         {props.type === 'multi' ? (
-          <div className="flex">
-            <div className="basis-1/2">{props.text}</div>
+          <div className="flex w-full">
+            <div className="w-full">{props.text}</div>
             {/* 투표한 플레이어가 있다면 프로필 이미지 띄워주기. */}
-            <div className="basis-1/2 flex justify-end items-center">
+            <div className="flex justify-end items-center">
               {dummyData.map((e) => (
                 <img
                   key={`vote_player_${e}`}
