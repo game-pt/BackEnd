@@ -19,10 +19,10 @@ const IngameButton = (props: IIngameButton) => {
   return (
     <div className="button-area" style={buttonStyle}>
       <button
-        className="gamept-button text-left"
+        className="gamept-button text-left flex"
         onClick={props.onClickEvent}
       >
-        {props.text}
+        <div className="basis-1/2">{props.text}</div>
         {props.type === 'multi' && (
           /** 투표한 플레이어가 있다면 프로필 이미지 띄워주기. */
           <div className="logo"></div>

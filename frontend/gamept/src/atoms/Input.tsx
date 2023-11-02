@@ -27,7 +27,7 @@ const Input = (props: IInput) => {
         onChange={(e) => props.setValue('이우석 : ' + e.target.value)}
       />
       <img
-        className="absolute h-1/2 mr-5 hover:scale-110 duration-normal"
+        className="absolute w-auto h-1/2 mr-5 hover:scale-110 duration-normal"
         src={inputButton}
         alt="Input_Button"
         onClick={props.onClickEvent}
