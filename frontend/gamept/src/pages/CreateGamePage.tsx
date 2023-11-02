@@ -1,11 +1,14 @@
-// import CardImage from '../atoms/CardImage';
-// import ProfileImage from '@/atoms/ProfileImage';
-// import Logo from '@/atoms/Logo';
-// import SelectCharacter from '@/organisms/SelectCharacter';
+import Logo from '@/atoms/Logo';
+import SelectGameMode from '@/organisms/SelectGameMode';
+import SelectGameStory from '@/organisms/SelectGameStory';
 
 const CreateGamePage = () => {
   return (
-    <>
+    <div className="w-full h-full">
+      <Logo />
+      {false && <SelectGameMode />}
+      <SelectGameStory />
+      {/* <LoadGameModal /> */}
       {/* <CardImage
         url="../assets/Leonardo_Diffusion_XL_a_painting_of_one_adventurer_facing_the_1.jpg"
         alt=""
@@ -22,7 +25,7 @@ const CreateGamePage = () => {
         correctionStats={[0, 0, 0, 0, 0]}
         onClickEvent={() => {}}
       /> */}
-    </>
+    </div>
   );
 };
 
