@@ -14,7 +14,6 @@ export default {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'button-background': 'url("./src/assets/button-background.png")'
       },
-
       width: {
         xs: '15vw',
         s: '30vw',

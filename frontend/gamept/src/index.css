@@ -52,7 +52,7 @@
   }
 
   .gamept-button {
-    @apply w-full h-full font-bold outline-transparent focus:outline-[2px] focus:outline-offset-[-2px] focus:outline focus:border-transparent focus:outline-secondary bg-secondaryContainer bg-button-background bg-right hover:bg-secondaryHover text-24 text-black;
+    @apply w-full h-full font-bold outline-transparent focus:outline-[2px] focus:outline-offset-[-2px] focus:outline focus:border-transparent focus:outline-secondary bg-secondaryContainer bg-button-background bg-right bg-cover hover:bg-secondaryHover text-24 text-black;
   }
 }
 
@@ -95,7 +95,7 @@ input:-webkit-autofill:active {
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #240903;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -142,7 +142,7 @@ button {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: #240903;
   }
   a:hover {
     color: #747bff;
