@@ -1,5 +1,6 @@
 package com.a405.gamept.play.entity;
 
+import com.a405.gamept.game.entity.Item;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,11 @@ public class Player {
      */
     private Map<String, Integer> stat;
 
+    /**
+     * itemList : 사용자가 가지고 있는 아이템 목록
+     */
+    private List<Item> itemList; 
+    
     /**
      * nickname : 사용자의 닉네임
      */

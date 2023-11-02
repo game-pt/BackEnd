@@ -3,6 +3,7 @@ package com.a405.gamept.game.controller;
 import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.request.ActGetRequestDto;
 import com.a405.gamept.game.dto.request.DiceGetRequestDto;
+import com.a405.gamept.game.dto.request.SubtaskRequestDto;
 import com.a405.gamept.game.service.GameService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class GameController {
 
     @GetMapping("/{gameCode}/{eventCode}")
     public ResponseEntity<?> getActList(@Valid ActGetRequestDto actGetRequestDto){
-        return  ResponseEntity.ok(gameService.OptionsGet(actGetRequestDto.toCommand("001")));
+        return  ResponseEntity.ok(gameService.getOptions(actGetRequestDto.toCommand("001")));
     }
 
     @GetMapping("/dices")
@@ -38,5 +39,10 @@ public class GameController {
     @GetMapping("story/{storyCode}")
     public ResponseEntity<?> getStory(@PathVariable String storyCode) {
         return ResponseEntity.ok(gameService.getStory(StoryGetCommandDto.of(storyCode)));
+    }
+
+    @GetMapping("/subtask")
+    public ResponseEntity<?> getSubtask(SubtaskRequestDto subtaskRequestDto) {
+        return ResponseEntity.ok(gameService.getSubtask(subtaskRequestDto.toCommand("001")));
     }
 }

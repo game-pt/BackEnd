@@ -3,10 +3,12 @@ package com.a405.gamept.game.service;
 import com.a405.gamept.game.dto.command.ActGetCommandDto;
 import com.a405.gamept.game.dto.command.DiceGetCommandDto;
 import com.a405.gamept.game.dto.command.StoryGetCommandDto;
+import com.a405.gamept.game.dto.command.SubtaskCommandDto;
 import com.a405.gamept.game.dto.response.ActGetResponseDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
 
 import com.a405.gamept.game.dto.response.StoryGetResponseDto;
+import com.a405.gamept.game.dto.response.SubtaskResponseDto;
 import java.util.List;
 public interface GameService {
     /**
@@ -52,5 +54,15 @@ public interface GameService {
      * @return : 본인이 해당 게임에 참여 중인지에 대한 여부 : True or False
      * @author : 지환
      */
-    List<ActGetResponseDto> OptionsGet(ActGetCommandDto actGetCommandDto);
+    List<ActGetResponseDto> getOptions(ActGetCommandDto actGetCommandDto);
+
+    /**
+     * 행동의 하위 항목 목록을 반환
+     * @param subtaskCommandDto : 해당 행동의 정보
+     *                          playerCode : 어떤 플레이어의 정보를 가져올지
+     *                          subtask : 어떤 행동의 하위 목록을 가져와야하는지
+     * @return : 하위 항목의 코드, 이름 리스트
+     * @author : 지환
+     */
+    List<SubtaskResponseDto> getSubtask(SubtaskCommandDto subtaskCommandDto);
 }
