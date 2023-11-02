@@ -14,7 +14,7 @@ const MultiplayModal = (props: IMultiPlayModal) => {
 
   const handleModalClose = (e: MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      props.closeModal();
+      props.onClose();
     }
   };
 

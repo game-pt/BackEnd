@@ -37,13 +37,7 @@ const SelectGameMode = () => {
           </div>
         ))}
       </div>
-      {isShowModal && (
-        <MultiplayModal
-          setIsShowModal={setIsShowModal}
-          closeModal={() => setIsShowModal(false)}
-          isShowModal={isShowModal}
-        />
-      )}
+      {isShowModal && <MultiplayModal onClose={() => setIsShowModal(false)} />}
     </div>
   );
 };
