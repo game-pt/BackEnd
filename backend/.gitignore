@@ -39,4 +39,4 @@ out/
 .vscode/
 
 ### queryDSL ###
-/generated/
+/src/main/generated/
