@@ -23,7 +23,7 @@ public class Story extends BaseEntity {
     /**
      * eventList : 스토리와 연관되어 있는 이벤트들
      */
-    @OneToMany(mappedBy = "event")
+    @OneToMany(mappedBy = "story")
     @Comment("이벤트 리스트")
     private List<Event> eventList;
 
