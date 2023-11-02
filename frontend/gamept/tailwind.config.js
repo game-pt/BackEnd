@@ -14,10 +14,6 @@ export default {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'button-background': 'url("./src/assets/button-background.png")'
       },
-      // 미디어 쿼리 사용하기 위한 세로 길이 중단점 설정
-      screens: {
-        'tall': { 'raw': '(min-height: 80px)' },
-      },
       width: {
         xs: '15vw',
         s: '30vw',

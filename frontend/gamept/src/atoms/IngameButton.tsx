@@ -1,4 +1,5 @@
 import { IIngameButton } from '@/types/components/Button.types';
+import { useEffect, useRef, useState } from 'react';
 // import ProfileImage from './ProfileImage';
 
 /**
@@ -12,6 +13,8 @@ import { IIngameButton } from '@/types/components/Button.types';
  * @returns void;
  */
 const IngameButton = (props: IIngameButton) => {
+  const [btnHeight, setBtnHeight] = useState(0);
+
   const buttonStyle = {
     width: props.width,
     height: props.height,
@@ -22,25 +25,56 @@ const IngameButton = (props: IIngameButton) => {
   // 예상되는 저장 데이터 (플레이어 id, 플레이어 img URL)
   const dummyData = ['1', '2'];
 
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    const buttonElement = buttonRef.current;
+
+    if (buttonElement) {
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.target === buttonElement) {
+            setBtnHeight(entry.contentRect.height);
+          }
+        }
+      });
+
+      resizeObserver.observe(buttonElement);
+
+      return () => {
+        resizeObserver.unobserve(buttonElement);
+        resizeObserver.disconnect();
+      };
+    }
+  }, [buttonRef]);
+
   return (
     <div className="button-area" style={buttonStyle}>
       <button
-        className="tall:rounded-xl gamept-button text-left pr-2"
+        ref={buttonRef}
+        className={`gamept-button text-left pr-2 ${
+          btnHeight > 60 && `rounded-xl`
+        }`}
         onClick={props.onClickEvent}
       >
         {props.type === 'multi' ? (
           <div className="flex w-full">
-            <div className="w-full">{props.text}</div>
+            <div className="flex flex-1">{props.text}</div>
             {/* 투표한 플레이어가 있다면 프로필 이미지 띄워주기. */}
-            <div className="flex justify-end items-center">
-              {dummyData.map((e) => (
-                <img
-                  key={`vote_player_${e}`}
-                  className="max-w-[32px] max-h-[32px] mx-0.5"
-                  src={`./src/assets/player_profile.png`}
-                  alt="player_profile"
-                />
-              ))}
+            <div
+              className={`w-[${
+                dummyData.length * 36
+              }px] flex flex-wrap justify-end items-center`}
+            >
+              {dummyData.length > 0 &&
+                dummyData.map((e) => (
+                  <img
+                    key={`vote_player_${e}`}
+                    className="max-w-[32px] max-h-[32px] mx-0.5"
+                    src={`./src/assets/player_profile.png`}
+                    alt="player_profile"
+                  />
+                ))}
             </div>
           </div>
         ) : (
@@ -53,12 +87,22 @@ const IngameButton = (props: IIngameButton) => {
   // Profile Image 컴포넌트를 사용한다며의 예시 코드
   // return (
   //   <div className="button-area" style={buttonStyle}>
-  //     <button className="gamept-button text-left" onClick={props.onClickEvent}>
+  //     <button
+  //       ref={buttonRef}
+  //       className={`gamept-button text-left pr-2 ${
+  //         btnHeight > 60 && `rounded-xl`
+  //       }`}
+  //       onClick={props.onClickEvent}
+  //     >
   //       {props.type === 'multi' ? (
-  //         <div className="flex">
-  //           <div className="basis-1/2">{props.text}</div>
+  //         <div className="flex w-full">
+  //           <div className="flex flex-1">{props.text}</div>
   //           {/* 투표한 플레이어가 있다면 프로필 이미지 띄워주기. */}
-  //           <div className="basis-1/2 flex justify-end items-center">
+  //           <div
+  //             className={`w-[${
+  //               dummyData.length * 36
+  //             }px] flex flex-wrap justify-end items-center`}
+  //           >
   //             {dummyData.map((e) => (
   //               <ProfileImage
   //                 size={32}
@@ -66,7 +110,9 @@ const IngameButton = (props: IIngameButton) => {
   //                 alt={`player${e}_img`}
   //                 hasBorderAsset
   //                 key={`vote_player_${e}`}
-  //                 onClickEvent={() => {console.log('클릭 시 좌측 탭에 포커스 된 플레이어가 변경')}}
+  //                 onClickEvent={() => {
+  //                   console.log('클릭 시 좌측 탭에 포커스 된 플레이어가 변경');
+  //                 }}
   //               />
   //             ))}
   //           </div>
