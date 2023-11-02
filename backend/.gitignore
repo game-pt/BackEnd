@@ -1,6 +1,6 @@
 HELP.md
 .gradle
-generated/
+generated/*
 application-local.yml
 build/
 !gradle/wrapper/gradle-wrapper.jar
