@@ -1,5 +1,8 @@
 /**
- *
+ * 스토리 선택 단계 organism 구현
+ * 로직 미구현
+ * @params
+ * @returns
  */
 
 import { IGameModeCard } from '@/types/components/GameModeCard.type';
