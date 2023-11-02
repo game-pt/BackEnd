@@ -14,8 +14,8 @@ import MultiplayModal from './MultiplayModal';
 const SelectGameMode = () => {
   const [isShowModal, setIsShowModal] = useState(false);
   return (
-    <div className="pt-[100px] caret-transparent w-full h-full">
-      <div className="text-primary text-32 text-center font-hol mb-[30px]">
+    <div className="pt-[100px] w-full h-full">
+      <div className="text-primary text-32 text-center font-hol mb-[30px] caret-transparent ">
         게임 모드를 선택하세요.
       </div>
       <div className="flex flex-row gap-10 justify-center w-[60%] mx-auto">

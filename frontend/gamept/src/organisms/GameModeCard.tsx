@@ -16,7 +16,7 @@ import { IGameModeCard } from '@/types/components/GameModeCard.type';
 const GameModeCard = (props: IGameModeCard) => {
   return (
     <div
-      className=" w-full h-[445px] bg-containerLight rounded-[10px] min-w-[250px]"
+      className=" w-full h-[445px] bg-containerLight rounded-[10px] min-w-[250px] caret-transparent "
       onClick={props.onClickEvent}
     >
       <CardImage
