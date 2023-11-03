@@ -2,14 +2,16 @@ package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.ActGetCommandDto;
 import com.a405.gamept.game.dto.command.DiceGetCommandDto;
+import com.a405.gamept.game.dto.command.GameSetCommandDto;
 import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.command.SubtaskCommandDto;
 import com.a405.gamept.game.dto.response.ActGetResponseDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
-
+import com.a405.gamept.game.dto.response.GameSetResponseDto;
 import com.a405.gamept.game.dto.response.StoryGetResponseDto;
 import com.a405.gamept.game.dto.response.SubtaskResponseDto;
 import java.util.List;
+
 public interface GameService {
     /**
      * (완료)
@@ -28,6 +30,15 @@ public interface GameService {
      * @author : 유영
      */
     StoryGetResponseDto getStory(StoryGetCommandDto storyGetCommandDto);
+
+    /**
+     * (완료)
+     * 스토리 코드로 게임을 생성한다.
+     * @param gameSetCommandDto : 스토리 코드
+     * @return : 게임 정보
+     * @author : 유영
+     */
+    GameSetResponseDto setGame(GameSetCommandDto gameSetCommandDto);
 
     /**
      * 주사위(1~6) 2개를 돌린다

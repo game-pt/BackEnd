@@ -2,10 +2,12 @@ package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.ActGetCommandDto;
 import com.a405.gamept.game.dto.command.DiceGetCommandDto;
+import com.a405.gamept.game.dto.command.GameSetCommandDto;
 import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.command.SubtaskCommandDto;
 import com.a405.gamept.game.dto.response.ActGetResponseDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
+import com.a405.gamept.game.dto.response.GameSetResponseDto;
 import com.a405.gamept.game.dto.response.StoryGetResponseDto;
 import com.a405.gamept.game.dto.response.SubtaskResponseDto;
 import com.a405.gamept.game.entity.Act;
@@ -26,6 +28,10 @@ import com.a405.gamept.util.ValidateUtil;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
@@ -34,13 +40,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class GameServiceImpl implements GameService {
-    Set<ConstraintViolation<Object>> violations;
+
     private final GameRedisRepository gameRedisRepository;
     private final PlayerRedisRepository playerRedisRepository;
     private final ActRepository actRepository;
@@ -62,6 +66,8 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public StoryGetResponseDto getStory(StoryGetCommandDto storyGetCommandDto) {
+        ValidateUtil.validate(storyGetCommandDto);
+
         Story story = storyRepository.findById(storyGetCommandDto.storyCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
 
@@ -69,6 +75,33 @@ public class GameServiceImpl implements GameService {
         ValidateUtil.validate(storyGetResponseDto);
 
         return storyGetResponseDto;
+    }
+
+    @Override
+    public GameSetResponseDto setGame(GameSetCommandDto gameSetCommandDto) {
+        ValidateUtil.validate(gameSetCommandDto);
+
+        Story story = storyRepository.findById(gameSetCommandDto.storyCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
+        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        String code = new Random().ints(6, 0, CHARACTERS.length())
+                .mapToObj(CHARACTERS::charAt)
+                .map(Object::toString)
+                .collect(Collectors.joining());
+
+        log.info("게임 코드: " + code);
+
+        Game game = Game.builder()
+                .code(code)
+                .storyCode(story.getCode())
+                .build();
+        ValidateUtil.validate(game);
+        gameRedisRepository.save(game);
+
+        GameSetResponseDto gameSetResponseDto = GameSetResponseDto.from(game);
+        ValidateUtil.validate(gameSetResponseDto);
+
+        return gameSetResponseDto;
     }
 
     @Override
@@ -96,9 +129,9 @@ public class GameServiceImpl implements GameService {
         Player player = playerRedisRepository.findById(playerCode)
                 .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
-        List<Player> playerList = game.getPlayerList();
-        for(Player p : playerList){
-            if (p.getCode().equals(playerCode)) {
+        List<String> playerList = game.getPlayerList();
+        for(String p : playerList){
+            if (p.equals(playerCode)) {
                 return true;
             }
         }
@@ -134,7 +167,7 @@ public class GameServiceImpl implements GameService {
         List<SubtaskResponseDto> subtaskResponseDtoList = new ArrayList<>();
 
         if(subtask.getKey().equals("SKILL")){
-            List<Skill> skillList = skillRepository.findAllByJobCode(player.getJob().getCode());
+            List<Skill> skillList = skillRepository.findAllByJobCode(player.getJobCode());
 
             for (Skill skill : skillList){
                 subtaskResponseDtoList.add(SubtaskResponseDto.of(skill.getCode(), skill.getName()));
