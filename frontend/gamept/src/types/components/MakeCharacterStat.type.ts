@@ -1,6 +1,8 @@
+import { IStatObject } from './CharacterCard.types';
+
 export interface IMakeCharacterStat {
-  baseStats: number[];
-  correctionStats: number[];
+  baseStats: IStatObject[];
+  correctionStats: IStatObject[];
 }
 
 export interface IStatText {
