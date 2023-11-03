@@ -5,6 +5,8 @@ import { useState } from 'react';
 const CreateGamePage = () => {
   const [isSelectStory, setIsSelectStory] = useState(false);
 
+  console.log(setIsSelectStory);
+
   return (
     <div className="w-full h-full">
       <Logo />
