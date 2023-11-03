@@ -20,7 +20,7 @@ const GameModeCard = (props: IGameModeCard) => {
       onClick={props.onClickEvent}
     >
       <CardImage
-        url={'../assets/' + props.imgUrl}
+        url={'./src/assets/' + props.imgUrl}
         alt={`${props.modeName} 이미지`}
       />
       <div className="leading-[130px] items-center h-[130px] font-hol text-28 text-primary shadow-lg">
