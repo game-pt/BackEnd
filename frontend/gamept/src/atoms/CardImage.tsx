@@ -10,7 +10,8 @@
 import { ICardImage } from '@/types/components/Image.types';
 
 const CardImage = (props: ICardImage) => {
-  const imgUrl = new URL(props.url, import.meta.url).href;
+  // const imgUrl = new URL(props.url, import.meta.url).href;
+  const imgUrl = props.url;
 
   return (
     <div className="relative w-full h-[315px]">
