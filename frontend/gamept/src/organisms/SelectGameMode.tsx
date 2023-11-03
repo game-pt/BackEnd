@@ -53,7 +53,7 @@ const response: IGameModeCard[] = [
     modeType: 0,
   },
   {
-    imgUrl: 'MultiPlay.svg',
+    imgUrl: 'Multiplay.svg',
     modeName: '멀티 플레이',
     modeType: 0,
   },
