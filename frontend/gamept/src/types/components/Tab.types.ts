@@ -10,3 +10,8 @@ export interface SkillValuesType {
   img: string;
   desc: string;
 }
+
+export interface ItemValuesType {
+  img: string;
+  desc: string;
+}
