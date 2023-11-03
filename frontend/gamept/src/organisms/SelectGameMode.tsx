@@ -9,10 +9,15 @@
 import { useState } from 'react';
 import GameModeCard from './GameModeCard';
 import { IGameModeCard } from '@/types/components/GameModeCard.type';
+import { ISelectGameMode } from '@/types/components/MakeGameProcess.type';
 import MultiplayModal from './MultiplayModal';
-
-const SelectGameMode = () => {
+import { gameModeAtom } from '@/jotai/MakeGameAtom';
+import { useAtom } from 'jotai';
+const SelectGameMode = (props: ISelectGameMode) => {
   const [isShowModal, setIsShowModal] = useState(false);
+  const [getSelectMode, setSelectMode] = useAtom(gameModeAtom);
+
+  console.log('상태확인', getSelectMode);
   return (
     <div className="pt-[100px] w-full h-full">
       <div className="text-primary text-32 text-center font-hol mb-[30px] caret-transparent ">
@@ -24,7 +29,7 @@ const SelectGameMode = () => {
           <div
             className="w-full"
             onClick={
-              idx === 1 && !isShowModal
+              idx === MULTY && !isShowModal
                 ? () => {
                     setIsShowModal(true);
                   }
@@ -35,13 +40,25 @@ const SelectGameMode = () => {
               imgUrl={card.imgUrl}
               modeName={card.modeName}
               modeType={card.modeType}
-              onClickEvent={() => {}}
+              onClickEvent={
+                idx === SINGLE
+                  ? () => {
+                      setSelectMode(SINGLE);
+                      props.onGoSelectStory();
+                    }
+                  : undefined
+              }
               key={idx}
             />
           </div>
         ))}
       </div>
-      {isShowModal && <MultiplayModal onClose={() => setIsShowModal(false)} />}
+      {isShowModal && (
+        <MultiplayModal
+          onClose={() => setIsShowModal(false)}
+          onGoSelectStory={props.onGoSelectStory}
+        />
+      )}
     </div>
   );
 };
@@ -53,10 +70,12 @@ const response: IGameModeCard[] = [
     modeType: 0,
   },
   {
-    imgUrl: 'Multiplay.svg',
+    imgUrl: 'MultiPlay.svg',
     modeName: '멀티 플레이',
     modeType: 0,
   },
 ];
+
+const [SINGLE, MULTY] = [0, 1];
 
 export default SelectGameMode;
