@@ -17,7 +17,13 @@ public enum ErrorMessage {
     DICE_NOT_FOUND(NOT_FOUND, "다이스의 값을 찾을 수 없습니다. 다시 시도해주세요"),
     GAME_NOT_FOUND(NOT_FOUND, "해당 게임을 찾을 수 없습니다."),
     PLAYER_NOT_FOUND(NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
-    INVALID_GAME_REQUEST(BAD_REQUEST, "해당 유저의 게임이 아닙니다.");
+    INVALID_GAME_REQUEST(BAD_REQUEST, "해당 유저의 게임이 아닙니다."),
+
+    // 토큰 처리
+    TOKEN_INVALID(BAD_REQUEST, "잘못된 토큰입니다."),
+    TOKEN_EXPIRED(BAD_REQUEST, "만료된 토큰입니다."),
+    TOKEN_UNSUPPORTED(BAD_REQUEST, "지원하지 않는 토큰입니다."),
+    TOKEN_SIGNATURE(BAD_REQUEST, "잘못된 토큰입니다.");
 
     private final int code;
     private final String phrase;
