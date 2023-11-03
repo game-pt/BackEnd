@@ -4,13 +4,19 @@ import com.a405.gamept.game.dto.command.ActGetCommandDto;
 import com.a405.gamept.game.dto.command.DiceGetCommandDto;
 import com.a405.gamept.game.dto.command.GameSetCommandDto;
 import com.a405.gamept.game.dto.command.StoryGetCommandDto;
+import com.a405.gamept.game.dto.command.SubtaskCommandDto;
 import com.a405.gamept.game.dto.response.ActGetResponseDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
 import com.a405.gamept.game.dto.response.GameSetResponseDto;
 import com.a405.gamept.game.dto.response.StoryGetResponseDto;
+import com.a405.gamept.game.dto.response.SubtaskResponseDto;
 import com.a405.gamept.game.entity.Act;
+import com.a405.gamept.game.entity.Item;
+import com.a405.gamept.game.entity.Skill;
 import com.a405.gamept.game.entity.Story;
+import com.a405.gamept.game.entity.Subtask;
 import com.a405.gamept.game.repository.ActRepository;
+import com.a405.gamept.game.repository.SkillRepository;
 import com.a405.gamept.game.repository.StoryRepository;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
@@ -29,29 +35,21 @@ import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class GameServiceImpl implements GameService {
 
-    private final Validator validator;
-    Set<ConstraintViolation<Object>> violations;
     private final GameRedisRepository gameRedisRepository;
     private final PlayerRedisRepository playerRedisRepository;
     private final ActRepository actRepository;
     private final StoryRepository storyRepository;
-
-    @Autowired
-    GameServiceImpl(GameRedisRepository gameRedisRepository, PlayerRedisRepository playerRedisRepository, StoryRepository storyRepository, ActRepository actRepository) {
-        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
-        this.storyRepository = storyRepository;
-        this.gameRedisRepository = gameRedisRepository;
-        this.playerRedisRepository = playerRedisRepository;
-        this.actRepository = actRepository;
-    }
+    private final SkillRepository skillRepository;
 
     @Override
     public List<StoryGetResponseDto> getStoryList() {
@@ -117,16 +115,9 @@ public class GameServiceImpl implements GameService {
         int dice3 = random.nextInt(6) + 1;
         log.info(dice1+"\t"+dice2+"\t"+dice3);
 
-        DiceGetResponseDto diseResult = DiceGetResponseDto.of(dice1, dice2, dice3);
+        DiceGetResponseDto diceResult = DiceGetResponseDto.of(dice1, dice2, dice3);
 
-        violations = validator.validate(diseResult);
-
-        if (!violations.isEmpty()) {  // 유효성 검사 실패 시
-            for (ConstraintViolation<Object> violation : violations) {
-                log.error("DiceInvalidException: { GameService " + violation.getMessage() + " }");
-            }
-            throw new GameException(GameErrorMessage.DICE_NOT_FOUND);
-        }
+        ValidateUtil.validate(diceResult);
 
         return DiceGetResponseDto.of(dice1, dice2, dice3);
     }
@@ -149,7 +140,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<ActGetResponseDto> OptionsGet(ActGetCommandDto actGetCommandDto) {
+    public List<ActGetResponseDto> getOptions(ActGetCommandDto actGetCommandDto) {
 //        if(!gameCheck(actGetCommandDto.gameCode(), actGetCommandDto.playerCode())){
 //            log.error("DiceInvalidException: { PlayerError : player Code를 확인해주세요. }");
 //        }
@@ -162,14 +153,32 @@ public class GameServiceImpl implements GameService {
         for(Act act : actList){
             actGetResponseDtoList.add(ActGetResponseDto.of(act));
 
-            violations = validator.validate(actGetResponseDtoList.get(actGetResponseDtoList.size()-1));
-
-            if(!violations.isEmpty()){
-                for (ConstraintViolation<Object> violation : violations){
-                    throw new GameException(violation.getMessage());
-                }
-            }
+            ValidateUtil.validate(actGetResponseDtoList.get(actGetResponseDtoList.size()-1));
         }
         return actGetResponseDtoList;
+    }
+
+    @Override
+    public List<SubtaskResponseDto> getSubtask(SubtaskCommandDto subtaskCommandDto) {
+        Player player = playerRedisRepository.findById(subtaskCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+
+        Subtask subtask = subtaskCommandDto.subtask();
+        List<SubtaskResponseDto> subtaskResponseDtoList = new ArrayList<>();
+
+        if(subtask.getKey().equals("SKILL")){
+            List<Skill> skillList = skillRepository.findAllByJobCode(player.getJobCode());
+
+            for (Skill skill : skillList){
+                subtaskResponseDtoList.add(SubtaskResponseDto.of(skill.getCode(), skill.getName()));
+
+                ValidateUtil.validate(subtaskResponseDtoList.get(subtaskResponseDtoList.size()-1));
+            }
+        }else if(subtask.getKey().equals("ITEM")){
+            for(Item item : player.getItemList()){
+                subtaskResponseDtoList.add(SubtaskResponseDto.of(item.getCode(), item.getName()));
+            }
+        }
+        return subtaskResponseDtoList;
     }
 }
