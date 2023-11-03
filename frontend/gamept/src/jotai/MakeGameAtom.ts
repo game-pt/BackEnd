@@ -8,12 +8,12 @@
 
 import { atom } from 'jotai';
 
-export const gameModeAtom = atom(true);
+export const gameModeAtom = atom(0);
 export const gameStoryAtom = atom('fantasy');
 
 export const selectGameModeAtom = atom(
   (get) => get(gameModeAtom),
-  (get, set, selectedMode: boolean) => {
+  (get, set, selectedMode: number) => {
     get(gameModeAtom); // get 사용하지 않음 문제 해결용
     set(gameModeAtom, () => selectedMode);
   }
