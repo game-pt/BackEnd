@@ -1,13 +1,5 @@
 export interface ISelectCharacter {
-  type: number;
-  characterCode: number;
-  typeName: string;
-  baseStats: number[];
-  correctionStats: number[];
-  onClickEvent: () => void;
-}
-
-export interface ISwitchGender {
-  gender: number;
-  onClickEvent: () => void;
+  type: string;
+  apiURL: string;
+  playerStats?: Array<{ statType: string; statValue: number }>;
 }

@@ -19,7 +19,6 @@ const SelectGameStory = () => {
       </div>
       <div className="flex flex-row gap-10 justify-center w-[80%] mx-auto">
         {getStoryList.map((card, idx) => (
-          // 멀티플레이의 modal 컨트롤을 위해 wrapper 역할을 하는 div를 추가 설정
           <GameModeCard
             imgUrl={card.imgUrl}
             modeName={card.modeName}
