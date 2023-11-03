@@ -1,8 +1,9 @@
 /**
  * MultyplayModal 구현
- * 로직은 아직 미구현입니다.
+ * 게임 생성 및 join 시 atom 값 변경 후 스토리 단계로 변경
  * @param
  * onClose: () => void;
+ * onGoSelectStory: () => void;
  * @returns
  */
 
