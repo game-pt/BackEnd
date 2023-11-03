@@ -6,11 +6,15 @@
  */
 
 import { IGameModeCard } from '@/types/components/GameModeCard.type';
+import { ISelectGameStory } from '@/types/components/MakeGameProcess.type';
+import { gameStoryAtom } from '@/jotai/MakeGameAtom';
+import { useAtom } from 'jotai';
 import GameModeCard from './GameModeCard';
 // import { useState } from 'react';
 
-const SelectGameStory = () => {
+const SelectGameStory = (props: ISelectGameStory) => {
   // const [selected, setSelected] = useState(0);
+  const [, setStory] = useAtom(gameStoryAtom);
 
   return (
     <div className="pt-[100px] w-full h-full">
@@ -23,7 +27,10 @@ const SelectGameStory = () => {
             imgUrl={card.imgUrl}
             modeName={card.modeName}
             modeType={card.modeType}
-            onClickEvent={() => {}}
+            onClickEvent={() => {
+              setStory(tempDummy[idx]);
+              props.onGoMakeCharacter();
+            }}
             key={idx}
           />
         ))}
@@ -32,14 +39,16 @@ const SelectGameStory = () => {
   );
 };
 
+const tempDummy = ['판타지', '좀비', '미스테리'];
+
 const getStoryList: IGameModeCard[] = [
   {
-    imgUrl: 'SinglePlay.svg',
+    imgUrl: 'Story-fantasy.jpg',
     modeName: '판타지',
     modeType: 0,
   },
   {
-    imgUrl: 'MultiPlay.svg',
+    imgUrl: 'Story-zombie.jpg',
     modeName: '좀비',
     modeType: 0,
   },

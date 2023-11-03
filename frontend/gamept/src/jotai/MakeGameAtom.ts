@@ -15,6 +15,7 @@ export const selectGameModeAtom = atom(
   (get) => get(gameModeAtom),
   (_get, set, selectedMode: number) => {
     set(gameModeAtom, () => selectedMode);
+    console.log('게임모드 값 ', selectedMode);
   }
 );
 
@@ -22,5 +23,6 @@ export const selectGameStoryAtom = atom(
   (get) => get(gameStoryAtom),
   (_get, set, selectedStory: string) => {
     set(gameStoryAtom, () => selectedStory);
+    console.log('스토리값', selectedStory);
   }
 );

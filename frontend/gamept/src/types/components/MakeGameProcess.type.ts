@@ -4,7 +4,9 @@ export interface ISelectGameMode {
   onGoSelectStory: () => void;
 }
 
-export interface ISelectGameStory {}
+export interface ISelectGameStory {
+  onGoMakeCharacter: () => void;
+}
 
 export interface ISelectCharacter extends IProcessLevel {
   type: string;
