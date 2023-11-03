@@ -28,9 +28,11 @@ const MakeCharacterStatContainer = (props: IMakeCharacterStat) => {
     <div className="bg-[url(./assets/MakeCharacterStatPanel.svg)] grid grid-cols-2 gap-y-1 w-[260px] h-[155px] p-5">
       {props.baseStats.map((stat, idx) => (
         <StatText
-          statType={statType[idx]}
-          baseStat={stat}
-          correctionStat={props.correctionStats && props.correctionStats[idx]}
+          statType={stat.statType}
+          baseStat={stat.statValue}
+          correctionStat={
+            props.correctionStats && props.correctionStats[idx].statValue
+          }
           key={idx}
         />
       ))}
@@ -38,16 +40,12 @@ const MakeCharacterStatContainer = (props: IMakeCharacterStat) => {
   );
 };
 
-const statType = ['힘', '민첩', '지능', '행운', '매력'];
-
 const itoa = (input: number): string => {
-  console.log(input);
   if (input > 0) {
     return `(+${input})`;
   } else if (input < 0) {
     return `(-${-input})`;
   }
-  console.log(input);
   return '';
 };
 
