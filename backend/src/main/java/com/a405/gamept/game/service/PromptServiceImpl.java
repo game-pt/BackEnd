@@ -7,6 +7,7 @@ import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.play.entity.Game;
 import com.a405.gamept.play.repository.GameRedisRepository;
 import com.a405.gamept.util.ChatGptClientUtil;
+import com.a405.gamept.util.ValidateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,7 @@ public class PromptServiceImpl implements PromptService {
         // 최종적으로 응답에 이벤트를 추가하여 클라이언트에게 반환할 형태로 ResponseDto를 구성
         PromptResultGetCommandDto promptResultGetCommandDtoForCheck = PromptResultGetCommandDto.from(promptResultGetCommandDto, promptResult);
         PromptResultGetResponseDto promptResultGetResponseDto = eventService.checkEventInPrompt(promptResultGetCommandDtoForCheck);
+        ValidateUtil.validate(promptResultGetResponseDto);
 
         return promptResultGetResponseDto;
     }
