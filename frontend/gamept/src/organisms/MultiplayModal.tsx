@@ -10,9 +10,12 @@ import SelectButton from '@/atoms/SelectButton';
 import { IMultiPlayModal } from '@/types/components/MultiPlayModal.types';
 import Input from '@/atoms/Input';
 import { useRef, useEffect } from 'react';
+import { useAtom } from 'jotai';
+import { gameModeAtom } from '@/jotai/MakeGameAtom';
+
 const MultiplayModal = (props: IMultiPlayModal) => {
   const modalRef = useRef<HTMLDivElement>(null);
-
+  const [, setSelectMode] = useAtom(gameModeAtom);
   const handleModalClose = (e: MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       props.onClose();
@@ -39,7 +42,10 @@ const MultiplayModal = (props: IMultiPlayModal) => {
             height="72px"
             text="+ 멀티플레이 생성"
             width="420px"
-            onClickEvent={() => {}}
+            onClickEvent={() => {
+              setSelectMode(MULTY);
+              props.onGoSelectStory();
+            }}
           />
         </div>
         <div>
@@ -48,7 +54,10 @@ const MultiplayModal = (props: IMultiPlayModal) => {
           </div>
           <Input
             height="40px"
-            onClickEvent={() => {}}
+            onClickEvent={() => {
+              setSelectMode(MULTY);
+              props.onGoSelectStory();
+            }}
             placeholder="참여 코드를 입력해주세요."
             setValue={() => {}}
             width="436px"
@@ -59,4 +68,5 @@ const MultiplayModal = (props: IMultiPlayModal) => {
   );
 };
 
+const MULTY = 1;
 export default MultiplayModal;
