@@ -115,9 +115,9 @@ public class GameServiceImpl implements GameService {
         int dice3 = random.nextInt(6) + 1;
         log.info(dice1+"\t"+dice2+"\t"+dice3);
 
-        DiceGetResponseDto diseResult = DiceGetResponseDto.of(dice1, dice2, dice3);
+        DiceGetResponseDto diceResult = DiceGetResponseDto.of(dice1, dice2, dice3);
 
-        ValidateUtil.validate(diseResult);
+        ValidateUtil.validate(diceResult);
 
         return DiceGetResponseDto.of(dice1, dice2, dice3);
     }
