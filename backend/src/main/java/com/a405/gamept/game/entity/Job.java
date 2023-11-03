@@ -21,7 +21,7 @@ import java.util.List;
 public class Job extends BaseEntity {
 
     /**
-     * [pk] code: Job의 고유 코드
+     * [pk] gameCode: Job의 고유 코드
      */
     @Comment("고유 코드")
     @Id private String code;
