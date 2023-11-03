@@ -1,5 +1,6 @@
 package com.a405.gamept.global.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -9,6 +10,13 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    private final String prodUrl, localUrl, localPortUrl;
+
+    public WebSocketConfig(@Value("${url.prod}") String prodUrl, @Value("${url.local}") String localUrl, @Value("${url.local-port}") String localPortUrl) {
+        this.prodUrl = prodUrl;
+        this.localUrl = localUrl;
+        this.localPortUrl = localPortUrl;
+    }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -19,7 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry
                 .addEndpoint("/ws")
                 // 특정 원격 출처에서의 접속 허용
-                .setAllowedOriginPatterns("https://k9a405.p.ssafy.io", "http://localhost:3000", "http://localhost")
+                .setAllowedOriginPatterns(prodUrl, localUrl, localPortUrl)
                 .withSockJS();  // SockJS 지원을 통해 WebSocket 연결 설정
     }
 }
