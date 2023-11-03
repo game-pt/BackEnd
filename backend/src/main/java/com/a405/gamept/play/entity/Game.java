@@ -16,7 +16,7 @@ import org.springframework.data.redis.core.RedisHash;
 public class Game {
 
     /**
-     * [pk] code : Game의 방 넘버
+     * [pk] gameCode : Game의 방 넘버
      */
     @NotBlank(message = "게임 코드가 올바르지 않습니다.")
     @Size(min = 6, max = 6, message = "게임 코드는 6자리여야 합니다.")

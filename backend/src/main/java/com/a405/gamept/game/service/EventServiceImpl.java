@@ -2,14 +2,11 @@ package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.ActCommandDto;
 import com.a405.gamept.game.dto.command.EventCommandDto;
-import com.a405.gamept.game.dto.command.FindEventByStoryCodeCommandDto;
-import com.a405.gamept.game.dto.command.GetPromptResultCommandDto;
-import com.a405.gamept.game.dto.response.GetPromptResultResponseDto;
+import com.a405.gamept.game.dto.command.PromptResultGetCommandDto;
+import com.a405.gamept.game.dto.response.PromptResultGetResponseDto;
 import com.a405.gamept.game.entity.Act;
 import com.a405.gamept.game.entity.Event;
-import com.a405.gamept.game.entity.Story;
 import com.a405.gamept.game.repository.EventRepository;
-import com.a405.gamept.game.repository.StoryRepository;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.play.entity.Game;
@@ -27,7 +24,6 @@ import java.util.List;
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
-    private final StoryRepository storyRepository;
     private final GameRedisRepository gameRedisRepository;
 
     private final ChatGptClientUtil chatGptClientUtil;
@@ -53,14 +49,14 @@ public class EventServiceImpl implements EventService {
      * <p>
      * storyCode에 관련된 Event 중 하나를 랜덤하게 선택.
      *
-     * @param getPromptResultCommandDto
+     * @param promptResultGetCommandDto
      * @return Event
      */
     @Override
     @Transactional
-    public GetPromptResultCommandDto pickAtRandomEvent(GetPromptResultCommandDto getPromptResultCommandDto) {
+    public PromptResultGetCommandDto pickAtRandomEvent(PromptResultGetCommandDto promptResultGetCommandDto) {
         // 게임 코드에 따른 게임 객체
-        Game game = gameRedisRepository.findById(getPromptResultCommandDto.code())
+        Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
         // 이벤트가 발생하지 않음
@@ -69,7 +65,7 @@ public class EventServiceImpl implements EventService {
             gameRedisRepository.save(game.toBuilder()
                     .eventRate(game.getEventRate() + 0.05)
                     .build());
-            return getPromptResultCommandDto;
+            return promptResultGetCommandDto;
         }
 
         // 이벤트가 발생한 경우,
@@ -79,8 +75,8 @@ public class EventServiceImpl implements EventService {
 
         // 이벤트 중 랜덤하게 특정 이벤트 발생
         Event occuredEvent = occurRandomEvent(eventList);
-        String newPrompt = getPromptResultCommandDto.prompt() + occuredEvent.getPrompt();
-        return GetPromptResultCommandDto.from(getPromptResultCommandDto, newPrompt);
+        String newPrompt = promptResultGetCommandDto.prompt() + occuredEvent.getPrompt();
+        return PromptResultGetCommandDto.from(promptResultGetCommandDto, newPrompt);
     }
 
     /**
@@ -124,25 +120,25 @@ public class EventServiceImpl implements EventService {
      * checkEventInPrompt <br/><br/>
      *
      * ChatGPT로부터 받은 프롬프트 안에 [이벤트]가 존재하는 경우, 발생된 이벤트를 반환.
-     * @param getPromptResultCommandDto
+     * @param promptResultGetCommandDto
      * @return
      */
     @Override
     @Transactional
-    public GetPromptResultResponseDto checkEventInPrompt(GetPromptResultCommandDto getPromptResultCommandDto) {
+    public PromptResultGetResponseDto checkEventInPrompt(PromptResultGetCommandDto promptResultGetCommandDto) {
         // 게임 코드에 따른 게임 객체
-        Game game = gameRedisRepository.findById(getPromptResultCommandDto.code())
+        Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
         // 스토리 코드에 따른 이벤트 리스트
         List<Event> eventList = findAllEventByStoryCode(game.getStoryCode());
 
         // 텍스트에서 가장 마지막에 등장한 이벤트의 인덱스
-        int eventIndex = findLastEventInText(eventList, getPromptResultCommandDto.prompt());
+        int eventIndex = findLastEventInText(eventList, promptResultGetCommandDto.prompt());
 
         // 이벤트를 찾지 못한 경우,
         if (eventIndex == -1) {
-            return GetPromptResultResponseDto.from(getPromptResultCommandDto, null);
+            return PromptResultGetResponseDto.from(promptResultGetCommandDto, null);
         }
 
         // 최종적으로 Response에 Event를 추가
@@ -157,7 +153,7 @@ public class EventServiceImpl implements EventService {
         }
         EventCommandDto eventCommandDto = EventCommandDto.from(occuredEvent, acts);
 
-        return GetPromptResultResponseDto.from(getPromptResultCommandDto, eventCommandDto);
+        return PromptResultGetResponseDto.from(promptResultGetCommandDto, eventCommandDto);
     }
 
     /**

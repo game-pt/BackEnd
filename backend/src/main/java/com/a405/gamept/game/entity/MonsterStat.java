@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MonsterStat extends BaseEntity {
     /**
-     * code : pk
+     * gameCode : pk
      * */
     @Id
     private String code;

@@ -1,9 +1,8 @@
 package com.a405.gamept.game.controller;
 
-import com.a405.gamept.game.dto.command.GetPromptResultCommandDto;
-import com.a405.gamept.game.dto.command.RaceGetCommandDto;
-import com.a405.gamept.game.dto.request.GetPromptResultRequestDto;
-import com.a405.gamept.game.dto.response.GetPromptResultResponseDto;
+import com.a405.gamept.game.dto.command.PromptResultGetCommandDto;
+import com.a405.gamept.game.dto.request.PromptResultGetRequestDto;
+import com.a405.gamept.game.dto.response.PromptResultGetResponseDto;
 import com.a405.gamept.game.service.PromptService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +17,8 @@ public class PromptController {
     private final PromptService promptService;
 
     @PostMapping
-    public ResponseEntity<GetPromptResultResponseDto> getPromptResult(@Valid @RequestBody GetPromptResultRequestDto getPromptResultRequestDto) {
-        return ResponseEntity.ok(promptService.getPrmoptResult(GetPromptResultCommandDto.from(getPromptResultRequestDto)));
+    public ResponseEntity<PromptResultGetResponseDto> getPromptResult(@Valid @RequestBody PromptResultGetRequestDto promptResultGetRequestDto) {
+        return ResponseEntity.ok(promptService.getPrmoptResult(PromptResultGetCommandDto.from(promptResultGetRequestDto)));
     }
 
 }

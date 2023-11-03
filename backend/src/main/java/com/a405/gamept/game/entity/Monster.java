@@ -17,9 +17,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Monster extends BaseEntity {
     /**
-     * code : pk
+     * gameCode : pk
      * */
-    @Column(name = "code")
+    @Column(name = "gameCode")
     @Comment("고유 코드")
     @Id private String code;
 

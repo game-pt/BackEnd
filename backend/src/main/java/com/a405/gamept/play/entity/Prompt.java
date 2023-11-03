@@ -11,7 +11,7 @@ import org.springframework.data.redis.core.RedisHash;
 public class Prompt {
 
     /**
-     * [pk] code : prompt 구분 값
+     * [pk] gameCode : prompt 구분 값
      */
     @Id
     private String code;

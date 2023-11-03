@@ -26,7 +26,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Event extends BaseEntity {
     /**
-     * code : pk
+     * gameCode : pk
      */
     @Id
     private String code;

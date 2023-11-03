@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class JobBonus extends BaseEntity {
 
     /**
-     * [pk] code: 직업 별 Bonus Stat의 고유 코드
+     * [pk] gameCode: 직업 별 Bonus Stat의 고유 코드
      */
     @Id
     private String code;
