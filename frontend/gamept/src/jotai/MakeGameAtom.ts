@@ -13,16 +13,14 @@ export const gameStoryAtom = atom('fantasy');
 
 export const selectGameModeAtom = atom(
   (get) => get(gameModeAtom),
-  (get, set, selectedMode: number) => {
-    get(gameModeAtom); // get 사용하지 않음 문제 해결용
+  (_get, set, selectedMode: number) => {
     set(gameModeAtom, () => selectedMode);
   }
 );
 
 export const selectGameStoryAtom = atom(
   (get) => get(gameStoryAtom),
-  (get, set, selectedStory: string) => {
-    get(gameStoryAtom);
+  (_get, set, selectedStory: string) => {
     set(gameStoryAtom, () => selectedStory);
   }
 );
