@@ -13,16 +13,15 @@ const ProfileInterface = () => {
         />
       </div>
       <div className="w-full h-full flex flex-col">
-        <div className="w-full h-[95px]">
-          <div className="text-14 flex justify-around">
-            <p>이우석</p>
-            <p>Lv.20</p>
-            <p>신한 개발자</p>
-          </div>
-          <Gauge nowHP={100} totalHP={100} type="hp" />
-          <Gauge nowHP={100} totalHP={100} type="exp" />
+        <div className="w-full h-[110px]">
+        <Gauge value={100} total={100} type="hp" /> 
+        <Gauge value={0} total={100} type="exp" />
         </div>
-        <div></div>
+        <div className="text-left ml-6">
+          <p>이우석</p>
+          <p>인간 전사</p>
+          <p>LV</p>
+        </div>
       </div>
     </div>
   );
