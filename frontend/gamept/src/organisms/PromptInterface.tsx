@@ -9,6 +9,11 @@ const PromptInterface = () => {
   const [fetchingPrompt, setFetchingPrompt] = useState(false);
   // const testName = '이우석';
 
+  ////////////////////////////////////////////////////////////////////////
+  // 유한 확인하면 지우면 됨
+  console.log(text);
+  ////////////////////////////////////////////////////////////////////////
+
   return (
     <div className="relative max-w-[1110px] min-w-[500px] h-[657px] mx-auto border-primary border-4">
       {/* 이 곳에 AI를 통해 생성한 배경 이미지를 백그라운드로 삽입 예정 */}
