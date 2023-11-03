@@ -1,5 +1,10 @@
 /**
- *
+ * 종족/ 직업 선택 컴포넌트 구현
+ * @praams props
+ * type: string : 종족/직업 구분
+ * apiURL : string : 종족/직업에 따라 전송할 api 경로
+ * playerStats? : Array<{statType: string; statValue: number}> : 직업 선택시 전송할 기본 스탯
+ * @returns void
  */
 
 import { ISelectCharacter } from '@/types/components/SelectCharacter.types';
@@ -40,7 +45,6 @@ const SelectCharacter = (props: ISelectCharacter) => {
       );
     }
   }, []);
-  console.log('문제가뭘까', characterList);
 
   return (
     <div>
