@@ -3,23 +3,26 @@ import Prompt from '@/atoms/Prompt';
 import { useState } from 'react';
 import ChoiceGroup from './ChoiceGroup';
 import LoadingSpinner1 from '@/atoms/LoadingSpinner1';
+import { IPromptInterface } from '@/types/components/Prompt.types';
 
-const PromptInterface = () => {
+const PromptInterface = (props: IPromptInterface) => {
   const [text, setText] = useState('');
-  const [fetchingPrompt, setFetchingPrompt] = useState(false);
-  // const testName = '이우석';
+  const [isFetching, setIsFetching] = useState(true);
+  const roomId = "asdfasdf"; // 추후 게임 생성 시 응답되는 게임 코드 전역 상태로 관리
+  const playerName = '이우석'; // 유저 정보도 전역 상태로 관리
 
-  ////////////////////////////////////////////////////////////////////////
-  // 유한 확인하면 지우면 됨
-  console.log(text);
-  ////////////////////////////////////////////////////////////////////////
+  const sendEvent = () => {
+    if (props.sendHandler)
+      props.sendHandler(roomId, playerName, text);
+    setIsFetching(!isFetching);
+  }
 
   return (
     <div className="relative max-w-[1110px] min-w-[500px] h-[657px] mx-auto border-primary border-4">
       {/* 이 곳에 AI를 통해 생성한 배경 이미지를 백그라운드로 삽입 예정 */}
       <div className="absolute w-full inset-0 bg-[url(./assets/interface/PromptInterface.png)] bg-no-repeat bg-auto pointer-events-none z-10"></div>
       {/* 프롬프트에 data 추가하면 프롬프트 내용 출력 */}
-      {fetchingPrompt ? (
+      {isFetching ? (
         <div className="max-w-[1100px] min-w-[500px] h-[330px] mx-auto flex items-center justify-center relative bg-transparent">
           <LoadingSpinner1 />
         </div>
@@ -37,7 +40,7 @@ const PromptInterface = () => {
           height="45px"
           placeholder="프롬프트를 입력해주세요."
           setValue={(e: string) => setText(e)}
-          onClickEvent={() => setFetchingPrompt(!fetchingPrompt)}
+          onClickEvent={() => sendEvent()}
         />
       </div>
     </div>

@@ -5,11 +5,17 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   server: {
     port: 3000,
+    hmr: {
+        host: "localhost",
+        port: 8080,
+        // protocol: "wss",
+    },
   },
   plugins: [react()],
   resolve: {
-    alias: [
-      { find: '@', replacement: '/src' },
-    ],
+    alias: [{ find: '@', replacement: '/src' }],
+  },
+  define: {
+    global: {},
   },
 });
