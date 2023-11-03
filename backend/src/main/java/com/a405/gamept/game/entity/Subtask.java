@@ -6,6 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Subtask {
-    NONE(""), SKILL("at_002"), ITEM("at_003");
+    NONE(""), SKILL("SKILL"), ITEM("ITEM");
     private final String key;
 }
