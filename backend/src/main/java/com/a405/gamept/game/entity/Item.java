@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class Item extends BaseEntity {
 
     /**
-     * [pk] code: Item의 고유한 코드
+     * [pk] gameCode: Item의 고유한 코드
      */
     @Id
     private String code;

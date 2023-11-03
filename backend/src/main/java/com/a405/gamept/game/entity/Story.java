@@ -15,7 +15,7 @@ import java.util.List;
 public class Story extends BaseEntity {
 
     /**
-    * code : pk
+    * gameCode : pk
     * */
     @Id
     private String code;

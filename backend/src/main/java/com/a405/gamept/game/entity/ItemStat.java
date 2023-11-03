@@ -19,20 +19,20 @@ import lombok.NoArgsConstructor;
 public class ItemStat extends BaseEntity {
 
     /**
-     * [pk] code: 아이템 추가 스탯 코드
+     * [pk] gameCode: 아이템 추가 스탯 코드
      */
     @Id
     private String code;
 
     /**
-     * [fk] item_code: 아이템의 code
+     * [fk] item_code: 아이템의 gameCode
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_code")
     private Item item;
 
     /**
-     * [fk] stat_code: 스탯의 code
+     * [fk] stat_code: 스탯의 gameCode
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stat_code")

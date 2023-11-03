@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ActStat extends BaseEntity {
     /**
-     * code : pk
+     * gameCode : pk
      * */
     @Id
     private String code;

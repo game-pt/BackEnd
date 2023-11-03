@@ -1,10 +1,10 @@
 package com.a405.gamept.game.service;
 
-import com.a405.gamept.game.dto.command.GetPromptResultCommandDto;
-import com.a405.gamept.game.dto.response.GetPromptResultResponseDto;
+import com.a405.gamept.game.dto.command.PromptResultGetCommandDto;
+import com.a405.gamept.game.dto.response.PromptResultGetResponseDto;
 
 public interface PromptService {
 
-    GetPromptResultResponseDto getPrmoptResult(GetPromptResultCommandDto getPromptResultCommandDto);
+    PromptResultGetResponseDto getPrmoptResult(PromptResultGetCommandDto promptResultGetCommandDto);
 
 }

@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class Skill extends BaseEntity {
 
     /**
-     * [pk] code: Skill의 고유 코드
+     * [pk] gameCode: Skill의 고유 코드
      */
     @Id
     private String code;
