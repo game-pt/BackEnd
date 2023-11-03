@@ -10,6 +10,7 @@ import static org.springframework.http.HttpStatus.*;
 public enum GameErrorMessage  {
     GAME_NOT_FOUND(BAD_REQUEST, "게임이 존재하지 않습니다."),
     STORY_NOT_FOUND(BAD_REQUEST, "스토리가 존재하지 않습니다."),
+    EVENT_NOT_FOUND(BAD_REQUEST, "이벤트가 존재하지 않습니다."),
     MONSTER_INVALID(INTERNAL_SERVER_ERROR, "몬스터가 유효하지 않습니다."),
     RACE_NOT_FOUND(BAD_REQUEST, "종족이 존재하지 않습니다."),
     RACE_INVALID(INTERNAL_SERVER_ERROR, "종족이 유효하지 않습니다."),

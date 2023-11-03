@@ -23,7 +23,7 @@ import org.hibernate.annotations.Comment;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Race extends BaseEntity {
     /**
-     * code : pk
+     * gameCode : pk
      * */
     @Id
     private String code;

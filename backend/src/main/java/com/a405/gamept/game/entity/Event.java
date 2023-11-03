@@ -12,6 +12,9 @@ import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
+
+import java.util.List;
 
 /**
  * Event
@@ -23,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Event extends BaseEntity {
     /**
-     * code : pk
+     * gameCode : pk
      */
     @Id
     private String code;
@@ -34,6 +37,13 @@ public class Event extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "story_code")
     private Story story;
+
+    /**
+     * actList : 해당 이벤트에 연관되어 있는 행동들
+     */
+    @OneToMany(mappedBy = "event")
+    @Comment("행동 리스트")
+    private List<Act> actList;
 
     /**
      * name : 이벤트 이름
@@ -55,4 +65,5 @@ public class Event extends BaseEntity {
      */
     @Column(columnDefinition = "TINYINT")
     private int weight;
+
 }

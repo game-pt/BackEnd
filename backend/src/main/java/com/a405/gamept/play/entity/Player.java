@@ -21,7 +21,7 @@ import org.springframework.data.redis.core.RedisHash;
 public class Player {
 
     /**
-     * [pk] code : 사용자 구분 값
+     * [pk] gameCode : 사용자 구분 값
      */
     @Id private String code;
 
