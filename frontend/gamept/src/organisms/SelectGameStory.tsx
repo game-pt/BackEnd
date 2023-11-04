@@ -1,11 +1,10 @@
 /**
  * 스토리 선택 단계 organism 구현
- * 로직 미구현
  * @params
  * @returns
  */
 
-import { IGameModeCard } from '@/types/components/GameModeCard.type';
+import { IGameModeCardResponse } from '@/types/components/GameModeCard.type';
 import { ISelectGameStory } from '@/types/components/MakeGameProcess.type';
 import { gameStoryAtom } from '@/jotai/MakeGameAtom';
 import { useAtom } from 'jotai';
@@ -24,7 +23,9 @@ const SelectGameStory = (props: ISelectGameStory) => {
       <div className="flex flex-row gap-10 justify-center w-[80%] mx-auto">
         {getStoryList.map((card, idx) => (
           <GameModeCard
-            imgUrl={card.imgUrl}
+            // API에서 url을 받아오지 않으므로 modeType을 파일명으로 만들어 url을 매핑시킬 예정
+            // 추후 imgUrl로 넣기 직전에 확장자를 더해주는 작업을 해줘야함
+            imgUrl={card.modeType}
             modeName={card.modeName}
             modeType={card.modeType}
             onClickEvent={() => {
@@ -41,21 +42,18 @@ const SelectGameStory = (props: ISelectGameStory) => {
 
 const tempDummy = ['판타지', '좀비', '미스테리'];
 
-const getStoryList: IGameModeCard[] = [
+const getStoryList: IGameModeCardResponse[] = [
   {
-    imgUrl: 'Story-fantasy.jpg',
     modeName: '판타지',
-    modeType: 0,
+    modeType: 'Story-fantasy.jpg',
   },
   {
-    imgUrl: 'Story-zombie.jpg',
     modeName: '좀비',
-    modeType: 0,
+    modeType: 'Story-zombie.jpg',
   },
   {
-    imgUrl: 'MultiPlay.svg',
     modeName: '미스테리',
-    modeType: 0,
+    modeType: 'MultiPlay.svg',
   },
 ];
 
