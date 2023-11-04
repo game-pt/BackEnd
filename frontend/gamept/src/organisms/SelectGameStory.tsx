@@ -1,7 +1,10 @@
 /**
  * 스토리 선택 단계 organism 구현
- * @params
- * @returns
+ * setStory로 스토리 code 설정
+ * 캐릭터 생성으로 navigate
+ * @params props
+ * onGoMakeCharacter : () => void // 캐릭터 생성 페이지로 navigate
+ * @returns void
  */
 
 import { IGameModeCardResponse } from '@/types/components/GameModeCard.type';
