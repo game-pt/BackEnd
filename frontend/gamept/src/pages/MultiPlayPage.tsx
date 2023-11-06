@@ -12,11 +12,12 @@ const MultiPlayPage = () => {
   const client = useRef<CompatClient | null>(null);
   const gameCode = '5s2OZy';
 
+  // 웹소캣 객체 생성
   const connectHandler = () => {
     const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
     client.current = Stomp.over(() => sock);
     client.current.connect({}, () => {
-      // 연결 성공 시 해당 방을 구독하면 서버로부터 새로운 매시지를 수신 한다.
+      // 연결 성공 시 해당 방을 구독하면 서버로부터 새로운 매시지를 수신
       client.current?.subscribe(
         `/topic/player/${gameCode}`,
         (message) => {
@@ -33,7 +34,7 @@ const MultiPlayPage = () => {
     });
   };
 
-  const sendHandler = () => {
+  const sendEventHandler = () => {
     if (client.current)
       client.current.send(
         `/player/${gameCode}`,
@@ -48,7 +49,7 @@ const MultiPlayPage = () => {
   };
 
   useEffect(() => {
-    if (!client.current) connectHandler();
+    if (client.current === null) connectHandler();
   });
 
   return (
@@ -67,7 +68,7 @@ const MultiPlayPage = () => {
             onClickEvent={() => console.log('진짜 나가요?')}
           />
         </div>
-        <PromptInterface sendHandler={sendHandler} />
+        <PromptInterface sendEventHandler={sendEventHandler} />
       </div>
     </div>
   );

@@ -5,5 +5,9 @@ export interface IPropmpt {
 }
 
 export interface IPromptInterface {
-  sendHandler?: () => void;
+  sendEventHandler?: () => void;
+}
+
+export interface IChoiceGroup {
+  onClickEvent?: () => void;
 }
