@@ -1,6 +1,7 @@
 package com.a405.gamept.global.config;
 
 import com.a405.gamept.global.filter.AuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,15 +19,18 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final String prodUrl, localUrl, localPortUrl;
     private final AuthenticationFilter authenticationFilter;
 
-    public SecurityConfig(AuthenticationFilter authenticationFilter) {
+    public SecurityConfig(@Value("${url.prod}") String prodUrl, @Value("${url.local}") String localUrl, @Value("${url.local-port}") String localPortUrl, AuthenticationFilter authenticationFilter) {
+        this.prodUrl = prodUrl;
+        this.localUrl = localUrl;
+        this.localPortUrl = localPortUrl;
         this.authenticationFilter = authenticationFilter;
     }
 
@@ -58,7 +62,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://k9a405.p.ssafy.io", "http://localhost", "http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList(prodUrl, localUrl, localPortUrl));
         configuration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.OPTIONS.name()));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
