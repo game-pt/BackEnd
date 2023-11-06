@@ -19,6 +19,7 @@ import com.a405.gamept.play.repository.GameRedisRepository;
 import com.a405.gamept.play.repository.PlayerRedisRepository;
 import com.a405.gamept.util.ValidateUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -114,7 +115,7 @@ public class GameServiceImpl implements GameService {
         }
 
         String message = chatCommandDto.message().trim();
-        Date nowdate = new Date();
+        SimpleDateFormat time = new SimpleDateFormat("HH:mm", Locale.KOREA);
         // 욕설 처리
         int i = 0;
         for (String b : FinalData.badWords) {
@@ -122,7 +123,7 @@ public class GameServiceImpl implements GameService {
             message = message.replaceAll(b, FinalData.goodWords[i]);
         }
 
-        String wholeMessage = "[" + nowdate.getHours() + ":" + nowdate.getMinutes() + "] " + player.getNickname() + ": " + message;
+        String wholeMessage = "[" + time + "] " + player.getNickname() + ": " + message;
 
         ChatResponseDto chatResponseDto = ChatResponseDto.builder()
                 .gameCode(game.getCode())
