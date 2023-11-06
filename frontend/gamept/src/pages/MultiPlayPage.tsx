@@ -107,7 +107,7 @@ const MultiPlayPage = () => {
             onClickEvent={() => disConnected()}
           />
         </div>
-        <PromptInterface sendEventHandler={sendEventHandler} />
+        <PromptInterface gameType='multi' sendEventHandler={sendEventHandler} />
       </div>
     </div>
   );

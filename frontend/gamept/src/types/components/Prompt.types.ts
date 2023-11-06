@@ -5,9 +5,11 @@ export interface IPropmpt {
 }
 
 export interface IPromptInterface {
+  gameType: string;
   sendEventHandler?: () => void;
 }
 
 export interface IChoiceGroup {
+  gameType: string;
   onClickEvent?: () => void;
 }
