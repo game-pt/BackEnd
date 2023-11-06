@@ -19,6 +19,7 @@ const MultiPlayPage = () => {
     // const sock = new SockJS("http://70.12.247.95:8080/ws");
     client.current = Stomp.over(() => sock);
 
+    // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
     // client.current.debug = () => null;
 
     client.current.connect({}, () => {
@@ -28,7 +29,7 @@ const MultiPlayPage = () => {
         (message) => {
           // 기존 대화 내역에 새로운 메시지 추가
           setHistory((prevHistory) => {
-            console.log(message.body);
+            console.log(history);
             return prevHistory
               ? [...prevHistory, JSON.parse(message.body)]
               : null;
