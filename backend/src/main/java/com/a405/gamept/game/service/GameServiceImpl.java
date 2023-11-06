@@ -1,15 +1,7 @@
 package com.a405.gamept.game.service;
 
-import com.a405.gamept.game.dto.command.ActGetCommandDto;
-import com.a405.gamept.game.dto.command.DiceGetCommandDto;
-import com.a405.gamept.game.dto.command.GameSetCommandDto;
-import com.a405.gamept.game.dto.command.StoryGetCommandDto;
-import com.a405.gamept.game.dto.command.SubtaskCommandDto;
-import com.a405.gamept.game.dto.response.ActGetResponseDto;
-import com.a405.gamept.game.dto.response.DiceGetResponseDto;
-import com.a405.gamept.game.dto.response.GameSetResponseDto;
-import com.a405.gamept.game.dto.response.StoryGetResponseDto;
-import com.a405.gamept.game.dto.response.SubtaskResponseDto;
+import com.a405.gamept.game.dto.command.*;
+import com.a405.gamept.game.dto.response.*;
 import com.a405.gamept.game.entity.Act;
 import com.a405.gamept.game.entity.Item;
 import com.a405.gamept.game.entity.Skill;
@@ -18,6 +10,7 @@ import com.a405.gamept.game.entity.Subtask;
 import com.a405.gamept.game.repository.ActRepository;
 import com.a405.gamept.game.repository.SkillRepository;
 import com.a405.gamept.game.repository.StoryRepository;
+import com.a405.gamept.game.util.FinalData;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.play.entity.Game;
@@ -25,19 +18,14 @@ import com.a405.gamept.play.entity.Player;
 import com.a405.gamept.play.repository.GameRedisRepository;
 import com.a405.gamept.play.repository.PlayerRedisRepository;
 import com.a405.gamept.util.ValidateUtil;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -102,6 +90,47 @@ public class GameServiceImpl implements GameService {
         ValidateUtil.validate(gameSetResponseDto);
 
         return gameSetResponseDto;
+    }
+
+    @Override
+    public ChatResponseDto chat(ChatCommandDto chatCommandDto) {
+        ValidateUtil.validate(chatCommandDto);
+
+        Game game = gameRedisRepository.findById(chatCommandDto.gameCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+
+        Player player = playerRedisRepository.findById(chatCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
+
+        boolean flag = false;  // 방에 존재하는 사용자인지 체크하는 로직
+        for (String playerCode : game.getPlayerList()) {
+            if(playerCode.equals(player.getCode())) {
+                flag = true;
+                break;
+            }
+        }
+        if(!flag) {  // 플레이어가 방에 존재하지 않을 경우
+            throw new GameException(GameErrorMessage.PLAYER_NOT_FOUND);
+        }
+
+        String message = chatCommandDto.message().trim();
+        Date nowdate = new Date();
+        // 욕설 처리
+        int i = 0;
+        for (String b : FinalData.badWords) {
+            i = new Random().nextInt(FinalData.goodWords.length);
+            message = message.replaceAll(b, FinalData.goodWords[i]);
+        }
+
+        String wholeMessage = "[" + nowdate.getHours() + ":" + nowdate.getMinutes() + "] " + player.getNickname() + ": " + message;
+
+        ChatResponseDto chatResponseDto = ChatResponseDto.builder()
+                .gameCode(game.getCode())
+                .message(wholeMessage)
+                .build();
+        ValidateUtil.validate(chatResponseDto);
+
+        return chatResponseDto;
     }
 
     @Override
