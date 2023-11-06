@@ -14,10 +14,10 @@ const PromptInterface = (props: IPromptInterface) => {
     setIsFetching(!isFetching);
   }
 
-  const sendChat = () => {
-    // 멀티플레이 시 채팅 보내는 메서드
+  const sendPrompt = () => {
+    // Prompt 보내는 메서드
     console.log(text);
-    // if (props.sendChatHandler) props.sendChatHandler(text);
+    // if (props.sendPromptHandler) props.sendPromptHandler(text);
   }
 
   return (
@@ -42,8 +42,9 @@ const PromptInterface = (props: IPromptInterface) => {
           width="full"
           height="45px"
           placeholder="프롬프트를 입력해주세요."
+          value={text}
           setValue={(e: string) => setText(e)}
-          onClickEvent={() => sendChat()}
+          onClickEvent={() => sendPrompt()}
         />
       </div>
     </div>

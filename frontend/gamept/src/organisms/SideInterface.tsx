@@ -2,6 +2,8 @@ import { useState } from 'react';
 import './SideInterface.css'; // Import your CSS file
 import { SkillValuesType, ItemValuesType, TabContent } from '@/types/components/Tab.types';
 import LoadingSpinner1 from '@/atoms/LoadingSpinner1';
+import ChattingTab from '@/atoms/ChattingTab';
+import { ISideInterface } from '@/types/components/SideInterface.types';
 
 const StatTab = () => {
   const statList: Record<string, number> = {
@@ -99,7 +101,7 @@ const ItemTab = () => {
   );
 };
 
-const SideInterface = () => {
+const SideInterface = (props: ISideInterface) => {
   const [selectedTab, setSelectedTab] = useState('스탯'); // 초기 탭 설정
   const [selectedTabColor, setSelectedTabColor] = useState('#331812'); // 초기 탭 색상 설정
 
@@ -117,7 +119,7 @@ const SideInterface = () => {
       color: '#3D221C',
     },
     채팅: {
-      content: <LoadingSpinner1 />,
+      content: <ChattingTab chat={props.chat} sendChat={props.sendChat} />,
       color: '#422721',
     },
   };

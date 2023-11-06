@@ -16,21 +16,27 @@ const Input = (props: IInput) => {
     height: props.height,
   };
 
+  const onClickEvent = () => {
+    props.onClickEvent();
+    props.setValue('');
+  }
+
   return (
     <div
       className="min-w-400 min-h-[40px] mx-auto relative flex justify-end items-center"
       style={inputStyle}
     >
       <input
+        value={props.value}
         placeholder={props.placeholder}
         className="w-full h-full mx-2 px-2 pr-7 bg-backgroud border-primary border-2 rounded-sm font-hol text-white text-18"
-        onChange={(e) => props.setValue('이우석 : ' + e.target.value)}
+        onChange={(e) => props.setValue(e.target.value)}
       />
       <img
         className="absolute w-auto h-1/2 mr-5 hover:scale-110 duration-normal"
         src={inputButton}
         alt="Input_Button"
-        onClick={props.onClickEvent}
+        onClick={onClickEvent}
       />
     </div>
   );

@@ -9,13 +9,18 @@ import ProfileInterface from '@/organisms/ProfileInterface';
 
 const MultiPlayPage = () => {
   const [history, setHistory] = useState<string[] | null>(null);
+  const [chat, setChat] = useState<string[] | null>(null);
   const client = useRef<CompatClient | null>(null);
-  const gameCode = '5s2OZy';
+  const gameCode = 'LD0ZpL';
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
     const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
+    // const sock = new SockJS("http://70.12.247.95:8080/ws");
     client.current = Stomp.over(() => sock);
+
+    // client.current.debug = () => null;
+
     client.current.connect({}, () => {
       // 연결 성공 시 해당 방을 구독하면 서버로부터 새로운 매시지를 수신
       client.current?.subscribe(
@@ -23,16 +28,38 @@ const MultiPlayPage = () => {
         (message) => {
           // 기존 대화 내역에 새로운 메시지 추가
           setHistory((prevHistory) => {
+            console.log(message.body);
             return prevHistory
               ? [...prevHistory, JSON.parse(message.body)]
               : null;
           });
-          console.log(history);
+        },
+        {}
+      );
+
+      client.current?.subscribe(
+        `/topic/chat/${gameCode}`,
+        (message) => {
+          // 기존 대화 내역에 새로운 메시지 추가
+          setChat((prevChat) => {
+            console.log(message.body);
+            return prevChat
+              ? [...prevChat, message.body]
+              : [message.body];
+          });
         },
         {}
       );
     });
   };
+
+  const disConnected = () => {
+    if (client.current !== null) {
+      client.current.disconnect();
+      client.current = null;
+    }
+    else console.log("Already Disconnected!!!");
+  }
 
   const sendEventHandler = () => {
     if (client.current)
@@ -43,7 +70,19 @@ const MultiPlayPage = () => {
           gameCode: gameCode,
           raceCode: 'RAC-001',
           jobCode: 'JOB-001',
-          nickname: 'Test',
+          nickName: 'pEyweV-R9VILh',
+        })
+      );
+  };
+
+  const sendChatHandler = (text: string) => {
+    if (client.current)
+      client.current.send(
+        `/chat/${gameCode}`,
+        {},
+        JSON.stringify({
+          playerCode: "LD0ZpL-mGRkeI",
+          message: text,
         })
       );
   };
@@ -57,7 +96,7 @@ const MultiPlayPage = () => {
       <div className="basis-1/3 h-full flex flex-col justify-between items-start">
         <img src={Logo} alt="로고" className="w-[200px] m-4 ml-6" />
         <div className="w-full h-[400px] flex justify-center">
-          <SideInterface />
+          <SideInterface sendChat={sendChatHandler} chat={chat} />
         </div>
         <ProfileInterface />
       </div>
@@ -65,7 +104,7 @@ const MultiPlayPage = () => {
         <div className="w-full flex justify-end py-1 pr-10">
           <TextButton
             text="게임 나가기"
-            onClickEvent={() => console.log('진짜 나가요?')}
+            onClickEvent={() => disConnected()}
           />
         </div>
         <PromptInterface sendEventHandler={sendEventHandler} />
