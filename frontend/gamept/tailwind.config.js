@@ -12,7 +12,7 @@ export default {
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'button-background': 'url("./src/assets/button-background.png")'
+        'button-background': 'url("./src/assets/button-background.png")',
       },
       width: {
         xs: '15vw',
@@ -96,6 +96,7 @@ export default {
         y9: '#864d0d',
         y10: '#723f11',
         y11: '#432005',
+        yKakao: '#FEE500',
 
         deepGray: '#C9C9C9',
         fontWhite: '#FFFFFF',
