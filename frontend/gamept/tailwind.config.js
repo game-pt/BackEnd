@@ -187,6 +187,34 @@ export default {
       dropShadow: {
         nobg: '0 0 0px 1000px #fff inset',
       },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: 0 },
+          '100%': { opcatity: 1 },
+        },
+        slideUp: {
+          '0%': {
+            transform: 'translateY(100px)',
+          },
+          '100%': {
+            transform: 'translateY(0)',
+          },
+        },
+        bounce: {
+          '0%, 100%': {
+            transform: 'translateY(-2.5%)',
+            'animation-timing-function': 'ease-out',
+          },
+          '50%': {
+            transform: 'translateY(2.5%)',
+            'animation-timing-function': 'ease-out',
+          },
+        },
+      },
+      animation: {
+        test: 'fadeIn 1s ease-in-out, slideUp 1s ease-in-out',
+        bounce: 'bounce 2s infinite',
+      },
     },
   },
   plugins: [],
