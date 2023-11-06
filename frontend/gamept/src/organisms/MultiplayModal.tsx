@@ -60,6 +60,7 @@ const MultiplayModal = (props: IMultiPlayModal) => {
               props.onGoSelectStory();
             }}
             placeholder="참여 코드를 입력해주세요."
+            value=""
             setValue={() => {}}
             width="436px"
           />
