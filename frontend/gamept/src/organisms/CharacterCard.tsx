@@ -18,8 +18,9 @@ import { useState } from 'react';
 
 const SwitchGenderBtn = (props: ISwitchGender) => {
   return (
+    // bg-[#3E2E2C]
     <div
-      className="absolute bg-gray-600 w-[35px] h-[35px] rounded-md p-2 right-5"
+      className="absolute bg-[url(./assets/MakeCharacterStatPanel.svg)] bg-center outline outline-2 outline-black/70 w-[40px] h-auto rounded-md p-2 right-5 bg-url"
       onClick={props.onClickEvent}
     >
       {props.gender === 0 ? (
@@ -37,7 +38,7 @@ const CharacterCard = (props: ICharacterCard) => {
   return (
     <div
       onClick={props.onClickEvent}
-      className="relative w-[300px] h-[430px] bg-containerLight drop-shadow-xl rounded-[10px] p-5 flex flex-col justify-between"
+      className="relative w-[300px] h-[430px] bg-containerLight drop-shadow-xl rounded-[10px] p-5 flex flex-col justify-between caret-transparent"
     >
       <SwitchGenderBtn
         gender={gender}
