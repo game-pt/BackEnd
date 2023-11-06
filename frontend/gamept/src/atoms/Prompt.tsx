@@ -5,8 +5,12 @@ import { IPropmpt } from '@/types/components/Prompt.types';
  * 현재 더미 데이터로 출력 중 / props.data 를 출력해줘야함
  */
 const Prompt = (props: IPropmpt) => {
+  const promptHeight =
+    props.type === 'in-game' ? 'h-[330px]' : 'min-h-[330px] h-[60%]';
   return (
-    <div className="max-w-[1100px] min-w-[500px] h-[330px] mx-auto relative bg-transparent">
+    <div
+      className={`max-w-[1100px] min-w-[500px] mx-auto relative bg-transparent w-full + ${promptHeight}`}
+    >
       {props.type && (
         <div className={props.type}>
           <p>
