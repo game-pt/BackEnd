@@ -1,5 +1,6 @@
 package com.a405.gamept.game.controller;
 
+import com.a405.gamept.game.dto.command.DiceGetCommandDto;
 import com.a405.gamept.game.dto.command.GameSetCommandDto;
 import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.request.ActGetRequestDto;
@@ -25,14 +26,14 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @GetMapping("/{gameCode}/{eventCode}")
-    public ResponseEntity<?> getActList(@Valid ActGetRequestDto actGetRequestDto){
-        return  ResponseEntity.ok(gameService.getOptions(actGetRequestDto.toCommand("001")));
+    @GetMapping("/{gameCode}")
+    public ResponseEntity<?> getActList(@PathVariable String gameCode, @Valid ActGetRequestDto actGetRequestDto){
+        return  ResponseEntity.ok(gameService.getOptions(actGetRequestDto.toCommand(gameCode)));
     }
 
-    @GetMapping("/dices")
-    public ResponseEntity<?> getDices(@Valid DiceGetRequestDto diceGetRequestDto) {
-        return ResponseEntity.ok(gameService.rollOfDice(diceGetRequestDto.toDto("001")));
+    @GetMapping("/{gameCode}/dices/{playerCode}")
+    public ResponseEntity<?> getDices(@PathVariable String gameCode, @PathVariable String playerCode) {
+        return ResponseEntity.ok(gameService.rollOfDice(new DiceGetCommandDto(gameCode, playerCode)));
     }
     @GetMapping("story")
     public ResponseEntity<?> getStoryList() {
@@ -42,9 +43,9 @@ public class GameController {
     public ResponseEntity<?> getStory(@PathVariable String storyCode) {
         return ResponseEntity.ok(gameService.getStory(StoryGetCommandDto.of(storyCode)));
     }
-    @GetMapping("/subtask")
-    public ResponseEntity<?> getSubtask(SubtaskRequestDto subtaskRequestDto) {
-        return ResponseEntity.ok(gameService.getSubtask(subtaskRequestDto.toCommand("001")));
+    @GetMapping("/{gameCode}/subtask")
+    public ResponseEntity<?> getSubtask(@PathVariable String gameCode, SubtaskRequestDto subtaskRequestDto) {
+        return ResponseEntity.ok(gameService.getSubtask(subtaskRequestDto.toCommand(gameCode)));
     }
 
     @PostMapping

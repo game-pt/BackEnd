@@ -7,5 +7,7 @@ public record DiceGetCommandDto(
         String gameCode,
         String playerCode
 ) {
-
+    public static DiceGetCommandDto from(String gameCode, String playerCode){
+        return new DiceGetCommandDto(gameCode, playerCode);
+    }
 }

@@ -15,7 +15,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @RedisHash(value = "player", timeToLive = 14 * 24 * 60 * 60)
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @ToString
 public class Player {
@@ -34,6 +34,11 @@ public class Player {
      * jobCode : 사용자의 직업 코드
      */
     private String jobCode;
+
+    /**
+     * 사용자의 체력
+     */
+    private int hp;
 
     /**
      * stat : 사용자의 스탯
