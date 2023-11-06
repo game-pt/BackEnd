@@ -119,7 +119,7 @@ const SideInterface = (props: ISideInterface) => {
       color: '#3D221C',
     },
     채팅: {
-      content: props.sendChat ? <ChattingTab chat={props.chat} sendChat={props.sendChat} /> : <LoadingSpinner1 />,
+      content: props.sendChat ? <ChattingTab chat={props.chat} sendChat={props.sendChat} /> : <div className="w-full h-full flex justify-center items-center"><LoadingSpinner1 /></div>,
       color: '#422721',
     },
   };
