@@ -16,7 +16,7 @@ import org.springframework.data.redis.core.RedisHash;
 public class Game {
 
     /**
-     * [pk] code : Game의 방 넘버
+     * [pk] gameCode : Game의 방 넘버
      */
     @NotBlank(message = "게임 코드가 올바르지 않습니다.")
     @Size(min = 6, max = 6, message = "게임 코드는 6자리여야 합니다.")
@@ -36,17 +36,20 @@ public class Game {
     /**
      * turn : 이 게임의 진행 상황
      */
-    private int turn;
+    @Builder.Default
+    private int turn = 0;
 
     /**
      * eventCnt : 이벤트가 얼마나 남았는지
      */
-    private int eventCnt;
+    @Builder.Default
+    private int eventCnt = 0;
 
     /**
      * eventRate : 이벤트 가중치
      */
-    private int eventRate;
+    @Builder.Default
+    private double eventRate = 0;
 
     /**
      * playerList : 이 게임에 참여 중인 사람 목록
@@ -60,7 +63,7 @@ public class Game {
     private List<Prompt> promptList;
 
     @Builder
-    public Game(String code, String storyCode, Prompt memory, int turn, int eventCnt, int eventRate, List<String> playerList, List<Prompt> promptList) {
+    public Game(String code, String storyCode, Prompt memory, int turn, int eventCnt, double eventRate, List<String> playerList, List<Prompt> promptList) {
         this.code = code;
         this.storyCode = storyCode;
         this.memory = memory;
@@ -75,8 +78,5 @@ public class Game {
     public Game(String code, String storyCode) {
         this.code = code;
         this.storyCode = storyCode;
-        this.turn = 0;
-        this.eventCnt = 0;
-        this.eventRate = 0;
     }
 }

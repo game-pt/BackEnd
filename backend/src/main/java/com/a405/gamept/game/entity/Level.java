@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class Level extends BaseEntity {
 
     /**
-     * code : pk
+     * gameCode : pk
      */
     @Id
     private String code;
