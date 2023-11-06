@@ -12,7 +12,7 @@ export default {
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'button-background': 'url("./src/assets/button-background.png")'
+        'button-background': 'url("./src/assets/button-background.png")',
       },
       width: {
         xs: '15vw',
@@ -20,6 +20,7 @@ export default {
         m: '50vw',
         l: '70vw',
         xl: '98vw',
+        200: '200px',
         300: '300px',
         350: '350px',
         400: '400px',
@@ -59,6 +60,7 @@ export default {
         b9: '#0312c3',
         b10: '#0e1da1',
         b11: '#080e5e',
+        b12: '#45283c',
 
         o1: '#fff7ed',
         o2: '#ffecd5',
@@ -95,6 +97,7 @@ export default {
         y9: '#864d0d',
         y10: '#723f11',
         y11: '#432005',
+        yKakao: '#FEE500',
 
         deepGray: '#C9C9C9',
         fontWhite: '#FFFFFF',
@@ -184,6 +187,34 @@ export default {
       },
       dropShadow: {
         nobg: '0 0 0px 1000px #fff inset',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: 0 },
+          '100%': { opcatity: 1 },
+        },
+        slideUp: {
+          '0%': {
+            transform: 'translateY(100px)',
+          },
+          '100%': {
+            transform: 'translateY(0)',
+          },
+        },
+        bounce: {
+          '0%, 100%': {
+            transform: 'translateY(-2.5%)',
+            'animation-timing-function': 'ease-out',
+          },
+          '50%': {
+            transform: 'translateY(2.5%)',
+            'animation-timing-function': 'ease-out',
+          },
+        },
+      },
+      animation: {
+        test: 'fadeIn 1s ease-in-out, slideUp 1s ease-in-out',
+        bounce: 'bounce 2s infinite',
       },
     },
   },
