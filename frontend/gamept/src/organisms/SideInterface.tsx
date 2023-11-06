@@ -1,27 +1,76 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import './SideInterface.css'; // Import your CSS file
 import { SkillValuesType, ItemValuesType, TabContent } from '@/types/components/Tab.types';
 import LoadingSpinner1 from '@/atoms/LoadingSpinner1';
 import ChattingTab from '@/atoms/ChattingTab';
 import { ISideInterface } from '@/types/components/SideInterface.types';
 
+import { TbNavigation } from "react-icons/tb";
+
+const fetchInitialStats = async () => {
+  try {
+    const response = await axios.get('/api/initial-stats'); // API 엔드포인트를 백엔드에 맞게 수정
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch initial stats:', error);
+    return {}; // API 요청 실패 시 빈 객체 반환
+  }
+};
+
+
+
 const StatTab = () => {
-  const statList: Record<string, number> = {
-    힘: 10,
-    민첩: 10,
-    지능: 10,
-    행운: 10,
-    매력: 10,
+  const [statList, setStatList] = useState<Record<string, number>>({
+  });
+  
+  useEffect(() => {
+    // 초기 스탯을 백엔드에서 가져와 설정
+      fetchInitialStats()
+        .then(statData => {
+          setStatList(statData);
+        })
+  }, []);
+
+  const [statPoints, setStatPoints] = useState(5);
+
+  const increaseStat = (statName: string) => {
+    if (statPoints > 0) {
+      setStatList((prevState) => ({
+        ...prevState,
+        [statName]: prevState[statName] + 1,
+      }));
+      setStatPoints(statPoints - 1);
+    }
   };
+  // const levelUp = async () => {
+  //   try {
+  //     const response = await axios.post('/api/level-up'); // 레벨업을 백엔드에 맞게 수정
+  //     if (response.status === 200) {
+  //       setStatPoints(statPoints + 1);
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to level up:', error);
+  //   }
+  // };
 
   return (
-    <div className="w-full h-full flex flex-col p-8 py-10 bg-transparent text-28 justify-between">
-      {Object.keys(statList).map((e, i) => (
+    <div className="w-full h-full flex flex-col p-8 py-10 bg-transparent text-xl justify-between">
+      {Object.keys(statList).map((statName, i) => (
         <div key={`stat_${i}`} className="w-full flex">
-          <p className="basis-1/4 text-center">{e}</p>
-          <p className="basis-3/4 text-center">{statList[e]}</p>
+          <p className="basis-1/4 text-center">{statName}</p>
+          <p className="basis-3/4 text-center">{statList[statName]}</p>
+          {statPoints > 0 && (
+            <button onClick={() => increaseStat(statName)} className="bg-transparent px-0 py-0">
+              <TbNavigation />
+            </button>
+          )}
         </div>
       ))}
+      <div className="text-base flex items-center justify-center">
+        <p>스탯 포인트 :&nbsp;</p>
+        <div className="border-2 shadow-md border-primary px-2">{statPoints}</div>
+      </div>
     </div>
   );
 };
@@ -84,14 +133,16 @@ const ItemTab = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col p-6 py-8 bg-transparent text-16 justify-between">
+    <div className="w-full h-full flex flex-col p-6 py-4 bg-transparent text-16 justify-between">
       {Object.keys(itemList).map((e, i) => (
         <div key={`skill_${i}`} className="w-full flex my-2 items-center">
-          <img
-            className="w-[63px]"
-            src={`./src/assets/items/${itemList[e].img}`}
-            alt={`${i}_skill`}
-          />
+          <div className="border border-[#4F3F2B] rounded">
+            <img
+              className="w-[63px] rounded"
+              src={`./src/assets/items/${itemList[e].img}`}
+              alt={`${i}_skill`}
+            />
+          </div>
           <p className="basis-3/4 text-left pl-4 text-white">
             {e}: {itemList[e].desc}
           </p>
@@ -100,6 +151,7 @@ const ItemTab = () => {
     </div>
   );
 };
+
 
 const SideInterface = (props: ISideInterface) => {
   const [selectedTab, setSelectedTab] = useState('스탯'); // 초기 탭 설정

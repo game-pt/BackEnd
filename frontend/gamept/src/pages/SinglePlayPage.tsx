@@ -1,5 +1,5 @@
 // import React from 'react';
-import Logo from '@/assets/GamePTLogo.svg';
+import Logo from '@/assets/logo/logo.png';
 import SideInterface from '@/organisms/SideInterface';
 import PromptInterface from '@/organisms/PromptInterface';
 import TextButton from '@/atoms/TextButton';
@@ -9,8 +9,8 @@ import ProfileInterface from '@/organisms/ProfileInterface';
 const SinglePlayPage = () => {
   return (
     <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary">
-      <div className="basis-1/3 h-full flex flex-col justify-between items-start">
-        <img src={Logo} alt="로고" className="w-[200px] m-4 ml-6" />
+      <div className="w-400 h-full flex flex-col justify-between items-start">
+        <img src={Logo} alt="로고" className="w-[300px]" />
         <div className="w-full h-[400px] flex justify-center">
           <SideInterface />
         </div>
