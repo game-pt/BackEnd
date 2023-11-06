@@ -22,17 +22,18 @@ const MultiPlayPage = () => {
     // client.current.debug = () => null;
 
     client.current.connect({}, () => {
-      // 연결 성공 시 해당 방을 구독하면 서버로부터 새로운 매시지를 수신
+      // 연결 성공 시 해당 방을 구독하면 서버로부터 이벤트 발생 & 프롬프트 추가 시 마다 메세지 수신
       client.current?.subscribe(
         `/topic/player/${gameCode}`,
         (message) => {
-          // 기존 대화 내역에 새로운 메시지 추가
+          // 기존 프롬프트 내역에 새로운 메시지 추가
           setHistory((prevHistory) => {
             console.log(history);
             return prevHistory
               ? [...prevHistory, JSON.parse(message.body)]
-              : null;
+              : JSON.parse(message.body);
           });
+
         },
         {}
       );
