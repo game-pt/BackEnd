@@ -48,7 +48,7 @@ const SelectCharacter = (props: ISelectCharacter) => {
 
   return (
     <div>
-      <div className="text-primary text-32 font-hol pt-[100px]">
+      <div className="text-primary text-32 font-hol pt-[100px] text-center">
         당신의 {props.type}은 무엇입니까?
       </div>
       <div className="flex flex-row gap-10 justify-center my-[30px]">
@@ -66,7 +66,7 @@ const SelectCharacter = (props: ISelectCharacter) => {
             />
           ))}
       </div>
-      <div className="text-primary text-28 font-hol">
+      <div className="text-primary text-28 font-hol text-center">
         {props.type}에 따라 {props.type === '종족' ? '기본' : '추가'} 스탯이
         결정됩니다.
       </div>

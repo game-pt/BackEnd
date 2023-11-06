@@ -22,7 +22,7 @@ const CreateGamePage = () => {
     navigate('/createCharacter');
   };
   return (
-    <div className="w-full h-full">
+    <div className="w-screen h-screen bg-backgroundDeep">
       <Logo />
       {!isSelectStory && <SelectGameMode onGoSelectStory={goSelectStory} />}
       {isSelectStory && <SelectGameStory onGoMakeCharacter={goMakeCharacter} />}

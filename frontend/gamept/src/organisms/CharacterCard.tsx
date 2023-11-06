@@ -58,7 +58,9 @@ const CharacterCard = (props: ICharacterCard) => {
         alt="프로필 이미지"
         className="mx-auto"
       />
-      <div className="text-24 text-primary font-hol">{props.codeName}</div>
+      <div className="text-24 text-primary font-hol text-center">
+        {props.codeName}
+      </div>
       <MakeCharacterStatContainer
         baseStats={props.baseStats}
         correctionStats={props.correctionStats}

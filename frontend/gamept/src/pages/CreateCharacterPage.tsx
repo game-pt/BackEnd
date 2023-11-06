@@ -52,7 +52,7 @@ const CreateCharacterPage = () => {
     />,
   ];
   return (
-    <div>
+    <div className="bg-backgroundDeep w-screen h-screen">
       <Logo />
       {createCharacterProcess[processLevel]}
     </div>
