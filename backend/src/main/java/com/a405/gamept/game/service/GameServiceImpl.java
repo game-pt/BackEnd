@@ -123,7 +123,7 @@ public class GameServiceImpl implements GameService {
             message = message.replaceAll(b, FinalData.goodWords[i]);
         }
 
-        String wholeMessage = "[" + time + "] " + player.getNickname() + ": " + message;
+        String wholeMessage = "[" + time.format(new Date()) + "] " + player.getNickname() + ": " + message;
 
         ChatResponseDto chatResponseDto = ChatResponseDto.builder()
                 .gameCode(game.getCode())
