@@ -33,7 +33,6 @@ const MultiPlayPage = () => {
               ? [...prevHistory, JSON.parse(message.body)]
               : JSON.parse(message.body);
           });
-
         },
         {}
       );
@@ -90,6 +89,10 @@ const MultiPlayPage = () => {
   useEffect(() => {
     if (client.current === null) connectHandler();
   });
+
+  useEffect(() => {
+    
+  }, [history]);
 
   return (
     <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary">

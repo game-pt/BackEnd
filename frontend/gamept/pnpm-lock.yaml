@@ -20,6 +20,9 @@ dependencies:
   react-dom:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
+  react-indexed-db:
+    specifier: ^2.0.1
+    version: 2.0.1(react@18.2.0)
   react-query:
     specifier: ^3.39.3
     version: 3.39.3(react-dom@18.2.0)(react@18.2.0)
@@ -2843,6 +2846,14 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-indexed-db@2.0.1(react@18.2.0):
+    resolution: {integrity: sha512-zDyStJLQo3ItXm/KWN9GUNrSlrTtAWWFE64QVWG1MBgk9NKEDtIyu3ZX4T3U6X4O4xQXIfdhk+pRHQAHjfusRg==}
+    peerDependencies:
+      react: ^18.2.0
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-is@16.13.1:
