@@ -5,5 +5,5 @@ export interface IPropmpt {
 }
 
 export interface IPromptInterface {
-  sendHandler?: (roomId: string, playerName: string, inputMessage: string) => void;
+  sendHandler?: () => void;
 }

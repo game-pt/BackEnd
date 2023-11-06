@@ -2,7 +2,6 @@ import { useState } from 'react';
 import './SideInterface.css'; // Import your CSS file
 import { SkillValuesType, ItemValuesType, TabContent } from '@/types/components/Tab.types';
 import LoadingSpinner1 from '@/atoms/LoadingSpinner1';
-import ChattingTab from '@/atoms/ChattingTab';
 
 const StatTab = () => {
   const statList: Record<string, number> = {
@@ -118,7 +117,7 @@ const SideInterface = () => {
       color: '#3D221C',
     },
     채팅: {
-      content: <ChattingTab />,
+      content: <LoadingSpinner1 />,
       color: '#422721',
     },
   };

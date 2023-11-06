@@ -8,12 +8,10 @@ import { IPromptInterface } from '@/types/components/Prompt.types';
 const PromptInterface = (props: IPromptInterface) => {
   const [text, setText] = useState('');
   const [isFetching, setIsFetching] = useState(true);
-  const roomId = "asdfasdf"; // 추후 게임 생성 시 응답되는 게임 코드 전역 상태로 관리
-  const playerName = '이우석'; // 유저 정보도 전역 상태로 관리
 
   const sendEvent = () => {
-    if (props.sendHandler)
-      props.sendHandler(roomId, playerName, text);
+    if (props.sendHandler) props.sendHandler();
+    console.log(text);
     setIsFetching(!isFetching);
   }
 
