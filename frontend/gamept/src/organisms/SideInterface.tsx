@@ -2,6 +2,8 @@ import { useState } from 'react';
 import './SideInterface.css'; // Import your CSS file
 import { SkillValuesType, ItemValuesType, TabContent } from '@/types/components/Tab.types';
 import LoadingSpinner1 from '@/atoms/LoadingSpinner1';
+import ChattingTab from '@/atoms/ChattingTab';
+import { ISideInterface } from '@/types/components/SideInterface.types';
 
 const StatTab = () => {
   const statList: Record<string, number> = {
@@ -99,7 +101,7 @@ const ItemTab = () => {
   );
 };
 
-const SideInterface = () => {
+const SideInterface = (props: ISideInterface) => {
   const [selectedTab, setSelectedTab] = useState('스탯'); // 초기 탭 설정
   const [selectedTabColor, setSelectedTabColor] = useState('#331812'); // 초기 탭 색상 설정
 
@@ -117,7 +119,7 @@ const SideInterface = () => {
       color: '#3D221C',
     },
     채팅: {
-      content: <LoadingSpinner1 />,
+      content: props.sendChat ? <ChattingTab chat={props.chat} sendChat={props.sendChat} /> : <LoadingSpinner1 />,
       color: '#422721',
     },
   };
@@ -158,11 +160,6 @@ const SideInterface = () => {
           </div>
         )}
       </div>
-
-      {/* 새로운 영역 추가 ->>??? 어떤 영역인가요??
-      <div className="additional-content">
-        여기에 추가 탭 내용을 표시할 컴포넌트나 요소를 추가할 수 있습니다.
-      </div> */}
     </div>
   );
 };

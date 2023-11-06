@@ -10,8 +10,8 @@ import { ITextButton } from '@/types/components/Button.types';
 
 const TextButton = (props: ITextButton) => {
   return (
-    <div className="w-fit h-fit text-[#FFA727] font-hol text-24">
-      <a href="#" onClick={() => props.onClickEvent}>
+    <div className="w-fit h-fit text-[#FFA727] font-hol text-24 cursor-pointer">
+      <a onClick={() => props.onClickEvent()}>
         {props.text}
       </a>
     </div>

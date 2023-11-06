@@ -10,9 +10,14 @@ const PromptInterface = (props: IPromptInterface) => {
   const [isFetching, setIsFetching] = useState(true);
 
   const sendEvent = () => {
-    if (props.sendHandler) props.sendHandler();
-    console.log(text);
+    if (props.sendEventHandler) props.sendEventHandler();
     setIsFetching(!isFetching);
+  }
+
+  const sendPrompt = () => {
+    // Prompt 보내는 메서드
+    console.log(text);
+    // if (props.sendPromptHandler) props.sendPromptHandler(text);
   }
 
   return (
@@ -29,7 +34,7 @@ const PromptInterface = (props: IPromptInterface) => {
       )}
       {/* 선택지 버튼 출력할 Area */}
       <div className="w-full h-[250px] flex justify-center self-center">
-        <ChoiceGroup />
+        <ChoiceGroup onClickEvent={sendEvent} />
       </div>
       {/* 프롬프트 입력할 인풋 */}
       <div className="absolute inset-x-0 bottom-0">
@@ -37,8 +42,9 @@ const PromptInterface = (props: IPromptInterface) => {
           width="full"
           height="45px"
           placeholder="프롬프트를 입력해주세요."
+          value={text}
           setValue={(e: string) => setText(e)}
-          onClickEvent={() => sendEvent()}
+          onClickEvent={() => sendPrompt()}
         />
       </div>
     </div>
