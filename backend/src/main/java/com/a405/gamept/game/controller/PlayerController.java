@@ -6,7 +6,6 @@ import com.a405.gamept.game.dto.command.RaceGetCommandDto;
 import com.a405.gamept.game.dto.request.JobGetRequestDto;
 import com.a405.gamept.game.dto.request.PlayerSetRequestDto;
 import com.a405.gamept.game.dto.request.RaceGetRequestDto;
-import com.a405.gamept.game.dto.response.PlayerSetResponseDto;
 import com.a405.gamept.game.service.PlayerService;
 import com.a405.gamept.game.util.exception.GameException;
 import jakarta.validation.Valid;
@@ -15,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,11 +42,5 @@ public class PlayerController {
     @PostMapping
     public ResponseEntity<?> setPlayer(@Valid @RequestBody PlayerSetRequestDto playerSetRequestDto) throws GameException {
         return ResponseEntity.ok(playerService.setPlayer(PlayerSetCommandDto.from(playerSetRequestDto)));
-    }
-
-    @MessageMapping("/player/{gameCode}")
-    public void broadPlayer(@Payload PlayerSetRequestDto playerSetRequestDto, @DestinationVariable String gameCode) throws GameException {
-        webSocket.convertAndSend("topic/player/" + playerSetRequestDto.gameCode(),
-                playerService.setPlayer(PlayerSetCommandDto.from(playerSetRequestDto)));
     }
 }
