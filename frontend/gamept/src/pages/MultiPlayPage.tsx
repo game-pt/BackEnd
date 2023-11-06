@@ -16,7 +16,6 @@ const MultiPlayPage = () => {
   // 웹소캣 객체 생성
   const connectHandler = () => {
     const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
-    // const sock = new SockJS("http://70.12.247.95:8080/ws");
     client.current = Stomp.over(() => sock);
 
     // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
@@ -43,7 +42,6 @@ const MultiPlayPage = () => {
         (message) => {
           // 기존 대화 내역에 새로운 메시지 추가
           setChat((prevChat) => {
-            console.log(message.body);
             return prevChat
               ? [...prevChat, message.body]
               : [message.body];
@@ -71,7 +69,7 @@ const MultiPlayPage = () => {
           gameCode: gameCode,
           raceCode: 'RAC-001',
           jobCode: 'JOB-001',
-          nickName: 'pEyweV-R9VILh',
+          nickName: 'LD0ZpL-mGRkeI',
         })
       );
   };

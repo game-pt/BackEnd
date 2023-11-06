@@ -4,14 +4,8 @@ import { IChattingTab } from '@/types/components/SideInterface.types';
 
 const ChattingTab = (props: IChattingTab) => {
   const [text, setText] = useState('');
-  const dummyData = [
-    ['이유석', 'hello!'],
-    ['이유석', 'hello!'],
-    ['이유석', 'hello!'],
-  ];
 
   const sendChatting = () => {
-    console.log("hi");
     if (props.sendChat) props.sendChat(text);
     setText('');
   };
@@ -19,18 +13,12 @@ const ChattingTab = (props: IChattingTab) => {
   return (
     <div className="w-full h-full flex flex-col p-2 bg-transparent text-28 justify-between">
       <div className="overflow-y-scroll w-full h-[328px]">
-        {props.chat !== null
-          ? props.chat.map((e, i) => (
-              <div key={`chat_row_${i}`} className="flex mx-2 text-16">
-                <p>{e}</p>
-              </div>
-            ))
-          : dummyData.map((e, i) => (
-              <div key={`chat_row_${i}`} className="flex mx-2 text-16">
-                <p>{e[0]} :&nbsp;</p>
-                <p>{e[1]}</p>
-              </div>
-            ))}
+        {props.chat &&
+          props.chat.map((e, i) => (
+            <div key={`chat_row_${i}`} className="flex mx-2 text-16">
+              <p>{e}</p>
+            </div>
+          ))}
       </div>
       <div>
         <Input

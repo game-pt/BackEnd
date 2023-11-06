@@ -160,11 +160,6 @@ const SideInterface = (props: ISideInterface) => {
           </div>
         )}
       </div>
-
-      {/* 새로운 영역 추가 ->>??? 어떤 영역인가요??
-      <div className="additional-content">
-        여기에 추가 탭 내용을 표시할 컴포넌트나 요소를 추가할 수 있습니다.
-      </div> */}
     </div>
   );
 };
