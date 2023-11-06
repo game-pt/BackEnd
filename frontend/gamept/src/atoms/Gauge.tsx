@@ -4,13 +4,25 @@ import Gaugebar from "@/assets/gauge_bg.png";
 import GaugeHp from "@/assets/gauge_red.png";
 import GaugeExp from "@/assets/gauge_green.png";
 
-const Gauge = (props: IGauge) => {
+
+interface IModifiedGaugeProps extends IGauge {
+  onLevelUp?: () => void;
+}
+
+const Gauge = (props: IModifiedGaugeProps) => {
   const [currentValue, setCurrentValue] = useState(props.value);
 
   useEffect(() => {
     // 게이지 값이 변경될 때마다 현재 값을 업데이트
     setCurrentValue(props.value);
-  }, [props.value]);
+
+    // 경험치 게이지가 조건을 충족하는 경우 레벨업 콜백 함수 호출
+    if (props.type === 'exp' && props.value >= props.total && props.onLevelUp) {
+      props.onLevelUp();
+    }
+  }, [props.value, props.type, props.total, props.onLevelUp]);
+
+
 
   // 게이지 바의 너비를 계산
   const gaugeWidth = (currentValue / props.total) * 100;

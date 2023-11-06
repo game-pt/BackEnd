@@ -60,6 +60,7 @@ export default {
         b9: '#0312c3',
         b10: '#0e1da1',
         b11: '#080e5e',
+        b12: '#45283c',
 
         o1: '#fff7ed',
         o2: '#ffecd5',
