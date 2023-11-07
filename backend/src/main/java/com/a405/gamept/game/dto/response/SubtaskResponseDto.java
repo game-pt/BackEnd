@@ -8,9 +8,11 @@ public record SubtaskResponseDto(
         @NotNull(message = "코드는 필수입니다.")
         String code,
         @NotNull(message = "명칭은 필수입니다.")
-        String name
+        String name,
+
+        String desc
 ) {
-    public static SubtaskResponseDto of(String code, String name){
-        return new SubtaskResponseDto(code, name);
+    public static SubtaskResponseDto of(String code, String name, String desc){
+        return new SubtaskResponseDto(code, name, desc);
     }
 }
