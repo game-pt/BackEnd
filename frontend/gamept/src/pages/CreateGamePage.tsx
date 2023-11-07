@@ -9,19 +9,23 @@ import Logo from '@/atoms/Logo';
 import SelectGameMode from '@/organisms/SelectGameMode';
 import SelectGameStory from '@/organisms/SelectGameStory';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 const CreateGamePage = () => {
   const [isSelectStory, setIsSelectStory] = useState(false);
-
+  const navigate = useNavigate();
   const goSelectStory = () => {
     setIsSelectStory(true);
   };
-  console.log(setIsSelectStory);
 
+  const goMakeCharacter = () => {
+    navigate('/createCharacter');
+  };
   return (
-    <div className="w-full h-full">
+    <div className="w-screen h-screen bg-backgroundDeep">
       <Logo />
       {!isSelectStory && <SelectGameMode onGoSelectStory={goSelectStory} />}
-      {isSelectStory && <SelectGameStory />}
+      {isSelectStory && <SelectGameStory onGoMakeCharacter={goMakeCharacter} />}
     </div>
   );
 };

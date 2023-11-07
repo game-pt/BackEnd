@@ -33,16 +33,23 @@ const SwitchGenderBtn = (props: ISwitchGender) => {
 };
 
 const CharacterCard = (props: ICharacterCard) => {
-  const [gender, setGender] = useState(props.characterCode >> 2);
+  const [gender, setGender] = useState(props.gender);
   console.log(props.baseStats, 'afasf');
   return (
     <div
-      onClick={props.onClickEvent}
+      onClick={() => {
+        if (props.onSetCharacter) {
+          props.onSetCharacter(gender ?? 0, props.characterCode);
+        }
+        if (props.onNextLevel) {
+          props.onNextLevel();
+        }
+      }}
       className="relative w-[300px] h-[430px] bg-containerLight drop-shadow-xl rounded-[10px] p-5 flex flex-col justify-between caret-transparent"
     >
       <SwitchGenderBtn
-        gender={gender}
-        onClickEvent={() => setGender(~gender)}
+        gender={gender ?? 1}
+        onClickEvent={() => setGender(1 - (gender ?? 1))}
       />
       <ProfileImage
         hasBorderAsset
@@ -51,7 +58,9 @@ const CharacterCard = (props: ICharacterCard) => {
         alt="프로필 이미지"
         className="mx-auto"
       />
-      <div className="text-24 text-primary font-hol">{props.typeName}</div>
+      <div className="text-24 text-primary font-hol text-center">
+        {props.codeName}
+      </div>
       <MakeCharacterStatContainer
         baseStats={props.baseStats}
         correctionStats={props.correctionStats}
