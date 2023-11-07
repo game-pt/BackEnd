@@ -1,3 +1,5 @@
+import { IStatObject } from './CharacterCard.types';
+
 export interface IProcessLevel {}
 
 export interface ISelectGameMode {
@@ -19,8 +21,10 @@ export interface ISelectCharacter extends IProcessLevel {
 }
 
 export interface ICharacterStatus {
+  nickname: string;
   race: string;
-  className: string;
+  job: string;
   gender: number;
-  name: string;
+  imgCode: string;
+  stat: IStatObject[];
 }

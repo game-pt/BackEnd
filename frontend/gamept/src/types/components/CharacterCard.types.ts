@@ -16,7 +16,7 @@ export interface ICharacterCard {
 
 export interface ISwitchGender {
   gender: number;
-  onClickEvent: () => void;
+  onClickEvent: (event: React.MouseEvent) => void;
 }
 
 export interface ICharacterResponse {
