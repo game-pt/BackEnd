@@ -162,6 +162,8 @@ public class PlayerServiceImpl implements PlayerService {
         gameRepository.save(game);
         playerRepository.save(player);
 
+        log.info("플레이어 스탯: " + stat);
+
         PlayerSetResponseDto playerSetResponseDto = PlayerSetResponseDto.from(player);
         ValidateUtil.validate(playerSetResponseDto);  // 유효성 검사
 

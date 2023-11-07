@@ -1,16 +1,17 @@
 package com.a405.gamept.game.controller;
 
-import com.a405.gamept.game.dto.command.DiceGetCommandDto;
-import com.a405.gamept.game.dto.command.GameSetCommandDto;
-import com.a405.gamept.game.dto.command.StoryGetCommandDto;
-import com.a405.gamept.game.dto.request.ActGetRequestDto;
-import com.a405.gamept.game.dto.request.ActResultGetRequestDto;
-import com.a405.gamept.game.dto.request.DiceGetRequestDto;
-import com.a405.gamept.game.dto.request.SubtaskRequestDto;
-import com.a405.gamept.game.dto.request.GameSetRequestDto;
+
+import com.a405.gamept.game.dto.command.*;
+import com.a405.gamept.game.dto.request.*;
+import com.a405.gamept.game.dto.response.ChatResponseDto;
 import com.a405.gamept.game.service.GameService;
+import com.a405.gamept.game.util.exception.GameException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("game")
 public class GameController {
+    private final SimpMessagingTemplate webSocket;
     private final GameService gameService;
 
-    public GameController(GameService gameService) {
+    public GameController(SimpMessagingTemplate webSocket, GameService gameService) {
+        this.webSocket = webSocket;
         this.gameService = gameService;
     }
 
@@ -34,7 +37,7 @@ public class GameController {
 
     @GetMapping("/{gameCode}/dices/{playerCode}")
     public ResponseEntity<?> getDices(@PathVariable String gameCode, @PathVariable String playerCode) {
-        return ResponseEntity.ok(gameService.rollOfDice(new DiceGetCommandDto(gameCode, playerCode)));
+        return ResponseEntity.ok(gameService.rollOfDice(DiceGetCommandDto.of(gameCode, playerCode)));
     }
     @GetMapping("story")
     public ResponseEntity<?> getStoryList() {
@@ -44,9 +47,20 @@ public class GameController {
     public ResponseEntity<?> getStory(@PathVariable String storyCode) {
         return ResponseEntity.ok(gameService.getStory(StoryGetCommandDto.of(storyCode)));
     }
+
     @GetMapping("/{gameCode}/subtask")
     public ResponseEntity<?> getSubtask(@PathVariable String gameCode, @Valid SubtaskRequestDto subtaskRequestDto) {
         return ResponseEntity.ok(gameService.getSubtask(subtaskRequestDto.toCommand(gameCode)));
+    }
+    @MessageMapping("/chat/{gameCode}")
+    public void chat(@Payload ChatRequestDto chatRequestDto, @DestinationVariable String gameCode) throws GameException {
+        ChatResponseDto chatResponseDto = gameService.chat(ChatCommandDto.from(gameCode, chatRequestDto));
+        webSocket.convertAndSend("/topic/chat/" + gameCode, chatResponseDto.message());
+    }
+    @GetMapping("/subtask")
+    public ResponseEntity<?> getSubtask(SubtaskRequestDto subtaskRequestDto) {
+        return ResponseEntity.ok(gameService.getSubtask(subtaskRequestDto.toCommand("001")));
+
     }
 
     @PostMapping
