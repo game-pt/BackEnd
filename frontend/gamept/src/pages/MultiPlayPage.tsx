@@ -25,7 +25,7 @@ const MultiPlayPage = () => {
 
     client.current.connect({}, () => {
       if (client.current == null) {
-        console.log("Error");
+        console.log('Error');
         return;
       }
 
@@ -58,9 +58,7 @@ const MultiPlayPage = () => {
           console.log(message);
           // 기존 대화 내역에 새로운 메시지 추가
           setChat((prevChat) => {
-            return prevChat
-              ? [...prevChat, message.body]
-              : [message.body];
+            return prevChat ? [...prevChat, message.body] : [message.body];
           });
         },
         {}
@@ -74,17 +72,16 @@ const MultiPlayPage = () => {
         client.current.debug = () => null;
         client.current.disconnect(() => {
           if (client.current) {
-            client.current.unsubscribe("sub-0");
-            client.current.unsubscribe("sub-1");
+            client.current.unsubscribe('sub-0');
+            client.current.unsubscribe('sub-1');
           }
         });
       } catch (err) {
-        console.log("disconneted Failed");
+        console.log('disconneted Failed');
       }
       client.current = null;
-    }
-    else console.log("Already Disconnected!!!");
-  }
+    } else console.log('Already Disconnected!!!');
+  };
 
   const sendEventHandler = () => {
     if (client.current)
@@ -113,12 +110,16 @@ const MultiPlayPage = () => {
   };
 
   useEffect(() => {
-    if (client.current === null) connectHandler();
-  });
+    if (client.current === null) {
+      connectHandler();
+    }
 
-  useEffect(() => {
-    
-  }, [history]);
+    return () => {
+      disConnected();
+    };
+  }, []);
+
+  useEffect(() => {}, [history]);
 
   return (
     <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary">
@@ -131,12 +132,9 @@ const MultiPlayPage = () => {
       </div>
       <div className="basis-3/4 h-full mr-2">
         <div className="w-full flex justify-end py-1 pr-10">
-          <TextButton
-            text="게임 나가기"
-            onClickEvent={() => disConnected()}
-          />
+          <TextButton text="게임 나가기" onClickEvent={() => disConnected()} />
         </div>
-        <PromptInterface gameType='multi' sendEventHandler={sendEventHandler} />
+        <PromptInterface gameType="multi" sendEventHandler={sendEventHandler} />
       </div>
     </div>
   );
