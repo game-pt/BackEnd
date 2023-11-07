@@ -14,11 +14,10 @@ import ProfileImage from '@/atoms/ProfileImage';
 import MakeCharacterStatContainer from '@/atoms/MakeCharacterStatContainer';
 import SwitchToMale from '@/assets/switchToMale.png';
 import SwitchToFemale from '@/assets/switchToFemale.png';
-import { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 
 const SwitchGenderBtn = (props: ISwitchGender) => {
   return (
-    // bg-[#3E2E2C]
     <div
       className="absolute bg-[url(./assets/MakeCharacterStatPanel.svg)] bg-center outline outline-2 outline-black/70 w-[40px] h-auto rounded-md p-2 right-5 bg-url"
       onClick={props.onClickEvent}
@@ -33,17 +32,26 @@ const SwitchGenderBtn = (props: ISwitchGender) => {
 };
 
 const CharacterCard = (props: ICharacterCard) => {
-  const [gender, setGender] = useState(props.characterCode >> 2);
-  console.log(props.baseStats, 'afasf');
+  const [gender, setGender] = useState(props.gender);
+
+  const handleGenderBtn = (event: MouseEvent) => {
+    event.stopPropagation();
+    setGender(1 - (gender ?? 1));
+  };
+
   return (
     <div
-      onClick={props.onClickEvent}
+      onClick={() => {
+        if (props.onSetCharacter) {
+          props.onSetCharacter(gender ?? 0, props.characterCode);
+        }
+        if (props.onNextLevel) {
+          props.onNextLevel();
+        }
+      }}
       className="relative w-[300px] h-[430px] bg-containerLight drop-shadow-xl rounded-[10px] p-5 flex flex-col justify-between caret-transparent"
     >
-      <SwitchGenderBtn
-        gender={gender}
-        onClickEvent={() => setGender(~gender)}
-      />
+      <SwitchGenderBtn gender={gender ?? 1} onClickEvent={handleGenderBtn} />
       <ProfileImage
         hasBorderAsset
         size={160}
@@ -51,10 +59,13 @@ const CharacterCard = (props: ICharacterCard) => {
         alt="프로필 이미지"
         className="mx-auto"
       />
-      <div className="text-24 text-primary font-hol">{props.typeName}</div>
+      <div className="text-24 text-primary font-hol text-center">
+        {props.codeName}
+      </div>
       <MakeCharacterStatContainer
         baseStats={props.baseStats}
         correctionStats={props.correctionStats}
+        cardType={props.type}
       />
     </div>
   );

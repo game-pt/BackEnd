@@ -13,10 +13,10 @@ import {
 
 const StatText = (props: IStatText) => {
   return (
-    <div className="flex flex-row items-center text-white text-16 font-hol">
+    <div className="flex flex-row items-center text-white text-16 font-hol mx-auto">
       <div className="w-10 text-left grow-0">{props.statType}</div>
       <div className="grow-0">: {props.baseStat}</div>
-      <div className="text-right text-12 grow text-primary leading-[16px]">
+      <div className="text-right text-12 grow text-primary leading-[16px] ml-2">
         {itoa(props.correctionStat)}
       </div>
     </div>

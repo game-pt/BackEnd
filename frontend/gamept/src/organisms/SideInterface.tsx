@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './SideInterface.css'; // Import your CSS file
+<<<<<<< HEAD
 import { SkillValuesType, TabContent } from '@/types/components/Tab.types';
 import LoadingSpinner1 from '@/atoms/LoadingSpinner1';
+=======
+import { SkillValuesType, ItemValuesType, TabContent } from '@/types/components/Tab.types';
+>>>>>>> 77ac23b9ab6ebad58190a5c3377c982f1eb80dda
 import ChattingTab from '@/atoms/ChattingTab';
 import { ISideInterface } from '@/types/components/SideInterface.types';
 import { TbNavigation } from "react-icons/tb";
@@ -217,7 +221,7 @@ const SideInterface = (props: ISideInterface) => {
   const [selectedTab, setSelectedTab] = useState('스탯'); // 초기 탭 설정
   const [selectedTabColor, setSelectedTabColor] = useState('#331812'); // 초기 탭 색상 설정
 
-  const tabContents: Record<string, TabContent> = {
+  const tabContents: Record<string, TabContent> = props.sendChat ? {
     스탯: {
       content: <StatTab />,
       color: '#290E08',
@@ -231,8 +235,22 @@ const SideInterface = (props: ISideInterface) => {
       color: '#331812',
     },
     채팅: {
-      content: props.sendChat ? <ChattingTab chat={props.chat} sendChat={props.sendChat} /> : <LoadingSpinner1 />,
+
+      content: <ChattingTab chat={props.chat} sendChat={props.sendChat} />,
+      color: '#422721',
+    },
+  } : {
+    스탯: {
+      content: <StatTab />,
+      color: '#331812',
+    },
+    스킬: {
+      content: <SkillTab />,
       color: '#381D17',
+    },
+    아이템: {
+      content: <ItemTab />,
+      color: '#3D221C',
     },
   };
 

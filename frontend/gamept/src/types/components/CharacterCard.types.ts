@@ -4,20 +4,22 @@ export interface IStatObject {
 }
 
 export interface ICharacterCard {
-  type: number;
-  characterCode: number;
-  typeName: string;
+  type: string;
+  gender?: number;
+  characterCode: string;
+  codeName: string;
   baseStats: IStatObject[];
   correctionStats: IStatObject[];
-  onClickEvent: () => void;
+  onNextLevel?: () => void;
+  onSetCharacter?: (gender: number, select: string) => void;
 }
 
 export interface ISwitchGender {
   gender: number;
-  onClickEvent: () => void;
+  onClickEvent: (event: React.MouseEvent) => void;
 }
 
 export interface ICharacterResponse {
-  typeName: string;
+  codeName: string;
   stats: IStatObject[];
 }

@@ -7,7 +7,7 @@
  * @returns void
  */
 
-import { ISelectCharacter } from '@/types/components/SelectCharacter.types';
+import { ISelectCharacter } from '@/types/components/MakeGameProcess.type';
 import {
   ICharacterCard,
   ICharacterResponse,
@@ -25,15 +25,15 @@ const SelectCharacter = (props: ISelectCharacter) => {
     // const getCharacterListResponse = getCharacterList(props.apiURL);
 
     // 더미 데이터
-    const getCharacterListResponse = getRaceList;
+    // const getCharacterListResponse = getClassList;
 
     // 받아온 response를 type에 맞게 변경 후 setList
     if (props.type === '종족') {
-      setCharacterList(changeResponseToRace(getCharacterListResponse));
+      setCharacterList(changeResponseToRace(getRaceList));
     } else {
       setCharacterList(
         changeResponseToClass(
-          getCharacterListResponse,
+          getClassList,
           props.playerStats ?? [
             { statType: '힘', statValue: 10 },
             { statType: '민첩', statValue: 10 },
@@ -44,11 +44,11 @@ const SelectCharacter = (props: ISelectCharacter) => {
         )
       );
     }
-  }, []);
+  }, [props.type]);
 
   return (
     <div>
-      <div className="text-primary text-32 font-hol pt-[100px]">
+      <div className="text-primary text-32 font-hol pt-[100px] text-center">
         당신의 {props.type}은 무엇입니까?
       </div>
       <div className="flex flex-row gap-10 justify-center my-[30px]">
@@ -58,13 +58,15 @@ const SelectCharacter = (props: ISelectCharacter) => {
               baseStats={card.baseStats}
               characterCode={card.characterCode}
               correctionStats={card.correctionStats}
-              onClickEvent={() => {}}
+              onSetCharacter={props.onSetCharacter}
               type={card.type}
-              typeName={card.typeName}
+              codeName={card.codeName}
+              gender={props.gender}
+              onNextLevel={props.onNextLevel}
             />
           ))}
       </div>
-      <div className="text-primary text-28 font-hol">
+      <div className="text-primary text-28 font-hol text-center">
         {props.type}에 따라 {props.type === '종족' ? '기본' : '추가'} 스탯이
         결정됩니다.
       </div>
@@ -74,15 +76,14 @@ const SelectCharacter = (props: ISelectCharacter) => {
 
 const changeResponseToRace = (input: ICharacterResponse[]) => {
   return input.map((characterInfo) => ({
-    characterCode: 0,
-    type: 0,
-    typeName: characterInfo.typeName,
+    characterCode: 'ABC-001',
+    type: 'race',
+    codeName: characterInfo.codeName,
     baseStats: characterInfo.stats.map((statObj) => ({ ...statObj })),
     correctionStats: characterInfo.stats.map((statObj) => ({
       ...statObj,
       statValue: 0,
     })),
-    onClickEvent: () => {},
   }));
 };
 
@@ -91,20 +92,19 @@ const changeResponseToClass = (
   baseStats: IStatObject[]
 ) => {
   return input.map((characterInfo) => ({
-    characterCode: 0,
-    type: 0,
-    typeName: characterInfo.typeName,
+    characterCode: 'ABC-001',
+    type: 'class',
+    codeName: characterInfo.codeName,
     baseStats: [...baseStats],
     correctionStats: characterInfo.stats.map((statObj) => ({
       ...statObj,
     })),
-    onClickEvent: () => {},
   }));
 };
 
 const getRaceList: ICharacterResponse[] = [
   {
-    typeName: '인간',
+    codeName: '인간',
     stats: [
       {
         statType: '힘',
@@ -136,7 +136,7 @@ getRaceList.push(getRaceList[0]);
 
 const getClassList: ICharacterResponse[] = [
   {
-    typeName: '전사',
+    codeName: '전사',
     stats: [
       {
         statType: '힘',
