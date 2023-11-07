@@ -8,6 +8,7 @@ import TextButton from '@/atoms/TextButton';
 import ProfileInterface from '@/organisms/ProfileInterface';
 import { getPromptTopic } from '@/services/GameService';
 import { useIndexedDB } from 'react-indexed-db-hook';
+import Swal from 'sweetalert2'
 
 const MultiPlayPage = () => {
   const [history, setHistory] = useState<string[] | null>(null);
@@ -47,7 +48,12 @@ const MultiPlayPage = () => {
           const body = JSON.parse(message.body);
           // 프롬포트 응답이라면
           if (body.prompt !== undefined) {
-            getPromptTopic(body);
+            // 원본 데이터와 프롬프트 구분
+            const { origin, prompt } = getPromptTopic(body);
+            console.log(origin);
+            // 인덱스 디비에 프롬프트 데이터 저장.
+            db.add({ content: prompt });
+
           }
 
           // 기존 프롬프트 내역에 새로운 메시지 추가
@@ -64,9 +70,6 @@ const MultiPlayPage = () => {
       client.current.subscribe(
         `/topic/chat/${gameCode}`,
         (message) => {
-          console.log(message);
-          db.add({ content: message.body })
-          db.getAll().then(value => value.map(e => console.log(e.content)));
           // 기존 대화 내역에 새로운 메시지 추가
           setChat((prevChat) => {
             return prevChat ? [...prevChat, message.body] : [message.body];
@@ -121,6 +124,33 @@ const MultiPlayPage = () => {
       );
   };
 
+  const leaveGame = () => {
+    Swal.fire({
+      title: "경고문",
+      text: "이 게임 정보가 삭제됩니다람쥐!",
+      width: 600,
+      padding: "2rem",
+      color: "#FBCB73",
+      background: "#240903",
+      showDenyButton: true,
+      confirmButtonText: "머무르기",
+      confirmButtonColor: "#F0B279",
+      denyButtonText: "나가기",
+      denyButtonColor: "#C9C9C9",
+      customClass: {
+        container: "font-hol",
+        popup: "rounded-lg",
+        title: "text-48 mb-8",
+        htmlContainer: "text-36",
+      },
+    }).then(result => {
+      if (result.isDenied) {
+        disConnected();
+        db.clear();
+      }
+    })
+  }
+
   useEffect(() => {
     if (client.current === null) {
       connectHandler();
@@ -144,7 +174,7 @@ const MultiPlayPage = () => {
       </div>
       <div className="basis-3/4 h-full mr-2">
         <div className="w-full flex justify-end py-1 pr-10">
-          <TextButton text="게임 나가기" onClickEvent={() => disConnected()} />
+          <TextButton text="게임 나가기" onClickEvent={() => leaveGame()} />
         </div>
         <PromptInterface gameType="multi" sendEventHandler={sendEventHandler} />
       </div>
