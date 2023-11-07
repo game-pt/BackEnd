@@ -54,6 +54,9 @@ dependencies {
 
 	//Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// korean-summarizer
+	implementation 'com.github.tuguri8:korean-summarizer:0.1.2'
 }
 
 tasks.named('test') {
