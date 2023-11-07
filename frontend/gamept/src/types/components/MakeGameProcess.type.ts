@@ -7,7 +7,11 @@ export interface ISelectGameMode {
 }
 
 export interface ISelectGameStory {
-  onGoMakeCharacter: () => void;
+  stories: Array<{
+    code: string;
+    name: string;
+    desc: string;
+  }>;
 }
 
 export interface ISelectCharacter extends IProcessLevel {
