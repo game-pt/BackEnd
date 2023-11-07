@@ -6,12 +6,14 @@ import SideInterface from '@/organisms/SideInterface';
 import PromptInterface from '@/organisms/PromptInterface';
 import TextButton from '@/atoms/TextButton';
 import ProfileInterface from '@/organisms/ProfileInterface';
+import { getPromptTopic } from '@/services/GameService';
 
 const MultiPlayPage = () => {
   const [history, setHistory] = useState<string[] | null>(null);
   const [chat, setChat] = useState<string[] | null>(null);
   const client = useRef<CompatClient | null>(null);
-  const gameCode = 'LD0ZpL';
+  const gameCode = 'pQseQC';
+  const playerCode = 'pQseQC-9P0bzg';
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -22,10 +24,23 @@ const MultiPlayPage = () => {
     // client.current.debug = () => null;
 
     client.current.connect({}, () => {
+      if (client.current == null) {
+        console.log("Error");
+        return;
+      }
+
+      client.current.subscribe(``, () => {}, {});
+
       // 연결 성공 시 해당 방을 구독하면 서버로부터 이벤트 발생 & 프롬프트 추가 시 마다 메세지 수신
-      client.current?.subscribe(
+      client.current.subscribe(
         `/topic/player/${gameCode}`,
         (message) => {
+          const body = JSON.parse(message.body);
+          // 프롬포트 응답이라면
+          if (body.prompt !== undefined) {
+            getPromptTopic(body);
+          }
+
           // 기존 프롬프트 내역에 새로운 메시지 추가
           setHistory((prevHistory) => {
             console.log(history);
@@ -37,9 +52,10 @@ const MultiPlayPage = () => {
         {}
       );
 
-      client.current?.subscribe(
+      client.current.subscribe(
         `/topic/chat/${gameCode}`,
         (message) => {
+          console.log(message);
           // 기존 대화 내역에 새로운 메시지 추가
           setChat((prevChat) => {
             return prevChat
@@ -54,7 +70,17 @@ const MultiPlayPage = () => {
 
   const disConnected = () => {
     if (client.current !== null) {
-      client.current.disconnect();
+      try {
+        client.current.debug = () => null;
+        client.current.disconnect(() => {
+          if (client.current) {
+            client.current.unsubscribe("sub-0");
+            client.current.unsubscribe("sub-1");
+          }
+        });
+      } catch (err) {
+        console.log("disconneted Failed");
+      }
       client.current = null;
     }
     else console.log("Already Disconnected!!!");
@@ -69,7 +95,7 @@ const MultiPlayPage = () => {
           gameCode: gameCode,
           raceCode: 'RAC-001',
           jobCode: 'JOB-001',
-          nickName: 'LD0ZpL-mGRkeI',
+          nickName: playerCode,
         })
       );
   };
@@ -80,7 +106,7 @@ const MultiPlayPage = () => {
         `/chat/${gameCode}`,
         {},
         JSON.stringify({
-          playerCode: "LD0ZpL-mGRkeI",
+          playerCode,
           message: text,
         })
       );
