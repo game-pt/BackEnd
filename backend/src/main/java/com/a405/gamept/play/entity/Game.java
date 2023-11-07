@@ -1,5 +1,6 @@
 package com.a405.gamept.play.entity;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
@@ -29,9 +30,10 @@ public class Game {
     private String storyCode;
 
     /**
-     * memory : 프롬포트 저장
+     * memory : 프롬프트 저장
      */
-    private Prompt memory;
+    @Builder.Default
+    private String memory = "";
 
     /**
      * turn : 이 게임의 진행 상황
@@ -60,10 +62,11 @@ public class Game {
     /**
      * promptList : 최근 prompt 5개
      */
-    private List<Prompt> promptList;
+    @Builder.Default
+    private List<Prompt> promptList = new LinkedList<>();
 
     @Builder
-    public Game(String code, String storyCode, Prompt memory, int turn, int eventCnt, double eventRate, List<String> playerList, List<Prompt> promptList) {
+    public Game(String code, String storyCode, String memory, int turn, int eventCnt, double eventRate, List<String> playerList, List<Prompt> promptList) {
         this.code = code;
         this.storyCode = storyCode;
         this.memory = memory;

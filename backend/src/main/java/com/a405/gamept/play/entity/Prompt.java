@@ -17,7 +17,12 @@ public class Prompt {
     private String code;
 
     /**
-     * memo : prompt 내용
+     * role: prompt를 보낸 주체 (system, user, assistant)
      */
-    private String memo;
+    private String role;
+
+    /**
+     * content : prompt 내용
+     */
+    private String content;
 }
