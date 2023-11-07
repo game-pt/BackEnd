@@ -24,7 +24,9 @@ const SelectButton = (props: ISelectButton) => {
       style={buttonStyle}
     >
       <button
-        className="gamept-button text-center"
+        className={`gamept-button text-center ${
+          props.disabled ? 'text-gray-400' : ''
+        }`}
         onClick={props.onClickEvent}
         disabled={props.disabled}
       >
