@@ -4,7 +4,7 @@
  * name : 플레이어 이름
  * race : 종족
  * job : 직업
- * code : 캐릭터 코드 - 프로필 이미지 불러오는 용도
+ * imgCode : 캐릭터 코드 - 프로필 이미지 불러오는 용도
  * stat : 스탯 배열
  */
 
@@ -19,6 +19,7 @@ export const characterStatusAtom = atom({
   stat: {},
 });
 
+// 캐릭터 정보 갱신할 경우 사용, 변경된 스탯으로 이루어진 배열을 매개변수로 전달
 export const setCharacterStatusAtom = atom(
   (get) => get(characterStatusAtom),
   (_get, set, changedStat: Record<string, number>[]) => {
@@ -29,6 +30,7 @@ export const setCharacterStatusAtom = atom(
   }
 );
 
+// 캐릭터 생성 시 사용
 export const initCharacterStatusAtom = atom(
   (get) => get(characterStatusAtom),
   (_get, set, status: ICharacterStatus) => {
