@@ -7,16 +7,27 @@
  * @returns void
  */
 
-import { IGameModeCardResponse } from '@/types/components/GameModeCard.type';
 import { ISelectGameStory } from '@/types/components/MakeGameProcess.type';
+import { fetchPostGame } from '@/services/CreateGameService';
 import { gameStoryAtom } from '@/jotai/MakeGameAtom';
 import { useAtom } from 'jotai';
+import { useNavigate } from 'react-router-dom';
 import GameModeCard from './GameModeCard';
 // import { useState } from 'react';
 
 const SelectGameStory = (props: ISelectGameStory) => {
   // const [selected, setSelected] = useState(0);
   const [, setStory] = useAtom(gameStoryAtom);
+  const navigate = useNavigate();
+
+  const handleSelectStory = (storyCode: string) => {
+    const setGameCodeFromAPI = async () => {
+      const gameCode = (await fetchPostGame(storyCode)).code;
+      setStory(gameCode);
+      navigate('/createCharacter');
+    };
+    setGameCodeFromAPI();
+  };
 
   return (
     <div className="pt-[100px] w-full h-full">
@@ -24,17 +35,14 @@ const SelectGameStory = (props: ISelectGameStory) => {
         이야기 종류를 선택하세요.
       </div>
       <div className="flex flex-row gap-10 justify-center w-[80%] mx-auto">
-        {getStoryList.map((card, idx) => (
+        {props.stories.map((card, idx) => (
           <GameModeCard
             // API에서 url을 받아오지 않으므로 modeType을 파일명으로 만들어 url을 매핑시킬 예정
             // 추후 imgUrl로 넣기 직전에 확장자를 더해주는 작업을 해줘야함
-            imgUrl={card.modeType}
-            modeName={card.modeName}
-            modeType={card.modeType}
-            onClickEvent={() => {
-              setStory(tempDummy[idx]);
-              props.onGoMakeCharacter();
-            }}
+            imgUrl={card.code + '.jpg'}
+            modeName={card.name}
+            modeType={card.code}
+            onClickEvent={() => handleSelectStory(card.code)}
             key={idx}
           />
         ))}
@@ -43,21 +51,10 @@ const SelectGameStory = (props: ISelectGameStory) => {
   );
 };
 
-const tempDummy = ['판타지', '좀비', '미스테리'];
-
-const getStoryList: IGameModeCardResponse[] = [
-  {
-    modeName: '판타지',
-    modeType: 'Story-fantasy.jpg',
-  },
-  {
-    modeName: '좀비',
-    modeType: 'Story-zombie.jpg',
-  },
-  {
-    modeName: '미스테리',
-    modeType: 'MultiPlay.svg',
-  },
-];
-
+const goMakeCharacter = () => {
+  navigate('/createCharacter');
+};
+() => {
+  props.onGoMakeCharacter();
+};
 export default SelectGameStory;
