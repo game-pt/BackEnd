@@ -14,9 +14,11 @@ import { useNavigate } from 'react-router-dom';
 const CreateCharacterPage = () => {
   const [characterStatus, setCharacterStatus] = useState<ICharacterStatus>({
     race: '',
-    className: '',
+    job: '',
     gender: 0,
-    name: '',
+    nickname: '',
+    imgCode: '',
+    stat: [],
   });
 
   const [processLevel, setProcessLevel] = useState(0);
@@ -26,8 +28,8 @@ const CreateCharacterPage = () => {
   const handleRaceSelect = (gender: number, race: string) => {
     setCharacterStatus({ ...characterStatus, gender, race });
   };
-  const handleClassSelect = (gender: number, className: string) => {
-    setCharacterStatus({ ...characterStatus, gender, className });
+  const handleClassSelect = (gender: number, job: string) => {
+    setCharacterStatus({ ...characterStatus, gender, job });
   };
   const createCharacterProcess = [
     <SelectCharacter
