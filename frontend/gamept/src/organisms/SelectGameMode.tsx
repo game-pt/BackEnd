@@ -67,12 +67,12 @@ const response: IGameModeCard[] = [
   {
     imgUrl: 'SinglePlay.svg',
     modeName: '싱글 플레이',
-    modeType: 0,
+    modeType: 'AAA',
   },
   {
     imgUrl: 'MultiPlay.svg',
     modeName: '멀티 플레이',
-    modeType: 0,
+    modeType: 'AAA',
   },
 ];
 
