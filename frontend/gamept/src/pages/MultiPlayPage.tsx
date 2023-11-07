@@ -7,6 +7,7 @@ import PromptInterface from '@/organisms/PromptInterface';
 import TextButton from '@/atoms/TextButton';
 import ProfileInterface from '@/organisms/ProfileInterface';
 import { getPromptTopic } from '@/services/GameService';
+import { useIndexedDB } from 'react-indexed-db-hook';
 
 const MultiPlayPage = () => {
   const [history, setHistory] = useState<string[] | null>(null);
@@ -14,6 +15,7 @@ const MultiPlayPage = () => {
   const client = useRef<CompatClient | null>(null);
   const gameCode = 'pQseQC';
   const playerCode = 'pQseQC-9P0bzg';
+  const db = useIndexedDB("prompt");
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -28,12 +30,19 @@ const MultiPlayPage = () => {
         console.log('Error');
         return;
       }
-
-      client.current.subscribe(``, () => {}, {});
+      
+      // 멀티플레이 용
+      // 유저 데이터 업데이트 시 정보 송수신용
+      client.current.subscribe(`/topic/player/${gameCode}`, (message) => {
+        console.log(JSON.parse(message.body));
+        // message.body를 통해 데이터 받아서
+        // 프로필 업데이트 로직 수행
+        // 해당 방 구독하는 모든 플레이어들 데이터 저장하는 객체에다가 업데이트
+      }, {});
 
       // 연결 성공 시 해당 방을 구독하면 서버로부터 이벤트 발생 & 프롬프트 추가 시 마다 메세지 수신
       client.current.subscribe(
-        `/topic/player/${gameCode}`,
+        `/topic/game/${gameCode}`,
         (message) => {
           const body = JSON.parse(message.body);
           // 프롬포트 응답이라면
@@ -56,6 +65,8 @@ const MultiPlayPage = () => {
         `/topic/chat/${gameCode}`,
         (message) => {
           console.log(message);
+          db.add({ content: message.body })
+          db.getAll().then(value => value.map(e => console.log(e.content)));
           // 기존 대화 내역에 새로운 메시지 추가
           setChat((prevChat) => {
             return prevChat ? [...prevChat, message.body] : [message.body];
@@ -74,6 +85,7 @@ const MultiPlayPage = () => {
           if (client.current) {
             client.current.unsubscribe('sub-0');
             client.current.unsubscribe('sub-1');
+            client.current.unsubscribe('sub-2');
           }
         });
       } catch (err) {
