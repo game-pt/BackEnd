@@ -34,7 +34,7 @@ const ProfileInterface = () => {
       </div>
       <div className="w-full my-auto text-left px-6">
           <p>이우석</p>
-          <p>인간 / 플레임위자드</p>
+          <p>오크 / 플레임위자드</p>
           <p>Lv.9</p>
         </div>
 
