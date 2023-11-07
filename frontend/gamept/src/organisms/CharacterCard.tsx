@@ -65,6 +65,7 @@ const CharacterCard = (props: ICharacterCard) => {
       <MakeCharacterStatContainer
         baseStats={props.baseStats}
         correctionStats={props.correctionStats}
+        cardType={props.type}
       />
     </div>
   );

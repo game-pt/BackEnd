@@ -25,15 +25,15 @@ const SelectCharacter = (props: ISelectCharacter) => {
     // const getCharacterListResponse = getCharacterList(props.apiURL);
 
     // 더미 데이터
-    const getCharacterListResponse = getRaceList;
+    // const getCharacterListResponse = getClassList;
 
     // 받아온 response를 type에 맞게 변경 후 setList
     if (props.type === '종족') {
-      setCharacterList(changeResponseToRace(getCharacterListResponse));
+      setCharacterList(changeResponseToRace(getRaceList));
     } else {
       setCharacterList(
         changeResponseToClass(
-          getCharacterListResponse,
+          getClassList,
           props.playerStats ?? [
             { statType: '힘', statValue: 10 },
             { statType: '민첩', statValue: 10 },
@@ -44,7 +44,7 @@ const SelectCharacter = (props: ISelectCharacter) => {
         )
       );
     }
-  }, []);
+  }, [props.type]);
 
   return (
     <div>

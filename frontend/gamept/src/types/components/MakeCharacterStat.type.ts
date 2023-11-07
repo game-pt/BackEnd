@@ -3,6 +3,7 @@ import { IStatObject } from './CharacterCard.types';
 export interface IMakeCharacterStat {
   baseStats: IStatObject[];
   correctionStats: IStatObject[];
+  cardType: string;
 }
 
 export interface IStatText {
