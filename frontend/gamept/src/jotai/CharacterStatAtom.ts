@@ -9,21 +9,31 @@
  */
 
 import { atom } from 'jotai';
+import { ICharacterStatus } from '@/types/components/CharacterStatus.type';
 
 export const characterStatusAtom = atom({
-  name: '',
+  nickname: '',
   race: '',
   job: '',
-  code: '',
+  imgCode: '',
   stat: {},
 });
 
-export const selectCharacterStatusAtom = atom(
+export const setCharacterStatusAtom = atom(
   (get) => get(characterStatusAtom),
   (_get, set, changedStat: Record<string, number>[]) => {
     set(characterStatusAtom, (prev) => ({
       ...prev,
       stat: { ...prev.stat, ...changedStat },
+    }));
+  }
+);
+
+export const initCharacterStatusAtom = atom(
+  (get) => get(characterStatusAtom),
+  (_get, set, status: ICharacterStatus) => {
+    set(characterStatusAtom, () => ({
+      ...status,
     }));
   }
 );

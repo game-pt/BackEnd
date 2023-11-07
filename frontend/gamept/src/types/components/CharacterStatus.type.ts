@@ -1,7 +1,7 @@
 export interface ICharacterStatus {
-  name: string;
+  nickname: string;
   race: string;
   job: string;
-  code: string;
+  imgCode: string;
   stat: Record<string, number>[];
 }

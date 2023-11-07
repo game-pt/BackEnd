@@ -19,8 +19,10 @@ export interface ISelectCharacter extends IProcessLevel {
 }
 
 export interface ICharacterStatus {
+  nickname: string;
   race: string;
-  className: string;
+  job: string;
   gender: number;
-  name: string;
+  imgCode: string;
+  stat: Record<string, number>[];
 }
