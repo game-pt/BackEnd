@@ -7,10 +7,10 @@
 
 export interface IGameModeCardResponse {
   modeName: string;
-  modeType: number;
-  imgUrl: string;
+  modeType: string;
 }
 
 export interface IGameModeCard extends IGameModeCardResponse {
   onClickEvent?: () => void;
+  imgUrl: string;
 }

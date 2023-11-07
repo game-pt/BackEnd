@@ -5,6 +5,7 @@ import './index.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import CreateGamePage from './pages/CreateGamePage.tsx';
 import SinglePlayPage from './pages/SinglePlayPage.tsx'; // 새로 만든 페이지 컴포넌트를 불러옵니다.
+import CreateCharacterPage from './pages/CreateCharacterPage.tsx';
 import MultiPlayPage from './pages/MultiPlayPage.tsx';
 import EndingPage from './pages/EndingPage.tsx';
 
@@ -13,6 +14,7 @@ const router = createBrowserRouter([
   { path: '/', element: <App /> },
   { path: '/createGame', element: <CreateGamePage /> },
   { path: '/singleplay', element: <SinglePlayPage /> }, // 새로운 경로 추가
+  { path: '/createCharacter', element: <CreateCharacterPage /> }, // 새로운 경로 추가
   { path: '/multiplay', element: <MultiPlayPage /> },
   { path: '/ending', element: <EndingPage /> },
 ]);
