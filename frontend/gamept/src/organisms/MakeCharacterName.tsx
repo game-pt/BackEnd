@@ -6,9 +6,11 @@
 
 import { IMakeCharacterName } from '@/types/components/MakeCharacterName.type';
 import { ChangeEvent, useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
+import SelectButton from '@/atoms/SelectButton';
 const MakeCharacterName = (props: IMakeCharacterName) => {
   const [isInputExceed, setIsInputExceed] = useState(false);
+  const navigate = useNavigate();
 
   const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
@@ -19,11 +21,14 @@ const MakeCharacterName = (props: IMakeCharacterName) => {
     }
 
     setIsInputExceed(false);
-    props.setCharacterName(e.target.value);
+    props.setCharacterName((prev) => ({
+      ...prev,
+      name: e.target.value,
+    }));
   };
 
   return (
-    <div className="w-[60vw] min-w-[400px]">
+    <div className="w-[60vw] min-w-[400px] m-auto p-[100px] flex flex-col gap-10 items-center">
       <div className="font-hol text-32 text-primary mb-[30px]">
         당신의 이름은 무엇입니까?
       </div>
@@ -32,12 +37,20 @@ const MakeCharacterName = (props: IMakeCharacterName) => {
         placeholder="이름을 입력해주세요."
         type="text"
         onChange={handleChangeInput}
-        value={props.characterName}
+        value={props.characterStatus.name}
       />
       {isInputExceed && (
         <div className="font-hol text-white text-18 mt-2">
           최대 글자 수를 초과했습니다.
         </div>
+      )}
+      {props.characterStatus.name.length > 0 && (
+        <SelectButton
+          height="75px"
+          onClickEvent={() => navigate('/singlePlay')}
+          text="시작하기"
+          width="350px"
+        />
       )}
     </div>
   );

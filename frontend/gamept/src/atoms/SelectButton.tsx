@@ -6,6 +6,7 @@
  * text: string;
  * isShadow?: boolean;
  * onClickEvent: () => void;
+ * disabled?: boolean;
  * @returns void
  */
 
@@ -25,6 +26,7 @@ const SelectButton = (props: ISelectButton) => {
       <button
         className="gamept-button text-center"
         onClick={props.onClickEvent}
+        disabled={props.disabled}
       >
         {props.text}
       </button>

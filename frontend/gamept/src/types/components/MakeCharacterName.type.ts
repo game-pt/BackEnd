@@ -1,4 +1,6 @@
+import { ICharacterStatus } from './MakeGameProcess.type';
+
 export interface IMakeCharacterName {
-  characterName: string;
-  setCharacterName: React.Dispatch<React.SetStateAction<string>>;
+  characterStatus: ICharacterStatus;
+  setCharacterName: React.Dispatch<React.SetStateAction<ICharacterStatus>>;
 }
