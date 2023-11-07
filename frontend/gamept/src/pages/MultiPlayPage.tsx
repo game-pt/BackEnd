@@ -9,14 +9,16 @@ import ProfileInterface from '@/organisms/ProfileInterface';
 import { getPromptTopic } from '@/services/GameService';
 import { useIndexedDB } from 'react-indexed-db-hook';
 import Swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom';
 
 const MultiPlayPage = () => {
   const [history, setHistory] = useState<string[] | null>(null);
   const [chat, setChat] = useState<string[] | null>(null);
   const client = useRef<CompatClient | null>(null);
-  const gameCode = 'pQseQC';
-  const playerCode = 'pQseQC-9P0bzg';
+  const gameCode = 'YMi8mg';
+  const playerCode = 'YMi8mg-yl7q7k';
   const db = useIndexedDB("prompt");
+  const navigate = useNavigate();
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -67,6 +69,7 @@ const MultiPlayPage = () => {
         {}
       );
 
+      // 채팅 구독
       client.current.subscribe(
         `/topic/chat/${gameCode}`,
         (message) => {
@@ -147,6 +150,7 @@ const MultiPlayPage = () => {
       if (result.isDenied) {
         disConnected();
         db.clear();
+        navigate("/");
       }
     })
   }
