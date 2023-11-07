@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public record PromptResultGetResponseDto(
         @NotBlank(message = "게임 코드가 입력되지 않았습니다.") String gameCode,
         @NotBlank(message = "프롬프트가 입력되지 않았습니다.") String prompt,
+        String itemYn,
         EventCommandDto event
 ) {
     public static PromptResultGetResponseDto from(PromptResultGetCommandDto promptResultGetCommandDto, EventCommandDto eventCommandDto) {
@@ -19,6 +20,14 @@ public record PromptResultGetResponseDto(
                 .gameCode(promptResultGetCommandDto.gameCode())
                 .prompt(promptResultGetCommandDto.prompt())
                 .event(eventCommandDto)
+                .build();
+    }
+
+    public static PromptResultGetResponseDto from(String gameCode, String prompt, String itemYn) {
+        return PromptResultGetResponseDto.builder()
+                .gameCode(gameCode)
+                .prompt(prompt)
+                .itemYn(itemYn)
                 .build();
     }
 }

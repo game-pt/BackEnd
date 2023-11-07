@@ -10,7 +10,7 @@ public record DiceGetRequestDto(
         @NotNull(message = "사용자의 코드를 입력해주세요.")
         String playerCode
 ) {
-    public DiceGetCommandDto toDto(String gameCode) {
+    public DiceGetCommandDto toCommand(String gameCode) {
         return new DiceGetCommandDto(gameCode, this.playerCode);
     }
 }
