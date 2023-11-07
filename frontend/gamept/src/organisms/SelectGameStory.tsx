@@ -9,7 +9,7 @@
 
 import { ISelectGameStory } from '@/types/components/MakeGameProcess.type';
 import { fetchPostGame } from '@/services/CreateGameService';
-import { gameStoryAtom } from '@/jotai/MakeGameAtom';
+import { gameGameAtom } from '@/jotai/MakeGameAtom';
 import { useAtom } from 'jotai';
 import { useNavigate } from 'react-router-dom';
 import GameModeCard from './GameModeCard';
@@ -17,13 +17,13 @@ import GameModeCard from './GameModeCard';
 
 const SelectGameStory = (props: ISelectGameStory) => {
   // const [selected, setSelected] = useState(0);
-  const [, setStory] = useAtom(gameStoryAtom);
+  const [, setGameCode] = useAtom(gameGameAtom);
   const navigate = useNavigate();
 
   const handleSelectStory = (storyCode: string) => {
     const setGameCodeFromAPI = async () => {
       const gameCode = (await fetchPostGame(storyCode)).code;
-      setStory(gameCode);
+      setGameCode(gameCode);
       navigate('/createCharacter');
     };
     setGameCodeFromAPI();
