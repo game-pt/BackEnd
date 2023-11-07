@@ -14,11 +14,10 @@ import ProfileImage from '@/atoms/ProfileImage';
 import MakeCharacterStatContainer from '@/atoms/MakeCharacterStatContainer';
 import SwitchToMale from '@/assets/switchToMale.png';
 import SwitchToFemale from '@/assets/switchToFemale.png';
-import { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 
 const SwitchGenderBtn = (props: ISwitchGender) => {
   return (
-    // bg-[#3E2E2C]
     <div
       className="absolute bg-[url(./assets/MakeCharacterStatPanel.svg)] bg-center outline outline-2 outline-black/70 w-[40px] h-auto rounded-md p-2 right-5 bg-url"
       onClick={props.onClickEvent}
@@ -34,7 +33,12 @@ const SwitchGenderBtn = (props: ISwitchGender) => {
 
 const CharacterCard = (props: ICharacterCard) => {
   const [gender, setGender] = useState(props.gender);
-  console.log(props.baseStats, 'afasf');
+
+  const handleGenderBtn = (event: MouseEvent) => {
+    event.stopPropagation();
+    setGender(1 - (gender ?? 1));
+  };
+
   return (
     <div
       onClick={() => {
@@ -47,10 +51,7 @@ const CharacterCard = (props: ICharacterCard) => {
       }}
       className="relative w-[300px] h-[430px] bg-containerLight drop-shadow-xl rounded-[10px] p-5 flex flex-col justify-between caret-transparent"
     >
-      <SwitchGenderBtn
-        gender={gender ?? 1}
-        onClickEvent={() => setGender(1 - (gender ?? 1))}
-      />
+      <SwitchGenderBtn gender={gender ?? 1} onClickEvent={handleGenderBtn} />
       <ProfileImage
         hasBorderAsset
         size={160}
