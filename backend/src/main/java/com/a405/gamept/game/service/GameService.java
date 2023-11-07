@@ -1,15 +1,8 @@
 package com.a405.gamept.game.service;
 
-import com.a405.gamept.game.dto.command.ActGetCommandDto;
-import com.a405.gamept.game.dto.command.DiceGetCommandDto;
-import com.a405.gamept.game.dto.command.GameSetCommandDto;
-import com.a405.gamept.game.dto.command.StoryGetCommandDto;
-import com.a405.gamept.game.dto.command.SubtaskCommandDto;
-import com.a405.gamept.game.dto.response.ActGetResponseDto;
-import com.a405.gamept.game.dto.response.DiceGetResponseDto;
-import com.a405.gamept.game.dto.response.GameSetResponseDto;
-import com.a405.gamept.game.dto.response.StoryGetResponseDto;
-import com.a405.gamept.game.dto.response.SubtaskResponseDto;
+
+import com.a405.gamept.game.dto.command.*;
+import com.a405.gamept.game.dto.response.*;
 import java.util.List;
 
 public interface GameService {
@@ -39,6 +32,15 @@ public interface GameService {
      * @author : 유영
      */
     GameSetResponseDto setGame(GameSetCommandDto gameSetCommandDto);
+
+    /**
+     * (완료)
+     *  채팅을 전송한다.
+     * @param chatCommandDto : 플레이어가 입력한 채팅 정보
+     * @return : 채팅 메시지 및 게임 코드
+     * @author : 유영
+     */
+    ChatResponseDto chat(ChatCommandDto chatCommandDto);
 
     /**
      * 주사위(1~6) 2개를 돌린다
@@ -76,4 +78,14 @@ public interface GameService {
      * @author : 지환
      */
     List<SubtaskResponseDto> getSubtask(SubtaskCommandDto subtaskCommandDto);
+
+    /**
+     * 선택한 행동을 수행한 후 GPT에게 prompt를 보낸 후 받아와서 반환한다.
+     * @param actResultGetCommandDto : 선택한 행동과 수행한 플레이어의 정보
+     *                               actCode : 어떤 행동을 선택했느지
+     *                               gameCode : 어떤 게임에서 일어나는지
+     *                               playerCode : 누가 수행하는지
+     * @return : 게임 코드와 prompt
+     */
+    PromptResultGetResponseDto playAct(ActResultGetCommandDto actResultGetCommandDto);
 }

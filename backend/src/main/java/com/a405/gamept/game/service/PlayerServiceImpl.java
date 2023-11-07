@@ -127,18 +127,19 @@ public class PlayerServiceImpl implements PlayerService {
 
         int statValue;
         for (RaceStat raceStat : race.getRaceStatList()) {
+            statValue = raceStat.getStatValue();
             for (JobBonus jobBonus : job.getJobBonusList()) {  // 종족 별 스탯과 직업 별 추가 스탯 순회
                 if(raceStat.getStat().equals(jobBonus.getStat())) {  // 종족별 스탯과 직업 별 추가 스탯이 일치할 경우
-                    statValue = raceStat.getStatValue() + jobBonus.getStatBonus();  // 연산
+                    statValue += jobBonus.getStatBonus();
                     if(statValue < 0) statValue = 0;
                     else if(FinalData.MAX_STAT < statValue) statValue = FinalData.MAX_STAT;  // 숫자 범위 처리
 
-                    stat.put(raceStat.getStat().getCode(), statValue);  // 플레이어 스탯에 삽입
                     break;
                 }
             }
+            stat.put(raceStat.getStat().getCode(), statValue);  // 플레이어 스탯에 삽입
         }
-
+        int hp = stat.get("STAT-001") * 10;
         // 플레이어 임의 코드 생성
         String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         String code = new Random().ints(6, 0, CHARACTERS.length())
@@ -152,6 +153,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .jobCode(job.getCode())
                 .nickname(playerSetCommandDto.nickname())
                 .stat(stat)
+                .hp(hp)
                 .build();
 
         playerList.add(player.getCode());
@@ -159,6 +161,8 @@ public class PlayerServiceImpl implements PlayerService {
 
         gameRepository.save(game);
         playerRepository.save(player);
+
+        log.info("플레이어 스탯: " + stat);
 
         PlayerSetResponseDto playerSetResponseDto = PlayerSetResponseDto.from(player);
         ValidateUtil.validate(playerSetResponseDto);  // 유효성 검사

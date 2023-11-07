@@ -65,8 +65,13 @@ public class Game {
     @Builder.Default
     private List<Prompt> promptList = new LinkedList<>();
 
+    /**
+     * 다이스의 총 합
+     */
+    private int diceValue;
+
     @Builder
-    public Game(String code, String storyCode, String memory, int turn, int eventCnt, double eventRate, List<String> playerList, List<Prompt> promptList) {
+    public Game(String code, String storyCode, String memory, int turn, int eventCnt, double eventRate, List<String> playerList, List<Prompt> promptList, int diceValue) {
         this.code = code;
         this.storyCode = storyCode;
         this.memory = memory;
@@ -75,6 +80,7 @@ public class Game {
         this.eventRate = eventRate;
         this.playerList = playerList;
         this.promptList = promptList;
+        this.diceValue = diceValue;
     }
 
     @Builder
