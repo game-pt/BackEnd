@@ -1,13 +1,9 @@
 package com.a405.gamept.play.entity;
 
 import com.a405.gamept.game.entity.Item;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.a405.gamept.game.entity.Job;
-import com.a405.gamept.game.entity.Race;
-import com.a405.gamept.game.entity.Stat;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
