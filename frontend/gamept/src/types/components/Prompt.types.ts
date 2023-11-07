@@ -5,9 +5,27 @@ export interface IPropmpt {
 }
 
 export interface IPromptInterface {
+  gameType: string;
   sendEventHandler?: () => void;
 }
 
 export interface IChoiceGroup {
+  gameType: string;
   onClickEvent?: () => void;
+}
+
+export interface IGetPromptType {
+  gameCode: string;
+  prompt: string;
+  event: {
+    eventCode: string;
+    eventName: string;
+    acts: [
+      {
+        actCode: string;
+        actName: string;
+        subtask: string;
+      },
+    ];
+  };
 }

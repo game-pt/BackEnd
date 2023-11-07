@@ -15,7 +15,7 @@ const ChoiceGroup = (props: IChoiceGroup) => {
           key={`${i}_choice_button`}
           width="49%"
           height="fit-content"
-          type="multi"
+          type={props.gameType}
           text={e}
           onClickEvent={() => sendEvent()}
         />

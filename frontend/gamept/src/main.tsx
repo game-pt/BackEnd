@@ -8,6 +8,8 @@ import SinglePlayPage from './pages/SinglePlayPage.tsx'; // 새로 만든 페이
 import CreateCharacterPage from './pages/CreateCharacterPage.tsx';
 import MultiPlayPage from './pages/MultiPlayPage.tsx';
 import EndingPage from './pages/EndingPage.tsx';
+import { initDB } from 'react-indexed-db-hook';
+import { DBConfig } from './services/DBConfig.ts';
 
 // 라우팅 경로 지정
 const router = createBrowserRouter([
@@ -18,6 +20,9 @@ const router = createBrowserRouter([
   { path: '/multiplay', element: <MultiPlayPage /> },
   { path: '/ending', element: <EndingPage /> },
 ]);
+
+// indexedDB 사용 선언
+initDB(DBConfig);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
