@@ -3,6 +3,7 @@ package com.a405.gamept.game.service;
 import com.a405.gamept.game.dto.command.ActGetCommandDto;
 import com.a405.gamept.game.dto.command.ActResultGetCommandDto;
 import com.a405.gamept.game.dto.command.DiceGetCommandDto;
+import com.a405.gamept.game.dto.command.EventCommandDto;
 import com.a405.gamept.game.dto.command.GameSetCommandDto;
 import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.command.SubtaskCommandDto;
@@ -14,13 +15,18 @@ import com.a405.gamept.game.dto.response.StoryGetResponseDto;
 import com.a405.gamept.game.dto.response.SubtaskResponseDto;
 import com.a405.gamept.game.entity.Act;
 import com.a405.gamept.game.entity.ActStat;
+import com.a405.gamept.game.entity.Event;
 import com.a405.gamept.game.entity.Item;
 import com.a405.gamept.game.entity.Skill;
+import com.a405.gamept.game.entity.Stat;
 import com.a405.gamept.game.entity.Story;
 import com.a405.gamept.game.entity.Subtask;
 import com.a405.gamept.game.repository.ActRepository;
 import com.a405.gamept.game.repository.ActStatRepository;
+import com.a405.gamept.game.repository.EventRepository;
+import com.a405.gamept.game.repository.ItemRepository;
 import com.a405.gamept.game.repository.SkillRepository;
+import com.a405.gamept.game.repository.StatRepository;
 import com.a405.gamept.game.repository.StoryRepository;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
@@ -28,6 +34,7 @@ import com.a405.gamept.play.entity.Game;
 import com.a405.gamept.play.entity.Player;
 import com.a405.gamept.play.repository.GameRedisRepository;
 import com.a405.gamept.play.repository.PlayerRedisRepository;
+import com.a405.gamept.util.ChatGptClientUtil;
 import com.a405.gamept.util.ValidateUtil;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -55,6 +62,10 @@ public class GameServiceImpl implements GameService {
     private final ActStatRepository actStatRepository;
     private final StoryRepository storyRepository;
     private final SkillRepository skillRepository;
+    private final ItemRepository itemRepository;
+    private final ChatGptClientUtil chatGptClientUtil;
+    private final StatRepository statRepository;
+    private final EventRepository eventRepository;
 
     @Override
     public List<StoryGetResponseDto> getStoryList() {
@@ -206,8 +217,8 @@ public class GameServiceImpl implements GameService {
         int diceValue = game.getDiceValue();
 
         //보너스 스탯
-        String statName = act.getStat().getName();
-        int relationStat = player.getStat().get(statName);
+        String statCode = act.getStat().getCode();
+        int relationStat = player.getStat().get(statCode);
         int extremePoint = act.getExtremeStd();
         int plusPoint = 0;
 
@@ -226,6 +237,7 @@ public class GameServiceImpl implements GameService {
         StringBuilder prompt = new StringBuilder();
         String eventName = act.getEvent().getName();
 
+        prompt.append(player.getNickname()).append("은 ");
         // 극적 성공, 실패 여부 확인
         boolean flag = false;
         int bonusPoint = 0;
@@ -244,26 +256,93 @@ public class GameServiceImpl implements GameService {
             bonusPoint = flag?-1:0;
             prompt.append("성공적이지 못한 ");
         }
+        prompt.append(act.getName()).append("를 했다.");
+
+        // ChatGPT에 프롬프트 전송
+        StringBuilder proptResult = new StringBuilder();
+        proptResult.append(chatGptClientUtil.enterPrompt(prompt.toString()));
 
         // 스탯 변화 진행
-
+        String tmp = statChane(player, act, bonusPoint);
+        if(tmp == null){
+            Event death = eventRepository.findById("EV-004")
+                    .orElseThrow(()-> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
+            return PromptResultGetResponseDto.from(null, EventCommandDto.from(death, null));
+        }
+        proptResult.append("\n").append(tmp);
         // 아이템 획득
-        return null;
+        String itemYn = "N";
+
+        Event event = act.getEvent();
+        if(event.getItemYn() == 'Y' && flag) {
+            itemYn = "Y";
+            proptResult.append("\n").append(getItem(game.getStoryCode(), player));
+        }
+
+        return PromptResultGetResponseDto.from(actResultGetCommandDto.gameCode(), proptResult.toString(), itemYn);
     }
 
-    public static void extremeSuccess(){
+    public String statChane(Player player, Act act, int bonusPoint){
+        log.info("상태 변화 진행, 이벤트 : "+act.getEvent().getName()+" 행동 : "+act.getName());
+        List<ActStat> actStatList = actStatRepository.findAllByActCode(act.getCode())
+                .orElse(null);
+        StringBuilder result = new StringBuilder();
+        result.append("[ \n").append(" 스탯 변화 발생\n");
+        for(ActStat actStat : actStatList){
+            if(actStat.getStat().getCode().equals("STAT-007")){
+                log.info("체력 회복 또는 감소");
+                int hp = player.getHp();
+                int maxHp = player.getStat().get("STAT-001") * 10;
 
+                if(hp + (bonusPoint * 10) <= 0) return null;
+
+                hp = Math.min(hp + (bonusPoint * 10), maxHp);
+                player.toBuilder().hp(hp).build();
+                if(bonusPoint > 0){
+                    result.append("< HP >가 "+bonusPoint * 10+" 회복 되었습니다.\n");
+                }else{
+                    result.append("< 대실패!!!! > "+bonusPoint * 10+" 의 피해를 입었습니다.\n");
+                }
+            }else{
+                log.info("스탯 상승 또는 감소");
+                String statCode = actStat.getStat().getCode();
+                int targetStat = player.getStat().get(statCode);
+                int statValue = targetStat + bonusPoint;
+                if(statValue < 0) statValue = 0;
+                else if(statValue > 20) statValue = 20;
+
+                Map<String, Integer> playerStat = player.getStat();
+                playerStat.put(statCode, statValue);
+
+                Stat stat = statRepository.findById(statCode)
+                        .orElseThrow(()-> new GameException(GameErrorMessage.STAT_INVALID));
+
+                player.toBuilder().stat(playerStat);
+                result.append("< ").append(stat.getName()).append(" >").append(" 이/가 +").append(bonusPoint)
+                        .append(" 변화 했습니다.\n");
+            }
+        }
+
+        playerRedisRepository.save(player);
+        result.append(" ]");
+        return result.toString();
     }
 
-    public static void extremeFail(){
+    public String getItem(String storyCode, Player player){
+        //랜덤 아이템 뽑기
+        List<Item> itemList = itemRepository.findAllByStoryCode(storyCode)
+                .orElse(null);
+        if(itemList.isEmpty()) throw new GameException(GameErrorMessage.INVALID_ITEM_REQUEST);
 
-    }
+        StringBuilder result = new StringBuilder();
+        // 랜덤 객체 생성
+        Random random = new Random();
+        int index = random.nextInt(itemList.size());
+        Item newItem = itemList.get(index);
+        player.toBuilder().newItem(newItem);
+        playerRedisRepository.save(player);
+        result.append("< ").append(newItem.getName()).append(" > ").append("이/가 나타났다.");
 
-    public static int rest(Player player){
-        int hp = player.getHp();
-        int healthPoint = player.getStat().get("건강");
-        int maxHp = healthPoint * 10;
-
-        return Math.min(hp + 20, maxHp);
+        return result.toString();
     }
 }

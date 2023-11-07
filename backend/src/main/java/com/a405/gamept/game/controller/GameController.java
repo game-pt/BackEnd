@@ -4,6 +4,7 @@ import com.a405.gamept.game.dto.command.DiceGetCommandDto;
 import com.a405.gamept.game.dto.command.GameSetCommandDto;
 import com.a405.gamept.game.dto.command.StoryGetCommandDto;
 import com.a405.gamept.game.dto.request.ActGetRequestDto;
+import com.a405.gamept.game.dto.request.ActResultGetRequestDto;
 import com.a405.gamept.game.dto.request.DiceGetRequestDto;
 import com.a405.gamept.game.dto.request.SubtaskRequestDto;
 import com.a405.gamept.game.dto.request.GameSetRequestDto;
@@ -44,12 +45,17 @@ public class GameController {
         return ResponseEntity.ok(gameService.getStory(StoryGetCommandDto.of(storyCode)));
     }
     @GetMapping("/{gameCode}/subtask")
-    public ResponseEntity<?> getSubtask(@PathVariable String gameCode, SubtaskRequestDto subtaskRequestDto) {
+    public ResponseEntity<?> getSubtask(@PathVariable String gameCode, @Valid SubtaskRequestDto subtaskRequestDto) {
         return ResponseEntity.ok(gameService.getSubtask(subtaskRequestDto.toCommand(gameCode)));
     }
 
     @PostMapping
     public ResponseEntity<?> setGame(@RequestBody @Valid GameSetRequestDto gameSetRequestDto) {
         return ResponseEntity.ok(gameService.setGame(GameSetCommandDto.from(gameSetRequestDto)));
+    }
+
+    @GetMapping("/{gameCode}/play")
+    public ResponseEntity<?> playGame(@PathVariable String gameCode, @Valid ActResultGetRequestDto actResultGetRequestDto) {
+        return ResponseEntity.ok(gameService.playAct(actResultGetRequestDto.toCommand(gameCode)));
     }
 }
