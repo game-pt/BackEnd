@@ -51,10 +51,4 @@ const SelectGameStory = (props: ISelectGameStory) => {
   );
 };
 
-const goMakeCharacter = () => {
-  navigate('/createCharacter');
-};
-() => {
-  props.onGoMakeCharacter();
-};
 export default SelectGameStory;
