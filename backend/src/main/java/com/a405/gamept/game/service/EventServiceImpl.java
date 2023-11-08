@@ -54,10 +54,10 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     @Transactional
-    public PromptResultGetCommandDto pickAtRandomEvent(PromptResultGetCommandDto promptResultGetCommandDto) {
+    public PromptResultGetCommandDto pickAtRandomEvent(PromptResultGetCommandDto promptResultGetCommandDto, Game game) {
         // 게임 코드에 따른 게임 객체
-        Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
-                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+//        Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
+//                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
         // 이벤트가 발생하지 않음
         if (!checkRandomEvent(game.getEventRate())) {
@@ -125,11 +125,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     @Transactional
-    public PromptResultGetResponseDto checkEventInPrompt(PromptResultGetCommandDto promptResultGetCommandDto) {
-        // 게임 코드에 따른 게임 객체
-        Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
-                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
-
+    public PromptResultGetResponseDto checkEventInPrompt(PromptResultGetCommandDto promptResultGetCommandDto, Game game) {
         // 스토리 코드에 따른 이벤트 리스트
         List<Event> eventList = findAllEventByStoryCode(game.getStoryCode());
 

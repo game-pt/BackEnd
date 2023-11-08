@@ -32,12 +32,12 @@ public class PromptServiceImpl implements PromptService {
     @Override
     @Transactional
     public PromptResultGetResponseDto getPrmoptResult(PromptResultGetCommandDto promptResultGetCommandDto) {
-        // 이벤트 트리거 프롬프트 추가
-        PromptResultGetCommandDto promptResultCommandDtoForEvent = eventService.pickAtRandomEvent(promptResultGetCommandDto);
-
         // Game 객체
         Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+
+        // 이벤트 트리거 프롬프트 추가
+        PromptResultGetCommandDto promptResultCommandDtoForEvent = eventService.pickAtRandomEvent(promptResultGetCommandDto, game);
 
         // ChatGPT에 프롬프트 전송
         String promptInput = promptResultCommandDtoForEvent.prompt();
@@ -54,7 +54,7 @@ public class PromptServiceImpl implements PromptService {
 
         // 최종적으로 응답에 이벤트를 추가하여 클라이언트에게 반환할 형태로 ResponseDto를 구성
         PromptResultGetCommandDto promptResultGetCommandDtoForCheck = PromptResultGetCommandDto.from(promptResultGetCommandDto, promptOutput);
-        PromptResultGetResponseDto promptResultGetResponseDto = eventService.checkEventInPrompt(promptResultGetCommandDtoForCheck);
+        PromptResultGetResponseDto promptResultGetResponseDto = eventService.checkEventInPrompt(promptResultGetCommandDtoForCheck, game);
         ValidateUtil.validate(promptResultGetResponseDto);
 
         return promptResultGetResponseDto;
