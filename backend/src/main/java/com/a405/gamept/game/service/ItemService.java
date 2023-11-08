@@ -1,12 +1,8 @@
 package com.a405.gamept.game.service;
 
-import com.a405.gamept.game.dto.command.ItemGetCommandDto;
 import com.a405.gamept.game.dto.command.ItemSetCommandDto;
-import com.a405.gamept.game.dto.response.ItemGetResponseDto;
 import com.a405.gamept.game.dto.response.ItemSetResponseDto;
 import com.a405.gamept.game.util.exception.GameException;
-
-import java.util.List;
 
 public interface ItemService {
     /**
