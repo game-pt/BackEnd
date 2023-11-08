@@ -1,7 +1,7 @@
 HELP.md
 .gradle
 application-local.yml
-FinalData.java
+GameData.java
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/

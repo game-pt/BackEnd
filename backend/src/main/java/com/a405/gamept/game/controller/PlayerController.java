@@ -1,9 +1,11 @@
 package com.a405.gamept.game.controller;
 
 import com.a405.gamept.game.dto.command.JobGetCommandDto;
+import com.a405.gamept.game.dto.command.PlayerGetCommandDto;
 import com.a405.gamept.game.dto.command.PlayerSetCommandDto;
 import com.a405.gamept.game.dto.command.RaceGetCommandDto;
 import com.a405.gamept.game.dto.request.JobGetRequestDto;
+import com.a405.gamept.game.dto.request.PlayerGetRequestDto;
 import com.a405.gamept.game.dto.request.PlayerSetRequestDto;
 import com.a405.gamept.game.dto.request.RaceGetRequestDto;
 import com.a405.gamept.game.service.PlayerService;
@@ -36,5 +38,10 @@ public class PlayerController {
     @PostMapping
     public ResponseEntity<?> setPlayer(@Valid @RequestBody PlayerSetRequestDto playerSetRequestDto) throws GameException {
         return ResponseEntity.ok(playerService.setPlayer(PlayerSetCommandDto.from(playerSetRequestDto)));
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getPlayer(@Valid PlayerGetRequestDto playerGetRequestDto) throws GameException {
+        return ResponseEntity.ok(playerService.getPlayer(PlayerGetCommandDto.from(playerGetRequestDto)));
     }
 }

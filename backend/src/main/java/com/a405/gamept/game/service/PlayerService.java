@@ -1,9 +1,11 @@
 package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.JobGetCommandDto;
+import com.a405.gamept.game.dto.command.PlayerGetCommandDto;
 import com.a405.gamept.game.dto.command.PlayerSetCommandDto;
 import com.a405.gamept.game.dto.command.RaceGetCommandDto;
 import com.a405.gamept.game.dto.response.JobGetResponseDto;
+import com.a405.gamept.game.dto.response.PlayerGetResponseDto;
 import com.a405.gamept.game.dto.response.PlayerSetResponseDto;
 import com.a405.gamept.game.dto.response.RaceGetResponseDto;
 import com.a405.gamept.game.util.exception.GameException;
@@ -37,4 +39,13 @@ public interface PlayerService {
      * @author  : 유영
      */
     PlayerSetResponseDto setPlayer(PlayerSetCommandDto playerSetCommandDto) throws GameException;
+
+    /**
+     * (완료)
+     * 해당 게임 방의 플레이어를 조회한다.
+     * @param playerGetCommandDto : 조회할 플레이어 정보
+     * @return  : 플레이어 정보
+     * @author  : 유영
+     */
+    PlayerGetResponseDto getPlayer(PlayerGetCommandDto playerGetCommandDto) throws GameException;
 }

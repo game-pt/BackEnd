@@ -1,6 +1,7 @@
 package com.a405.gamept.game.dto.response;
 
 import com.a405.gamept.game.entity.Item;
+import com.a405.gamept.game.util.RegexPatterns;
 import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,7 +9,7 @@ import lombok.Builder;
 @Builder(access = AccessLevel.PRIVATE)
 public record ItemGetResponseDto(
         @NotBlank(message = "아이템 코드가 존재하지 않습니다.")
-        @Pattern(regexp = "^ITEM-([0-9]{3})$", message = "아이템 코드가 올바르지 않습니다.")
+        @Pattern(regexp = RegexPatterns.ITEM, message = "아이템 코드가 올바르지 않습니다.")
         String code,
         @NotBlank(message = "아이템명이 존재하지 않습니다.") String name,
         @NotBlank(message = "아이템 설명이 존재하지 않습니다.") String desc,
