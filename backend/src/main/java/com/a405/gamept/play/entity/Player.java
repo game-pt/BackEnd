@@ -32,10 +32,14 @@ public class Player {
     private String jobCode;
 
     /**
-     * 사용자의 체력
+     * hp : 사용자의 체력
      */
     private int hp;
 
+    /**
+     * exp : 사용자의 경험치 MAX = 10
+     */
+    private int exp;
     /**
      * stat : 사용자의 스탯
      */

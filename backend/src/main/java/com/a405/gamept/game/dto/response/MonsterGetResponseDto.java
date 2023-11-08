@@ -16,7 +16,6 @@ public record MonsterGetResponseDto(
 ) {
     public static MonsterGetResponseDto from(Monster monster) {
         return MonsterGetResponseDto.builder()
-                .monsterName(monster.getName())
                 .monsterLevel(monster.getLevel())
                 .build();
     }
