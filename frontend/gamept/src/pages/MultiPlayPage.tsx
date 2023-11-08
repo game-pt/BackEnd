@@ -6,13 +6,13 @@ import SideInterface from '@/organisms/SideInterface';
 import PromptInterface from '@/organisms/PromptInterface';
 import TextButton from '@/atoms/TextButton';
 import ProfileInterface from '@/organisms/ProfileInterface';
-import { getPromptTopic } from '@/services/GameService';
+import { getPromptData } from '@/services/GameService';
 import { useIndexedDB } from 'react-indexed-db-hook';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 
 const MultiPlayPage = () => {
-  const [history, setHistory] = useState<string[] | null>(null);
+  const [history, setHistory] = useState<string[][] | null>(null);
   const [chat, setChat] = useState<string[] | null>(null);
   const client = useRef<CompatClient | null>(null);
   const gameCode = 'YMi8mg';
@@ -50,24 +50,23 @@ const MultiPlayPage = () => {
       // 연결 성공 시 해당 방을 구독하면 서버로부터 이벤트 발생 & 프롬프트 추가 시 마다 메세지 수신
       client.current.subscribe(
         `/topic/game/${gameCode}`,
-        (message) => {
+        async (message) => {
           const body = JSON.parse(message.body);
+
           // 프롬포트 응답이라면
           if (body.prompt !== undefined) {
             // 원본 데이터와 프롬프트 구분
-            const { origin, prompt } = getPromptTopic(body);
+            const { origin, prompt } = await getPromptData(body);
             console.log(origin);
-            // 인덱스 디비에 프롬프트 데이터 저장.
-            db.add({ content: prompt });
+            // 기존 프롬프트 내역에 새로운 메시지 추가
+            setHistory((prevHistory) => {
+              console.log(history);
+              return prevHistory
+                ? [...prevHistory, prompt]
+                : JSON.parse(message.body);
+            });
           }
 
-          // 기존 프롬프트 내역에 새로운 메시지 추가
-          setHistory((prevHistory) => {
-            console.log(history);
-            return prevHistory
-              ? [...prevHistory, JSON.parse(message.body)]
-              : JSON.parse(message.body);
-          });
         },
         {}
       );
@@ -76,6 +75,14 @@ const MultiPlayPage = () => {
       client.current.subscribe(
         `/topic/chat/${gameCode}`,
         (message) => {
+          console.log(message);
+          const arr = [];
+          for (let i = 0; i < 3; i++) {
+            arr.push(message.body);
+          }
+          // db.add({ content: arr });
+          console.log(db.getAll());
+          db.getAll().then((get) => console.log(get.length))
           // 기존 대화 내역에 새로운 메시지 추가
           setChat((prevChat) => {
             return prevChat ? [...prevChat, message.body] : [message.body];
