@@ -12,6 +12,7 @@ import com.a405.gamept.game.util.exception.GameException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class FightServiceImpl implements FightService {
 
@@ -27,13 +29,6 @@ public class FightServiceImpl implements FightService {
     Set<ConstraintViolation<Object>> violations;
     private final MonsterRepository monsterRepository;
     private final StoryRepository storyRepository;
-
-    @Autowired
-    public FightServiceImpl(Validator validator, MonsterRepository monsterRepository, StoryRepository storyRepository) {
-        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
-        this.monsterRepository = monsterRepository;
-        this.storyRepository = storyRepository;
-    }
 
     @Override
     public MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameException {
@@ -73,7 +68,7 @@ public class FightServiceImpl implements FightService {
 
         // 랜덤한 몬스터 뽑기
         Monster monster = monsterList.get((int) Math.floor(Math.random() * monsterList.size()));
-        log.info("등장 몬스터: { 이름: " + monster.getName() + ", 레벨: " + monster.getLevel() + " }");
+        log.info("등장 몬스터: { 레벨: " + monster.getLevel() + " }");
 
         MonsterGetResponseDto monsterGetResponseDto = MonsterGetResponseDto.from(monster);
 

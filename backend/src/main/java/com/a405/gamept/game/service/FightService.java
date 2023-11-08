@@ -15,4 +15,6 @@ public interface FightService {
      * @author : 유영
      */
     MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameException;
+
+
 }
