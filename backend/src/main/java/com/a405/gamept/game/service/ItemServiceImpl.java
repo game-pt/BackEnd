@@ -5,7 +5,7 @@ import com.a405.gamept.game.dto.response.ItemGetResponseDto;
 import com.a405.gamept.game.dto.response.ItemSetResponseDto;
 import com.a405.gamept.game.entity.Item;
 import com.a405.gamept.game.repository.ItemRepository;
-import com.a405.gamept.game.util.FinalData;
+import com.a405.gamept.game.util.GameData;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.play.entity.Game;
@@ -57,7 +57,7 @@ public class ItemServiceImpl implements ItemService {
         List<String> itemCodeList = player.getItemCodeList();
         if(itemCodeList == null) {  // 아이템 존재하지 않을 경우 새로 생성
             itemCodeList = new ArrayList<>();
-        } else if (FinalData.MAX_ITEM_SIZE <= itemCodeList.size()) {  // 아이템 소지 수가 최대값을 넘을 경우
+        } else if (GameData.MAX_ITEM_SIZE <= itemCodeList.size()) {  // 아이템 소지 수가 최대값을 넘을 경우
             throw new GameException(GameErrorMessage.ITEM_FULL);
         }
         itemCodeList.add(item.getCode());
