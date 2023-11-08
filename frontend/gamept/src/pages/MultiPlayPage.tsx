@@ -6,10 +6,10 @@ import SideInterface from '@/organisms/SideInterface';
 import PromptInterface from '@/organisms/PromptInterface';
 import TextButton from '@/atoms/TextButton';
 import ProfileInterface from '@/organisms/ProfileInterface';
-import { getPromptData } from '@/services/GameService';
 import { useIndexedDB } from 'react-indexed-db-hook';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import usePrompt from '@/hooks/usePrompt';
 
 const MultiPlayPage = () => {
   const [history, setHistory] = useState<string[][] | null>(null);
@@ -18,6 +18,7 @@ const MultiPlayPage = () => {
   const gameCode = 'YMi8mg';
   const playerCode = 'YMi8mg-yl7q7k';
   const db = useIndexedDB('prompt');
+  const [getPrompt, setPrompt] = usePrompt();
   const navigate = useNavigate();
 
   // 웹소캣 객체 생성
@@ -56,8 +57,9 @@ const MultiPlayPage = () => {
           // 프롬포트 응답이라면
           if (body.prompt !== undefined) {
             // 원본 데이터와 프롬프트 구분
-            const { origin, prompt } = await getPromptData(body);
-            console.log(origin);
+            const prompt = body.prompt.split("\n\n");
+
+
             // 기존 프롬프트 내역에 새로운 메시지 추가
             setHistory((prevHistory) => {
               console.log(history);

@@ -1,4 +1,4 @@
-import { useUpdatePrompt } from "@/jotai/PromptAtom";
+import { useUpdatePromptAtom } from "@/jotai/PromptAtom";
 import { IGetPromptType } from "@/types/components/Prompt.types";
 import { useIndexedDB } from 'react-indexed-db-hook';
 
@@ -10,7 +10,7 @@ const getPromptData = async (response: IGetPromptType) => {
 
   const get = await db.getAll();
 
-  const updatePrompt = useUpdatePrompt();
+  const updatePrompt = useUpdatePromptAtom();
 
   updatePrompt(get.map(e => `${e}`));
 

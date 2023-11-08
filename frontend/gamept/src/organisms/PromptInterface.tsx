@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 import ChoiceGroup from './ChoiceGroup';
 import LoadingSpinner1 from '@/atoms/LoadingSpinner1';
 import { IPromptInterface } from '@/types/components/Prompt.types';
-import { usePrompt } from '@/jotai/PromptAtom';
+import { usePromptAtom } from '@/jotai/PromptAtom';
 
 const PromptInterface = (props: IPromptInterface) => {
   const [text, setText] = useState('');
   const [isFetching, setIsFetching] = useState(true);
-  const prompt = usePrompt();
+  const prompt = usePromptAtom();
 
   const sendEvent = () => {
     if (props.sendEventHandler) props.sendEventHandler();
@@ -23,6 +23,7 @@ const PromptInterface = (props: IPromptInterface) => {
   }
 
   useEffect(() => {
+    console.log(prompt);
     if (prompt) setIsFetching(false);
   }, [prompt]);
 
