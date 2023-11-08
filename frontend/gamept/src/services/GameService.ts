@@ -15,6 +15,6 @@ const getPromptData = async (response: IGetPromptType) => {
   updatePrompt(get.map(e => `${e}`));
 
   return { origin, prompt };
-}
+};
 
 export { getPromptData };

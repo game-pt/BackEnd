@@ -9,23 +9,28 @@ import Logo from '@/atoms/Logo';
 import SelectGameMode from '@/organisms/SelectGameMode';
 import SelectGameStory from '@/organisms/SelectGameStory';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useQuery } from 'react-query';
+import { fetchGetStories } from '@/services/CreateGameService';
 
 const CreateGamePage = () => {
   const [isSelectStory, setIsSelectStory] = useState(false);
-  const navigate = useNavigate();
+  const { data, isSuccess } = useQuery({
+    queryKey: ['getStories'],
+    queryFn: () => fetchGetStories(),
+  });
   const goSelectStory = () => {
     setIsSelectStory(true);
   };
 
-  const goMakeCharacter = () => {
-    navigate('/createCharacter');
-  };
+  if (isSuccess) {
+    console.log(data);
+  }
+
   return (
     <div className="w-screen h-screen bg-backgroundDeep">
       <Logo />
       {!isSelectStory && <SelectGameMode onGoSelectStory={goSelectStory} />}
-      {isSelectStory && <SelectGameStory onGoMakeCharacter={goMakeCharacter} />}
+      {isSelectStory && <SelectGameStory stories={data} />}
     </div>
   );
 };

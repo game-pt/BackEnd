@@ -1,30 +1,42 @@
 import { usePromptAtom, useUpdatePromptAtom } from "@/jotai/PromptAtom";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useIndexedDB } from "react-indexed-db-hook";
 
-const usePrompt = () => {
+const usePrompt: () => [string[], (update: string[]) => void] = () => {
   const db = useIndexedDB('prompt');
-  const getPrompt = useMemo(async () => {
-    const getAtom = usePromptAtom();
-    const setAtom = useUpdatePromptAtom();
-    // 초기값 상태라면 => 초기화되었다면 => 새로고침했거나 처음
+  const getAtom = usePromptAtom();
+  const setAtom = useUpdatePromptAtom();
+  const [promptData, setPromptData] = useState<string[]>(getAtom[getAtom.length - 1]);
+
+  const initializePrompt = useCallback(async () => {
+    // IndexedDB에서 데이터 가져오기
+    const dataFromDB = (await db.getAll()).map(e => e.content);
+    if (dataFromDB.length === 0) {
+      // 데이터가 없으면 초기화
+      setAtom([]);
+      setPromptData([]);
+    } else {
+      console.log(dataFromDB);
+      // 데이터가 있으면 상태 업데이트
+      setAtom(dataFromDB);
+      setPromptData(dataFromDB);
+    }
+  }, [db, setAtom]);
+
+  useEffect(() => {
     if (getAtom[0][0] === '') {
-      const get = (await db.getAll()).map(e => `${e}`);
-      // Index DB에도 데이터가 없다면 처음
-      if (get.length === 0) return [['']];
-      // 있다면 Index DB 데이터를 set해주기
-      else setAtom(get);
+      // 초기 상태인 경우
+      initializePrompt();
+    }
+    setPromptData(getAtom[getAtom.length - 1]);
+  }, [initializePrompt]);
 
-      return usePromptAtom();
-    } else return getAtom;
-  }, [db]);
   const setPrompt = useCallback((update: string[]) => {
-    const setter = useUpdatePromptAtom();
     db.add({ content: update });
-    setter(update);
-  }, [db]);
+    setAtom(update);
+  }, [db, setAtom]);
 
-  return [getPrompt, setPrompt];
+  return [promptData, setPrompt];
 }
 
 export default usePrompt;

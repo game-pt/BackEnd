@@ -10,16 +10,22 @@ import { useIndexedDB } from 'react-indexed-db-hook';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import usePrompt from '@/hooks/usePrompt';
+import { usePromptAtom } from '@/jotai/PromptAtom';
 
 const MultiPlayPage = () => {
   const [history, setHistory] = useState<string[][] | null>(null);
   const [chat, setChat] = useState<string[] | null>(null);
   const client = useRef<CompatClient | null>(null);
+  const [getPrompt, setPrompt] = usePrompt();
+  const promptAtom = usePromptAtom();
   const gameCode = 'YMi8mg';
   const playerCode = 'YMi8mg-yl7q7k';
   const db = useIndexedDB('prompt');
-  const [getPrompt, setPrompt] = usePrompt();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(promptAtom);
+  }, [promptAtom])
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -59,6 +65,7 @@ const MultiPlayPage = () => {
             // 원본 데이터와 프롬프트 구분
             const prompt = body.prompt.split("\n\n");
 
+            setPrompt(prompt);
 
             // 기존 프롬프트 내역에 새로운 메시지 추가
             setHistory((prevHistory) => {
@@ -82,11 +89,13 @@ const MultiPlayPage = () => {
           for (let i = 0; i < 3; i++) {
             arr.push(message.body);
           }
-          db.add({ content: arr });
-          const get = await db.getAll();
-          console.log(db.getAll());
-          db.getAll().then((get) => console.log(get[0].content))
-          console.log(get);
+          // db.add({ content: arr });
+          // const get = await db.getAll();
+          // console.log(db.getAll());
+          db.getAll().then((get) => console.log(get[get.length-1].content))
+          // console.log(get);
+          setPrompt(arr);
+          console.log(promptAtom, 'hi')
           // 기존 대화 내역에 새로운 메시지 추가
           setChat((prevChat) => {
             return prevChat ? [...prevChat, message.body] : [message.body];
