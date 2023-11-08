@@ -9,6 +9,8 @@ import CreateCharacterPage from './pages/CreateCharacterPage.tsx';
 import MultiPlayPage from './pages/MultiPlayPage.tsx';
 import EndingPage from './pages/EndingPage.tsx';
 import { QueryClientProvider, QueryClient } from 'react-query';
+import { initDB } from 'react-indexed-db-hook';
+import { DBConfig } from './services/DBConfig.ts';
 
 // 라우팅 경로 지정
 const router = createBrowserRouter([
@@ -22,6 +24,8 @@ const router = createBrowserRouter([
 
 //react query 설정파일
 const queryClient = new QueryClient();
+// indexedDB 사용 선언
+initDB(DBConfig);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

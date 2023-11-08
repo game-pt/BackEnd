@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './SideInterface.css'; // Import your CSS file
-import { SkillValuesType, ItemValuesType, TabContent } from '@/types/components/Tab.types';
-import LoadingSpinner1 from '@/atoms/LoadingSpinner1';
+import { SkillValuesType, TabContent } from '@/types/components/Tab.types';
+
+
 import ChattingTab from '@/atoms/ChattingTab';
 import { ISideInterface } from '@/types/components/SideInterface.types';
-
 import { TbNavigation } from "react-icons/tb";
+import { GiCardDiscard } from "react-icons/gi";
+
 
 const fetchInitialStats = async () => {
   try {
@@ -22,6 +24,12 @@ const fetchInitialStats = async () => {
 
 const StatTab = () => {
   const [statList, setStatList] = useState<Record<string, number>>({
+    // 힘: 10,
+    // 건강: 10,
+    // 지능: 10,
+    // 민첩: 10,
+    // 매략: 10,
+    // 행운: 10
   });
   
   useEffect(() => {
@@ -32,7 +40,7 @@ const StatTab = () => {
         })
   }, []);
 
-  const [statPoints, setStatPoints] = useState(5);
+  const [statPoints, setStatPoints] = useState(20);
 
   const increaseStat = (statName: string) => {
     if (statPoints > 0) {
@@ -76,88 +84,159 @@ const StatTab = () => {
 };
 
 const SkillTab = () => {
-  const skillList: Record<string, SkillValuesType> = {
-    얼리기: {
-      img: 'Blizzard.png',
-      desc: '상대방을 얼린다.',
-    },
-    독수리: {
-      img: 'Diving assault.png',
-      desc: '독수리를 부른다.',
-    },
-    토하기: {
-      img: 'Drain mana.png',
-      desc: '과음 후 파전 만들기.',
-    },
-    '세게 때리기': {
-      img: 'Power of blessing.png',
-      desc: '읏~챠~.',
-    },
-  };
+  const [skillList, setSkillList] = useState<Record<string, SkillValuesType>>({
+    // 얼리기: {
+    //   img: 'Blizzard.png',
+    //   desc: '상대방을 얼린다.',
+    // },
+    // 독수리: {
+    //   img: 'Diving assault.png',
+    //   desc: '독수리를 부른다.',
+    // },
+    // 토하기: {
+    //   img: 'Drain mana.png',
+    //   desc: '과음 후 파전 만들기.',
+    // },
+    // '세게 때리기': {
+    //   img: 'Power of blessing.png',
+    //   desc: '읏~챠~.',
+    // },
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 서버에서 스킬 목록을 가져오는 함수
+    const fetchSkills = async () => {
+      try {
+        const response = await axios.get('/api/skills'); // API 엔드포인트를 여기에 추가
+        setSkillList(response.data); // 서버에서 받아온 스킬 목록을 상태에 저장
+        setLoading(false); // 로딩 상태를 해제
+      } catch (error) {
+        console.error('스킬 목록을 불러오는 중 오류가 발생했습니다.', error);
+        setLoading(false); // 오류 발생 시에도 로딩 상태를 해제
+      }
+    };
+
+    fetchSkills();
+  }, []);
 
   return (
-    <div className="w-full h-full flex flex-col p-6 py-8 bg-transparent text-16 justify-between">
-      {Object.keys(skillList).map((e, i) => (
-        <div key={`skill_${i}`} className="w-full flex my-2 items-center">
-          <img
-            className="w-[63px]"
-            src={`./src/assets/skill/${skillList[e].img}`}
-            alt={`${i}_skill`}
-          />
-          <p className="basis-3/4 text-left pl-4 text-white">
-            {e}: {skillList[e].desc}
-          </p>
-        </div>
-      ))}
+    <div className="w-full h-full flex flex-col p-6 bg-transparent text-16">
+      {loading ? (
+        <div>스킬을 불러오는 중입니다...</div>
+      ) : (
+        Object.keys(skillList).map((e, i) => (
+          <div key={`skill_${i}`} className="w-full flex my-2 items-center">
+            <img
+              className="w-[63px]"
+              src={`./src/assets/skill/${skillList[e].img}`}
+              alt={`${i}_skill`}
+            />
+            <p className="basis-3/4 text-left pl-4 text-white">
+              {e}: {skillList[e].desc}
+            </p>
+          </div>
+        ))
+      )}
     </div>
   );
 };
+
+
 const ItemTab = () => {
-  const itemList: Record<string, ItemValuesType> = {
-    빨간포션: {
+  const [itemList, setItemList] = useState<{
+    [key: string]: { img: string; desc: string };
+  }>({
+    '빨간포션': {
       img: 'Small Potion_00.png',
       desc: '마시면 체력+10.',
     },
-    크리스탈: {
+    '크리스탈': {
       img: 'protection crystal.png',
       desc: '가지고 있으면 공격력+10.',
     },
-    보석: {
+    '보석': {
       img: 'Gems_03.png',
       desc: '가지고 있으면 공격력+1.',
     },
-    망원경: {
+    '망원경': {
       img: 'advance lens.png',
       desc: '멀리보기 가능.',
     },
+  });
+
+  const [hoveredItem, setHoveredItem] = useState('');
+
+  const handleMouseEnter = (itemName: string) => {
+    setHoveredItem(itemName);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredItem('');
+  };
+  
+  const handleItemDelete = (itemName: string) => {
+    const updatedItemList = { ...itemList };
+    delete updatedItemList[itemName];
+    setItemList(updatedItemList);
   };
 
   return (
-    <div className="w-full h-full flex flex-col p-6 py-4 bg-transparent text-16 justify-between">
+    <div className="w-full h-full flex flex-col p-6 bg-transparent text-16">
       {Object.keys(itemList).map((e, i) => (
-        <div key={`skill_${i}`} className="w-full flex my-2 items-center">
+          <div
+          key={`item_${i}`}
+          className="w-full flex my-2 items-center"
+          onMouseEnter={() => handleMouseEnter(e)}
+          onMouseLeave={handleMouseLeave}
+        >
           <div className="border border-[#4F3F2B] rounded">
             <img
               className="w-[63px] rounded"
               src={`./src/assets/items/${itemList[e].img}`}
-              alt={`${i}_skill`}
+              alt={`${i}item`}
             />
           </div>
-          <p className="basis-3/4 text-left pl-4 text-white">
+          <div className="basis-3/4 text-left pl-4 text-white">
             {e}: {itemList[e].desc}
-          </p>
+          </div>
+          {hoveredItem === e && (
+          <button
+          className="bg-transparent px-0 py-0 ml-2"
+          onClick={() => handleItemDelete(e)}
+        >
+          <GiCardDiscard />
+        </button>
+        )}
         </div>
       ))}
     </div>
   );
 };
-
 
 const SideInterface = (props: ISideInterface) => {
   const [selectedTab, setSelectedTab] = useState('스탯'); // 초기 탭 설정
   const [selectedTabColor, setSelectedTabColor] = useState('#331812'); // 초기 탭 색상 설정
 
-  const tabContents: Record<string, TabContent> = {
+  const tabContents: Record<string, TabContent> = props.sendChat ? {
+    스탯: {
+      content: <StatTab />,
+      color: '#290E08',
+    },
+    스킬: {
+      content: <SkillTab />,
+      color: '#2E130D',
+    },
+    아이템: {
+      content: <ItemTab />,
+      color: '#331812',
+    },
+    채팅: {
+
+      content: <ChattingTab chat={props.chat} sendChat={props.sendChat} />,
+      color: '#422721',
+    },
+  } : {
     스탯: {
       content: <StatTab />,
       color: '#331812',
@@ -170,10 +249,6 @@ const SideInterface = (props: ISideInterface) => {
       content: <ItemTab />,
       color: '#3D221C',
     },
-    채팅: {
-      content: props.sendChat ? <ChattingTab chat={props.chat} sendChat={props.sendChat} /> : <LoadingSpinner1 />,
-      color: '#422721',
-    },
   };
 
   const changeTab = (tabName: string) => {
@@ -181,7 +256,7 @@ const SideInterface = (props: ISideInterface) => {
   };
 
   return (
-    <div className="w-[350px]">
+    <div className="w-[350px] text-lg">
       <div className="tab-header w-full flex">
         {Object.keys(tabContents).map((e, i) => (
           <button
