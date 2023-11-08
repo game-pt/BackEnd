@@ -17,7 +17,8 @@ import com.a405.gamept.game.repository.ItemRepository;
 import com.a405.gamept.game.repository.SkillRepository;
 import com.a405.gamept.game.repository.StatRepository;
 import com.a405.gamept.game.repository.StoryRepository;
-import com.a405.gamept.game.util.FinalData;
+import com.a405.gamept.game.util.GameData;
+import com.a405.gamept.game.util.Words;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.play.entity.Game;
@@ -131,9 +132,9 @@ public class GameServiceImpl implements GameService {
         SimpleDateFormat time = new SimpleDateFormat("HH:mm", Locale.KOREA);
         // 욕설 처리
         int i = 0;
-        for (String b : FinalData.badWords) {
-            i = new Random().nextInt(FinalData.goodWords.length);
-            message = message.replaceAll(b, FinalData.goodWords[i]);
+        for (String b : Words.badWords) {
+            i = new Random().nextInt(Words.goodWords.length);
+            message = message.replaceAll(b, Words.goodWords[i]);
         }
 
         String wholeMessage = "[" + time.format(new Date()) + "] " + player.getNickname() + ": " + message;
@@ -338,7 +339,7 @@ public class GameServiceImpl implements GameService {
                 int targetStat = player.getStat().get(statCode);
                 int statValue = targetStat + bonusPoint;
                 if(statValue < 0) statValue = 0;
-                else if(statValue > FinalData.MAX_STAT) statValue = FinalData.MAX_STAT;
+                else if(statValue > GameData.MAX_STAT) statValue = GameData.MAX_STAT;
 
                 Map<String, Integer> playerStat = player.getStat();
                 playerStat.put(statCode, statValue);
