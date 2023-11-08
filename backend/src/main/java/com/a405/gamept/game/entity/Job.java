@@ -41,6 +41,14 @@ public class Job extends BaseEntity {
     @Comment("스토리 코드")
     private Story story;
 
+    /**
+     * [fk] stat_code: 해당 직업의 메인 스탯의 코드
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stat_code")
+    @Comment("메인 스탯")
+    private Stat stat;
+    
     @OneToMany(mappedBy = "job")
     @Comment("직업 보너스 스탯 리스트")
     private List<JobBonus> jobBonusList;

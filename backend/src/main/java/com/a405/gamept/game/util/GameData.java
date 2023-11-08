@@ -3,7 +3,7 @@ package com.a405.gamept.game.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface FinalData {
+public interface GameData {
     // 몬스터 레벨 확률
     final Map<Integer, Integer> monsterRate = new HashMap<>() {{
         put(2, 1);  // 레벨 2 차이 확률 1
@@ -57,4 +57,11 @@ public interface FinalData {
     final int PLAYER_MAX_LEVEL = 10;
     final int MONSTER_MAX_LEVEL = 10;
     final int MAX_STAT = 20;
+    final int FIRST_STEP = 8;
+    final int SECOND_STEP = 12;
+    final int THIRD_STEP = 16;
+    final int FIRST_BONUS = 1;
+    final int SECOND_BONUS = 2;
+    final int THIRD_BONUS = 3;
+    final int FIRST_DEMERIT = -1;
 }

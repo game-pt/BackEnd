@@ -14,4 +14,6 @@ import org.springframework.stereotype.Repository;
 public interface MonsterRepository extends JpaRepository<Monster, String> {
 
     Optional<List<Monster>> findAllByStoryAndLevel(Story story, int level) throws DataAccessException;
+
+    Optional<Monster> findByStoryCodeAndLevel(String storyCode, int monsterLevel);
 }

@@ -10,7 +10,7 @@ import com.a405.gamept.game.entity.*;
 import com.a405.gamept.game.repository.JobRepository;
 import com.a405.gamept.game.repository.RaceRepository;
 import com.a405.gamept.game.repository.StoryRepository;
-import com.a405.gamept.game.util.FinalData;
+import com.a405.gamept.game.util.GameData;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.play.entity.Game;
@@ -132,7 +132,7 @@ public class PlayerServiceImpl implements PlayerService {
                 if(raceStat.getStat().equals(jobBonus.getStat())) {  // 종족별 스탯과 직업 별 추가 스탯이 일치할 경우
                     statValue += jobBonus.getStatBonus();
                     if(statValue < 0) statValue = 0;
-                    else if(FinalData.MAX_STAT < statValue) statValue = FinalData.MAX_STAT;  // 숫자 범위 처리
+                    else if(GameData.MAX_STAT < statValue) statValue = GameData.MAX_STAT;  // 숫자 범위 처리
 
                     break;
                 }

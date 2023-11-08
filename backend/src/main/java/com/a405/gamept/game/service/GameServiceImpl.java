@@ -17,7 +17,7 @@ import com.a405.gamept.game.repository.ItemRepository;
 import com.a405.gamept.game.repository.SkillRepository;
 import com.a405.gamept.game.repository.StatRepository;
 import com.a405.gamept.game.repository.StoryRepository;
-import com.a405.gamept.game.util.FinalData;
+import com.a405.gamept.game.util.GameData;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.play.entity.Game;
@@ -131,9 +131,9 @@ public class GameServiceImpl implements GameService {
         SimpleDateFormat time = new SimpleDateFormat("HH:mm", Locale.KOREA);
         // 욕설 처리
         int i = 0;
-        for (String b : FinalData.badWords) {
-            i = new Random().nextInt(FinalData.goodWords.length);
-            message = message.replaceAll(b, FinalData.goodWords[i]);
+        for (String b : GameData.badWords) {
+            i = new Random().nextInt(GameData.goodWords.length);
+            message = message.replaceAll(b, GameData.goodWords[i]);
         }
 
         String wholeMessage = "[" + time.format(new Date()) + "] " + player.getNickname() + ": " + message;
@@ -249,12 +249,12 @@ public class GameServiceImpl implements GameService {
         int extremePoint = act.getExtremeStd();
         int plusPoint = 0;
 
-        if(relationStat >= 16){
-            plusPoint = 3;
-        } else if(relationStat >= 12){
-            plusPoint = 2;
-        } else if(relationStat >= 8){
-            plusPoint = 1;
+        if(relationStat >= GameData.THIRD_STEP){
+            plusPoint = GameData.THIRD_BONUS;
+        } else if(relationStat >= GameData.SECOND_STEP){
+            plusPoint = GameData.SECOND_BONUS;
+        } else if(relationStat >= GameData.FIRST_STEP){
+            plusPoint = GameData.FIRST_BONUS;
         }
         //성공 기준 값
         int successStd = act.getSuccessStd();
@@ -336,7 +336,7 @@ public class GameServiceImpl implements GameService {
                 int targetStat = player.getStat().get(statCode);
                 int statValue = targetStat + bonusPoint;
                 if(statValue < 0) statValue = 0;
-                else if(statValue > FinalData.MAX_STAT) statValue = FinalData.MAX_STAT;
+                else if(statValue > GameData.MAX_STAT) statValue = GameData.MAX_STAT;
 
                 Map<String, Integer> playerStat = player.getStat();
                 playerStat.put(statCode, statValue);

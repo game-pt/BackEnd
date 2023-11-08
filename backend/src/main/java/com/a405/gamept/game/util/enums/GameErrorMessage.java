@@ -24,7 +24,9 @@ public enum GameErrorMessage  {
     INVALID_GAME_REQUEST(BAD_REQUEST, "해당 유저의 게임이 아닙니다."),
     INVALID_ACT_REQUEST(BAD_REQUEST, "해당 이벤트에 관여된 행동을 찾을 수 없습니다."),
     ACT_NOT_FOUND(BAD_REQUEST, "해당 동작이 존재하지 않습니다."),
-    INVALID_ITEM_REQUEST(BAD_REQUEST, "해당 스토리에는 아이템이 없습니다.");
+    INVALID_ITEM_REQUEST(BAD_REQUEST, "해당 스토리에는 아이템이 없습니다."),
+    //스킬 관련 에러 메세지
+    SKILL_NOT_FOUND(BAD_REQUEST, "해당 스킬이 존재하지 않습니다.");
 
     private final HttpStatus code;
     private final String message;

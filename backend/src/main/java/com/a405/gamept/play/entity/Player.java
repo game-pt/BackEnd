@@ -36,6 +36,11 @@ public class Player {
     private String jobCode;
 
     /**
+     * level : 사용자의 레벨
+     */
+    private int level;
+
+    /**
      * hp : 사용자의 체력
      */
     private int hp;
