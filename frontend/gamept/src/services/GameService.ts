@@ -4,7 +4,7 @@ import { useIndexedDB } from 'react-indexed-db-hook';
 
 const getPromptData = async (response: IGetPromptType) => {
   const origin = {};
-  const prompt = response.prompt;
+  const prompt = response.prompt.split("\n\n");
 
   const db = useIndexedDB('prompt');
 

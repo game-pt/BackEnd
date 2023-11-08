@@ -74,15 +74,17 @@ const MultiPlayPage = () => {
       // 채팅 구독
       client.current.subscribe(
         `/topic/chat/${gameCode}`,
-        (message) => {
+        async (message) => {
           console.log(message);
           const arr = [];
           for (let i = 0; i < 3; i++) {
             arr.push(message.body);
           }
-          // db.add({ content: arr });
+          db.add({ content: arr });
+          const get = await db.getAll();
           console.log(db.getAll());
-          db.getAll().then((get) => console.log(get.length))
+          db.getAll().then((get) => console.log(get[0].content))
+          console.log(get);
           // 기존 대화 내역에 새로운 메시지 추가
           setChat((prevChat) => {
             return prevChat ? [...prevChat, message.body] : [message.body];

@@ -5,14 +5,14 @@ import { useIndexedDB } from 'react-indexed-db-hook';
 const initialPrompt = async () => {
   const db = useIndexedDB('prompt');
   const get = await db.getAll();
-  return get;
+  return get.map(e => `${e}`);
 };
 
 const getPrompt = async (update: string[]) => {
   const db = useIndexedDB('prompt');
   await db.add({ content: update });
   const get = await db.getAll();
-  return get;
+  return get.map(e => `${e}`);
 };
 
 const promptAtom = atomWithDefault(initialPrompt);
