@@ -53,6 +53,10 @@ public class Job extends BaseEntity {
     @Comment("직업 보너스 스탯 리스트")
     private List<JobBonus> jobBonusList;
 
+    @OneToMany(mappedBy = "job")
+    @Comment("스킬 리스트")
+    private List<Skill> skillList;
+
     @Builder
     public Job(String code, Story story, String name) {
         this.code = code;

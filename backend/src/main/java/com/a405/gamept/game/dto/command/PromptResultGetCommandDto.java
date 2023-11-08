@@ -14,9 +14,9 @@ public record PromptResultGetCommandDto(
         @NotBlank(message = "프롬프트가 입력되지 않았습니다.") String prompt,
         EventCommandDto eventCommandDto
 ) {
-    public static PromptResultGetCommandDto from(PromptResultGetRequestDto promptResultGetRequestDto) {
+    public static PromptResultGetCommandDto from(PromptResultGetRequestDto promptResultGetRequestDto, String gameCode) {
         return PromptResultGetCommandDto.builder()
-                .gameCode(promptResultGetRequestDto.gameCode())
+                .gameCode(gameCode)
                 .prompt(promptResultGetRequestDto.prompt())
                 .eventCommandDto(null)
                 .build();
