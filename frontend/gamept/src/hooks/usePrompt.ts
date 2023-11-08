@@ -1,5 +1,5 @@
 import { usePromptAtom, useUpdatePromptAtom } from "@/jotai/PromptAtom";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useIndexedDB } from "react-indexed-db-hook";
 
 const usePrompt = () => {
@@ -18,7 +18,11 @@ const usePrompt = () => {
       return usePromptAtom();
     } else return getAtom;
   }, [db]);
-  const setPrompt = useUpdatePromptAtom();
+  const setPrompt = useCallback((update: string[]) => {
+    const setter = useUpdatePromptAtom();
+    db.add({ content: update });
+    setter(update);
+  }, [db]);
 
   return [getPrompt, setPrompt];
 }
