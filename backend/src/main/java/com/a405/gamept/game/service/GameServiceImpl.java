@@ -286,8 +286,8 @@ public class GameServiceImpl implements GameService {
         prompt.append(act.getName()).append("를 했다.");
 
         // ChatGPT에 프롬프트 전송
-        StringBuilder proptResult = new StringBuilder();
-        proptResult.append(chatGptClientUtil.enterPrompt(prompt.toString()));
+        StringBuilder promptResult = new StringBuilder();
+        promptResult.append(chatGptClientUtil.enterPrompt(promptResult.toString(), game.getMemory(), game.getPromptList()));
 
         // 스탯 변화 진행
         String tmp = statChane(player, act, bonusPoint);
@@ -296,17 +296,17 @@ public class GameServiceImpl implements GameService {
                     .orElseThrow(()-> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
             return PromptResultGetResponseDto.from(null, EventCommandDto.from(death, null));
         }
-        proptResult.append("\n").append(tmp);
+        promptResult.append("\n").append(tmp);
         // 아이템 획득
         String itemYn = "N";
 
         Event event = act.getEvent();
         if(event.getItemYn() == 'Y' && flag) {
             itemYn = "Y";
-            proptResult.append("\n").append(getItem(game.getStoryCode(), player));
+            promptResult.append("\n").append(getItem(game.getStoryCode(), player));
         }
 
-        return PromptResultGetResponseDto.from(actResultGetCommandDto.gameCode(), proptResult.toString(), itemYn);
+        return PromptResultGetResponseDto.from(actResultGetCommandDto.gameCode(), promptResult.toString(), itemYn);
     }
 
     public String statChane(Player player, Act act, int bonusPoint){
@@ -336,7 +336,7 @@ public class GameServiceImpl implements GameService {
                 int targetStat = player.getStat().get(statCode);
                 int statValue = targetStat + bonusPoint;
                 if(statValue < 0) statValue = 0;
-                else if(statValue > 20) statValue = 20;
+                else if(statValue > FinalData.MAX_STAT) statValue = FinalData.MAX_STAT;
 
                 Map<String, Integer> playerStat = player.getStat();
                 playerStat.put(statCode, statValue);
