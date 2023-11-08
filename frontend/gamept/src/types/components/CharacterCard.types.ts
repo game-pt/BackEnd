@@ -1,17 +1,24 @@
 export interface IStatObject {
-  statType: string;
+  statName: string;
   statValue: number;
 }
 
 export interface ICharacterCard {
   type: string;
   gender?: number;
-  characterCode: string;
-  codeName: string;
+  name: string;
+  code: string;
   baseStats: IStatObject[];
-  correctionStats: IStatObject[];
+  correctionStats: Array<{ statName: string; statBonus: number }>;
   onNextLevel?: () => void;
-  onSetCharacter?: (gender: number, select: string) => void;
+  onSetCharacter?: (
+    gender: number,
+    imgCode: string,
+    select: string,
+    code: string,
+    statList: IStatObject[] | Array<{ statName: string; statBonus: number }>
+  ) => void;
+  raceCode?: string;
 }
 
 export interface ISwitchGender {

@@ -1,6 +1,5 @@
-import { IStatObject } from './CharacterCard.types';
-
 export interface IProcessLevel {}
+import { IStatObject } from './CharacterCard.types';
 
 export interface ISelectGameMode {
   onGoSelectStory: () => void;
@@ -16,19 +15,42 @@ export interface ISelectGameStory {
 
 export interface ISelectCharacter extends IProcessLevel {
   type: string;
-  apiURL: string;
+  raceCode?: string;
   gender: number;
   onNextLevel: () => void;
   onPreviosLevel: () => void;
-  onSetCharacter: (gender: number, select: string) => void;
+  onSetCharacter: (
+    gender: number,
+    imgCode: string,
+    select: string,
+    code: string,
+    statList: IStatObject[] | Array<{ statName: string; statBonus: number }>
+  ) => void;
   playerStats?: Array<{ statType: string; statValue: number }>;
+  data: Array<{
+    code: string;
+    name: string;
+    statList: IStatObject[];
+    bonusList: Array<{ statName: string; statBonus: number }>;
+  }>;
+  statList?: IStatObject[];
 }
 
 export interface ICharacterStatus {
   nickname: string;
   race: string;
+  raceCode: string;
   job: string;
+  jobCode: string;
   gender: number;
   imgCode: string;
-  stat: IStatObject[];
+  statList: IStatObject[];
+  bonusList: Array<{ statName: string; statBonus: number }>;
+}
+
+export interface IPostPlayerRequest {
+  gameCode: string;
+  raceCode: string;
+  jobCode: string;
+  nickname: string;
 }
