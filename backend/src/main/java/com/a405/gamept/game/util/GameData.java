@@ -3,16 +3,16 @@ package com.a405.gamept.game.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface FinalData {
+public interface GameData {
     // 몬스터 레벨 확률
-    final Map<Integer, Integer> monsterRate = new HashMap<>() {{
+    Map<Integer, Integer> monsterRate = new HashMap<>() {{
         put(2, 1);  // 레벨 2 차이 확률 1
         put(1, 2);  // 레벨 1 차이 확률 2
         put(0, 5);  // 레벨 0 차이 확률 5
         put(-1, 2);  // 레벨 1 차이 확률 2
         put(-2, 1);  // 레벨 2 차이 확률 1
     }};
-    final String[] badWords  = {
+    String[] badWords  = {
             "ㅅㅂ", "씨1팔", "씨발", "씨바", "개새끼", "개세끼", "18년", "18놈", "18새끼", "ㄱㅐㅅㅐㄲl", "ㄱㅐㅈㅏ", "가슴만져", "가슴빨아", "가슴빨어", "가슴조물락", "가슴주물럭", "가슴쪼물딱",
             "가슴쪼물락", "가슴핧아", "가슴핧어", "강간", "개가튼년", "개가튼뇬", "개같은년", "개걸레", "개고치", "개너미", "개넘", "개년", "개놈", "개늠", "개똥", "개떵", "개떡",
             "개라슥", "개보지", "개부달", "개부랄", "개불랄", "개붕알", "개새", "개세", "개쓰래기", "개쓰레기", "개씁년", "개씁블", "개씁자지", "개씨발", "개씨블", "개자식", "개자지",
@@ -50,12 +50,12 @@ public interface FinalData {
             "허접", "허젚", "허졉", "허좁", "헐렁보지", "혀로보지핧기", "호냥년", "호로", "호로새끼", "호로자슥", "호로자식", "호로짜식", "호루자슥", "호모", "호졉", "호좁", "후라덜넘",
             "후장", "후장꽂아", "후장뚫어", "흐접", "흐젚", "흐졉", "bitch", "fuck", "fuckyou", "nflavor", "penis", "pennis", "pussy", "sex", "쓰레기", "느금", "니엄마", "느금마"
     };
-    final String[] goodWords  = {
+    String[] goodWords  = {
             "아싸", "와우", "신나", "해피", "짱", "고양이", "나비", "사랑", "친구", "멋쟁이", "이쁜이", "귀요미",
             "LOVE", "하트", "뿅뿅", "알러뷰", "최고", "사랑둥이", "애교쟁이"
     };
-    final int PLAYER_MAX_LEVEL = 10;
-    final int MONSTER_MAX_LEVEL = 10;
-    final int MAX_STAT = 20;
-    final int MAX_ITEM_SIZE = 4;
+    int PLAYER_MAX_LEVEL = 10;
+    int MONSTER_MAX_LEVEL = 10;
+    int MAX_STAT = 20;
+    int MAX_ITEM_SIZE = 4;
 }
