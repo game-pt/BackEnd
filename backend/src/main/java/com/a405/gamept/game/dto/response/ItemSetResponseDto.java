@@ -1,5 +1,6 @@
 package com.a405.gamept.game.dto.response;
 
+import com.a405.gamept.game.util.FinalData;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -14,6 +15,6 @@ public record ItemSetResponseDto(
         String itemCode,
         @NotBlank(message = "플레이어 코드가 존재하지 않습니다.")
         String playerCode,
-        @Size(max=4, message = "아이템 소지 횟수는 4개를 넘을 수 없습니다.")
+        @Size(max=FinalData.MAX_ITEM_SIZE, message = "아이템 소지 횟수는 " + FinalData.MAX_ITEM_SIZE + "개를 넘을 수 없습니다.")
         List<ItemGetResponseDto> itemList
 ) { }
