@@ -19,6 +19,11 @@ export const characterStatusAtom = atom({
   stat: {},
 });
 
+export const characterSkillAtom = atom<Array<{ name: string; desc: string }>>(
+  []
+);
+
+//Array<{ name: string; desc: string }>
 // 캐릭터 정보 갱신할 경우 사용, 변경된 스탯으로 이루어진 배열을 매개변수로 전달
 export const setCharacterStatusAtom = atom(
   (get) => get(characterStatusAtom),
@@ -37,5 +42,19 @@ export const initCharacterStatusAtom = atom(
     set(characterStatusAtom, () => ({
       ...status,
     }));
+  }
+);
+
+// 스킬 가져오기
+export const getSkillAtom = atom((get) => get(characterSkillAtom));
+
+// 스킬 init
+export const setSkillAtom = atom(
+  null,
+  (_get, set, skills: Array<{ name: string; desc: string }>) => {
+    set(
+      characterSkillAtom,
+      skills.map((element) => ({ ...element }))
+    );
   }
 );
