@@ -7,13 +7,13 @@
 import { IMakeCharacterName } from '@/types/components/MakeCharacterName.type';
 import { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { initCharacterStatusAtom } from '@/jotai/CharacterStatAtom';
-import { useAtom } from 'jotai';
+// import { initCharacterStatusAtom } from '@/jotai/CharacterStatAtom';
+// import { useAtom } from 'jotai';
 import SelectButton from '@/atoms/SelectButton';
 
 const MakeCharacterName = (props: IMakeCharacterName) => {
   const [isInputValid, setIsInputValid] = useState(InputStatement.VALID);
-  const [, setCharacterStatus] = useAtom(initCharacterStatusAtom);
+  // const [, setCharacterStatus] = useAtom(initCharacterStatusAtom);
   const navigate = useNavigate();
 
   // 시작하기 버튼 눌렀을 경우
@@ -24,9 +24,9 @@ const MakeCharacterName = (props: IMakeCharacterName) => {
     }
 
     // atom 갱신
-    setCharacterStatus(props.characterStatus);
+    // setCharacterStatus(props.characterStatus);
 
-    navigate('/singlePlay');
+    props.onNextLevel();
   };
 
   const handleEnter = (event: React.KeyboardEvent) => {
