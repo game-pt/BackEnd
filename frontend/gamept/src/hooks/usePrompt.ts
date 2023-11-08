@@ -18,8 +18,10 @@ const usePrompt: () => [string[], (update: string[]) => void] = () => {
     } else {
       console.log(dataFromDB);
       // 데이터가 있으면 상태 업데이트
-      setAtom(dataFromDB);
-      setPromptData(dataFromDB);
+      dataFromDB.forEach(e => {
+        setAtom(e);
+        setPromptData(e);
+      });
     }
   }, [db, setAtom]);
 

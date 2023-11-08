@@ -28,9 +28,9 @@ const queryClient = new QueryClient();
 initDB(DBConfig);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
     </QueryClientProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );
