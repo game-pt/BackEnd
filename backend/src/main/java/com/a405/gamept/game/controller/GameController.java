@@ -13,11 +13,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("game")
@@ -56,11 +51,6 @@ public class GameController {
     public void chat(@Payload ChatRequestDto chatRequestDto, @DestinationVariable String gameCode) throws GameException {
         ChatResponseDto chatResponseDto = gameService.chat(ChatCommandDto.from(gameCode, chatRequestDto));
         webSocket.convertAndSend("/topic/chat/" + gameCode, chatResponseDto.message());
-    }
-    @GetMapping("/subtask")
-    public ResponseEntity<?> getSubtask(SubtaskRequestDto subtaskRequestDto) {
-        return ResponseEntity.ok(gameService.getSubtask(subtaskRequestDto.toCommand("001")));
-
     }
 
     @PostMapping
