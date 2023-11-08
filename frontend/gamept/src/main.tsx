@@ -8,6 +8,7 @@ import SinglePlayPage from './pages/SinglePlayPage.tsx'; // 새로 만든 페이
 import CreateCharacterPage from './pages/CreateCharacterPage.tsx';
 import MultiPlayPage from './pages/MultiPlayPage.tsx';
 import EndingPage from './pages/EndingPage.tsx';
+import { QueryClientProvider, QueryClient } from 'react-query';
 import { initDB } from 'react-indexed-db-hook';
 import { DBConfig } from './services/DBConfig.ts';
 
@@ -21,11 +22,15 @@ const router = createBrowserRouter([
   { path: '/ending', element: <EndingPage /> },
 ]);
 
+//react query 설정파일
+const queryClient = new QueryClient();
 // indexedDB 사용 선언
 initDB(DBConfig);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </React.StrictMode>
 );
