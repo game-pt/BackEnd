@@ -114,7 +114,7 @@ public class GameServiceImpl implements GameService {
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
         Player player = playerRedisRepository.findById(chatCommandDto.playerCode())
-                .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
         boolean flag = false;  // 방에 존재하는 사용자인지 체크하는 로직
         for (String playerCode : game.getPlayerList()) {
@@ -224,7 +224,9 @@ public class GameServiceImpl implements GameService {
                 ValidateUtil.validate(subtaskResponseDtoList.get(subtaskResponseDtoList.size()-1));
             }
         }else if(subtask.getKey().equals("ITEM")){
-            for(Item item : player.getItemList()){
+            for(String itemCode : player.getItemCodeList()){
+                Item item = itemRepository.findById(itemCode)
+                        .orElseThrow(() -> new GameException(GameErrorMessage.ITEM_INVALID));
                 subtaskResponseDtoList.add(SubtaskResponseDto.of(item.getCode(), item.getName(), item.getDesc()));
             }
         }
@@ -366,7 +368,7 @@ public class GameServiceImpl implements GameService {
         Random random = new Random();
         int index = random.nextInt(itemList.size());
         Item newItem = itemList.get(index);
-        player.toBuilder().newItem(newItem);
+        player.toBuilder().newItemCode(newItem.getCode());
         playerRedisRepository.save(player);
         result.append("< ").append(newItem.getName()).append(" > ").append("이/가 나타났다.");
 
