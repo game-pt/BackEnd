@@ -57,4 +57,5 @@ public interface FinalData {
     final int PLAYER_MAX_LEVEL = 10;
     final int MONSTER_MAX_LEVEL = 10;
     final int MAX_STAT = 20;
+    final int MAX_ITEM_SIZE = 4;
 }
