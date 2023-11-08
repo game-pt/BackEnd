@@ -48,12 +48,12 @@ public class Player {
     /**
      * itemList : 사용자가 가지고 있는 아이템 목록
      */
-    private List<Item> itemList;
+    private List<String> itemCodeList;
 
     /**
      * newItem : 새로운 아이템, 사용자가 획득을 원할 시 습득할 아이템이다.
      */
-    private Item newItem;
+    private String newItemCode;
     
     /**
      * nickname : 사용자의 닉네임
