@@ -6,6 +6,7 @@ import com.a405.gamept.util.dto.request.ChatGptMessage;
 import com.a405.gamept.util.dto.response.ChatGptResponseDto;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -24,6 +25,7 @@ import java.util.List;
  * API를 통해 ChatGPT와 관련된 모든 기능을 포함하는 Util 객체를 정의.
  */
 @Component
+@Slf4j
 public class ChatGptClientUtil {
     private final String model;
     private final String uri;
@@ -102,15 +104,14 @@ public class ChatGptClientUtil {
 
                 // 대답이 제대로 온 경우,
                 if (!answer.isEmpty()) {
-                    System.out.println(answer);
-//                    return answer.replace("\n", "").trim();
+                    log.info("ChatGPT: " + answer);
                     return answer;
                 }
 
             // 응답이 비정상인 경우,
             } else {
-                System.out.println(response.statusCode());
-                System.out.println(response.body());
+                log.info("ResponseStatus: " + response.statusCode());
+                log.info("ResponseBody: " + response.body());
                 return null;
             }
             
