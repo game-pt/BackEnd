@@ -35,13 +35,6 @@ public class PlayerController {
         return ResponseEntity.ok(playerService.getJobList(JobGetCommandDto.from(jobGetRequestDto)));
     }
 
-    /*
-    @GetMapping("skill")
-    public ResponseEntity<?> getSkill(@Valid ) throws GameException {
-        return ResponseEntity.ok(playerService.getJobList(JobGetCommandDto.from(jobGetRequestDto)));
-    }
-    */
-
     @PostMapping
     public ResponseEntity<?> setPlayer(@Valid @RequestBody PlayerSetRequestDto playerSetRequestDto) throws GameException {
         return ResponseEntity.ok(playerService.setPlayer(PlayerSetCommandDto.from(playerSetRequestDto)));
