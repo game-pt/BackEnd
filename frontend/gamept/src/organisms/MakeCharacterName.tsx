@@ -56,7 +56,7 @@ const MakeCharacterName = (props: IMakeCharacterName) => {
         onKeyDown={handleEnter}
       />
       <div
-        className={`font-hol text-white text-20 my-5 ${
+        className={`font-hol text-white text-20 my-5 h-20 ${
           isInputValid !== InputStatement.VALID ? '' : 'invisible'
         }`}
       >
