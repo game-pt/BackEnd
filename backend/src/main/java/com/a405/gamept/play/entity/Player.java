@@ -51,6 +51,11 @@ public class Player {
     private Map<String, Integer> stat;
 
     /**
+     * statPoint : 스탯을 올릴 수 있는 포인트
+     */
+    private int statPoint;
+    
+    /**
      * itemList : 사용자가 가지고 있는 아이템 목록
      */
     private List<String> itemCodeList;

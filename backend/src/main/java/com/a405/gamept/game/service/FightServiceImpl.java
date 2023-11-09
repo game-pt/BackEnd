@@ -104,7 +104,7 @@ public class FightServiceImpl implements FightService {
         Gmonster gmonster = Gmonster.builder()
                 .code(code)
                 .level(monster.getLevel())
-                .hp(monster.getAttack())
+                .hp(monster.getHp())
                 .attack(monster.getAttack())
                 .build();
 
@@ -128,36 +128,40 @@ public class FightServiceImpl implements FightService {
         // 데미지를 주면 얼마나 데미지를 줬는지 몬스터의 피는 얼마나 남았는지
         // 공격 받았으면 얼마나 데미지를 받았고 피는 얼마나 남았는지
         int diceValue = game.getDiceValue();
-        DeathCheckCommandDto deathCheckCommandDto = null;
+        DeathCheckCommandDto deathCheckCommandDto = new DeathCheckCommandDto("","",0);
         if(subtask.equals(Subtask.NONE)){
             if(actCode.equals("ACT-001")){
                 //기본공격
-                deathCheckCommandDto.from(basicAttack(player,gmonster,diceValue));
+                deathCheckCommandDto = deathCheckCommandDto.from(basicAttack(player,gmonster,diceValue));
             }else if(actCode.equals("ACT-004")){
                 //도망가기
-                deathCheckCommandDto.from(runaway(player,gmonster, actCode, diceValue));
+                deathCheckCommandDto = deathCheckCommandDto.from(runaway(player,gmonster, actCode, diceValue));
             }
         }else if(subtask.equals(Subtask.SKILL)){
             String skillCode = fightResultGetCommandDto.actCode();
             if(skillCode.equals("SKILL-004") || skillCode.equals("SKILL-008") || skillCode.equals("SKILL-012") || skillCode.equals("SKILL-016")){
                 //방어 스킬
-                deathCheckCommandDto.from(defence(player, gmonster, skillCode, diceValue));
+                deathCheckCommandDto = deathCheckCommandDto.from(defence(player, gmonster, skillCode, diceValue));
             }else{
                 //공격 스킬
-                deathCheckCommandDto.from(skillAttack(player, gmonster, skillCode, diceValue));
+                deathCheckCommandDto = deathCheckCommandDto.from(skillAttack(player, gmonster, skillCode, diceValue));
             }
         }else if(subtask.equals(Subtask.ITEM)){
             // 아이템 사용
             String itemCode = fightResultGetCommandDto.actCode();
-            deathCheckCommandDto.from(itemUse(player, gmonster, itemCode, game.getStoryCode()));
+            deathCheckCommandDto = deathCheckCommandDto.from(itemUse(player, gmonster, itemCode, game.getStoryCode()));
         }
 
-        game.toBuilder()
-                .diceValue(0)
-                .build();
 
-        gameRedisRepository.save(game);
+        if(deathCheckCommandDto.playerHp() == 0){
+            gameRedisRepository.deleteById(game.getCode());
+        }else{
+            game = game.toBuilder()
+                    .diceValue(0)
+                    .build();
 
+            gameRedisRepository.save(game);
+        }
         return FightResultGetResponseDto.from(deathCheckCommandDto);
     }
 
@@ -182,20 +186,16 @@ public class FightServiceImpl implements FightService {
         result.append(player.getNickname()).append(" 은 적에게 ").append(damage).append("피해를 입혔다!!!\n");
         result.append("적의 HP : ").append(gmonsterHp).append("\n");
 
-        gmonster.toBuilder()
-                .hp(gmonsterHp)
-                .build();
-        gmonsterRedisRepository.save(gmonster);
+        gmonster = saveGmonsterHp(gmonster, gmonsterHp);
 
         int playerHp = player.getHp();
 
         DeathCheckCommandDto deathCheckCommandDto = gameOverCheck(player, gmonster, playerHp, gmonsterHp);
         result.append(deathCheckCommandDto.prompt());
+        playerHp = deathCheckCommandDto.playerHp();
         endYn = deathCheckCommandDto.endYn();
 
-        savePlayerHp(player, playerHp);
-        saveGmonsterHp(gmonster, gmonsterHp);
-        return new DeathCheckCommandDto(result.toString(), endYn, playerHp);
+        return deathCheckCommandDto.of(result.toString(), endYn, playerHp);
     }
 
     //도망가기
@@ -217,8 +217,10 @@ public class FightServiceImpl implements FightService {
             //실패
             result.append("나중에 보자!!!\n");
             result.append("적 : 그냥 지금 보자!!\n");
-            result.append(player.getNickname()).append(" 은 적에게서 도망치려고 했지만 붙잡혀버렸다....");
+            result.append(player.getNickname()).append(" 은 적에게서 도망치려고 했지만 붙잡혀버렸다....\n");
             deathCheckCommandDto = gameOverCheck(player, gmonster, player.getHp(), gmonster.getHp());
+            result.append(deathCheckCommandDto.prompt());
+            deathCheckCommandDto = deathCheckCommandDto.of(result.toString(), deathCheckCommandDto.endYn(), deathCheckCommandDto.playerHp());
         }else {
             //성공
             result.append("두고 보자!!!\n");
@@ -275,11 +277,11 @@ public class FightServiceImpl implements FightService {
             if(extremeFlag) {
                 result.append("대실패!!!\n");
                 damage = bonusDamage;
-                playerHp = Math.max(playerHp-damage, 0);
+                log.info("플레이어 HP 전: "+playerHp);
+                playerHp = Math.max(playerHp+damage, 0);
 
                 result.append(player.getNickname()).append(" 은 대실패의 여파로 ").append(damage).append("피해를 입었다!!!\n");
                 result.append("적의 HP : ").append(gmonsterHp).append("\n");
-
             }else {
                 result.append("실패!!!!\n");
 
@@ -288,12 +290,16 @@ public class FightServiceImpl implements FightService {
             }
         }
 
+        log.info("플레이어 HP 후: "+playerHp);
+        player = savePlayerHp(player, playerHp);
+        log.info("플레이어 HP 저장 후: "+player.getHp());
+        gmonster = saveGmonsterHp(gmonster, gmonsterHp);
+
         DeathCheckCommandDto deathCheckCommandDto = gameOverCheck(player, gmonster, playerHp, gmonsterHp);
         result.append(deathCheckCommandDto.prompt());
+        playerHp = deathCheckCommandDto.playerHp();
         String endYn = deathCheckCommandDto.endYn();
 
-        savePlayerHp(player, playerHp);
-        saveGmonsterHp(gmonster, gmonsterHp);
         return new DeathCheckCommandDto(result.toString(), endYn, playerHp);
     }
 
@@ -330,19 +336,25 @@ public class FightServiceImpl implements FightService {
                 //대성공
                 // 공격을 팅겨내서 데미지를 줌
                 int defensiveDamage = defesivePower + bonusDefesive;
+                gmonsterHp = Math.max(gmonsterHp-defensiveDamage, 0);
 
                 result.append("대성공!!!\n");
                 result.append(player.getNickname()).append("은/는 적의 공격을 팅겨냈다!!!\n");
                 result.append("적에게 ").append(defensiveDamage).append(" 만큼의 충격을 돌려주었다!!!\n");
+                result.append("적의 HP : ").append(gmonsterHp);
             }else {
                 // 공격을 좀 막아줌
                 damage = Math.max(gmonsterAttak - (defesivePower + bonusDefesive), 0);
                 result.append("성공!!!\n");
-                result.append(player.getNickname()).append("은/는 적의 공격을 막았다!!!\n");
-                if(damage > 0){
-                    result.append("적에게 ").append(defesivePower + bonusDefesive).append(" 만큼의 충격을 막아냈다!!!\n");
+
+                if(damage > 0) {
+                    result.append("적에게 ").append(defesivePower + bonusDefesive)
+                            .append(" 만큼의 충격을 막아냈다!!!\n");
                     result.append("적에게서 ").append(damage).append(" 만큼의 충격을 받았다.");
+                }else{
+                    result.append(player.getNickname()).append("은/는 적의 공격을 막았다!!!\n");
                 }
+                result.append("적의 HP : ").append(gmonsterHp);
             }
         }else {
             if (extremeFlag){
@@ -352,29 +364,38 @@ public class FightServiceImpl implements FightService {
                 result.append("대실패!!!\n");
                 result.append(player.getNickname()).append("은/는 적의 공격을 막으려 했지만 대실패의 여파로 더욱 큰 충격을 받았다!!!\n");
                 result.append("적에게 ").append(damage).append(" 만큼의 충격을 받았다!!!\n");
+                result.append("적의 HP : ").append(gmonsterHp);
             }else{
                 damage = gmonsterAttak;
                 result.append("실패!!!\n");
                 result.append(player.getNickname()).append("은/는 적의 공격을 막으려 했지만 막을 수 없었다!!!\n");
                 result.append("적에게 ").append(damage).append(" 만큼의 충격을 받았다!!!\n");
+                result.append("적의 HP : ").append(gmonsterHp);
             }
         }
 
         playerHp = Math.max(playerHp-damage, 0);
         String endYn = "N";
 
+        player = savePlayerHp(player, playerHp);
+        gmonster = saveGmonsterHp(gmonster, gmonsterHp);
+
         if(playerHp == 0){
             //게임 오버
             result.append("HP가 0이 되어버렸다...\n");
             result.append(player.getNickname()).append(" 은 쓰러지고 말았다.\n").append(damage).append("눈앞이 깜깜해진다.....\n");
             endYn = "Y";
+            deleteMonster(gmonster);
+            deletePlayer(player);
+
         }else if(gmonsterHp == 0){
             // 전투 종료
             result.append(player.getNickname()).append(" 은 적을 ").append(damage).append("무사히 쓰러트렸다!!!\n");
             endYn = "Y";
+            result.append(getExp(player, gmonster));
+            deleteMonster(gmonster);
         }
-        savePlayerHp(player, playerHp);
-        saveGmonsterHp(gmonster, gmonsterHp);
+
         return new DeathCheckCommandDto(result.toString(), endYn, playerHp);
     }
 
@@ -404,19 +425,25 @@ public class FightServiceImpl implements FightService {
         log.info("공격, 공격 받은 후 데미지 계산하기 - 게임 오버 체크");
         StringBuilder result = new StringBuilder();
         String endYn = "N";
-        if(playerHp == 0){
+        if(playerHp <= 0){
             //게임 오버
             result.append("HP가 0이 되어버렸다...\n");
             result.append(player.getNickname()).append(" 은 쓰러지고 말았다.\n");
             result.append("눈앞이 깜깜해진다.....\n");
             endYn = "Y";
+            deletePlayer(player);
+            deleteMonster(gmonster);
         }else if(gmonsterHp == 0){
             // 전투 종료
             result.append(player.getNickname()).append(" 은 적을 무사히 쓰러트렸다!!!\n");
             endYn = "Y";
+            result.append(getExp(player, gmonster));
+            deleteMonster(gmonster);
         }else {
+            log.info("공격 받기 전 : "+player.getHp());
             DeathCheckCommandDto deathCheckCommandDto = attacked(player, gmonster);
             result.append(deathCheckCommandDto.prompt());
+            playerHp = deathCheckCommandDto.playerHp();
             endYn = deathCheckCommandDto.endYn();
         }
 
@@ -445,34 +472,38 @@ public class FightServiceImpl implements FightService {
         StringBuilder result = new StringBuilder();
 
         int damage = gmonster.getAttack();
-        int playerHp = player.getHp() - damage;
+        int playerHp = Math.max(player.getHp() - damage, 0);
         String endYn = "N";
         result.append("적이 공격해온다!!!!\n");
         result.append(player.getNickname()).append(" 은 적에게 ").append(damage).append("의 공격을 받았다!!!\n");
         result.append("남은 체력 : ").append(playerHp).append("\n");
+        log.info("몬스터의 공격을 받은 후 : "+playerHp);
+        player = savePlayerHp(player, playerHp);
 
-        savePlayerHp(player, playerHp);
-
-        if(playerHp == 0){
+        if(playerHp <= 0){
             result.append("HP가 0이 되어버렸다...\n");
             result.append(player.getNickname()).append(" 은 쓰러지고 말았다.\n").append(damage).append("눈앞이 깜깜해진다.....\n");
             endYn = "Y";
+            deletePlayer(player);
+            deleteMonster(gmonster);
         }
 
         return new DeathCheckCommandDto(result.toString(), endYn, playerHp);
     }
-    public void savePlayerHp(Player player, int playerHp){
-        player.toBuilder()
+    public Player savePlayerHp(Player player, int playerHp){
+        player = player.toBuilder()
                 .hp(playerHp)
                 .build();
         playerRedisRepository.save(player);
-    }
 
-    public void saveGmonsterHp(Gmonster gmonster, int gmonsterHp){
-        gmonster.toBuilder()
+        return player;
+    }
+    public Gmonster saveGmonsterHp(Gmonster gmonster, int gmonsterHp){
+        gmonster = gmonster.toBuilder()
                 .hp(gmonsterHp)
                 .build();
         gmonsterRedisRepository.save(gmonster);
+        return gmonster;
     }
 
     //아이템 사용
@@ -510,7 +541,8 @@ public class FightServiceImpl implements FightService {
                 statUpMap.put(statCode, statUpMap.get(statCode)+ itemVolume);
             }
 
-            player.toBuilder()
+
+            player = player.toBuilder()
                             .stat(statUpMap)
                                     .build();
             playerRedisRepository.save(player);
@@ -557,7 +589,56 @@ public class FightServiceImpl implements FightService {
     }
 
     //경험치 획득 처리
-    public void expGet(){
+    public String getExp(Player player,Gmonster gmonster){
+        StringBuilder result = new StringBuilder();
+        int playerLevel = player.getLevel();
+        int statPoint = player.getStatPoint();
+        int playerExp = player.getExp();
 
+        if(playerLevel < 10){
+            int expStd = player.getLevel() - gmonster.getLevel();
+            int exp = 0;
+            if(expStd == 0) exp = 5;
+            else if(expStd == -2) exp = 7;
+            else if(expStd == -1) exp = 6;
+            else if(expStd == 2) exp = 3;
+            else if(expStd == 1) exp = 4;
+
+            playerExp += exp;
+
+
+            result.append(player.getNickname()).append("은/는 ").append(exp*10).append("의 경험치를 얻었다!!!!\n");
+            if(playerExp >= 10){
+                playerExp = playerExp - 10;
+                if (playerLevel + 1 < GameData.PLAYER_MAX_LEVEL){
+                    playerLevel++;
+                    statPoint++;
+                    result.append(player.getNickname()).append("레벨이 올랐다\n");
+                    result.append(playerLevel).append("이/가 되었다.\n");
+                    result.append("스탯 포인트가 생겼다!!!!\n");
+                    result.append("잔여 스탯 포인트 : ").append(statPoint).append("\n");
+                }
+            }
+        }else{
+            result.append(player.getNickname()).append("은/는 이미 충분히 강하다!!!\n");
+            result.append("더 이상 레벨이 오르지 않는다.\n");
+        }
+
+        player = player.toBuilder()
+                .level(playerLevel)
+                .statPoint(statPoint)
+                .exp(playerExp)
+                .build();
+        playerRedisRepository.save(player);
+
+        return result.toString();
+    }
+
+    public void deleteMonster(Gmonster gmonster){
+        gmonsterRedisRepository.deleteById(gmonster.getCode());
+    }
+
+    public void deletePlayer(Player player){
+        playerRedisRepository.deleteById(player.getCode());
     }
 }
