@@ -6,25 +6,19 @@
 
 import { IMakeCharacterName } from '@/types/components/MakeCharacterName.type';
 import { ChangeEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-// import { initCharacterStatusAtom } from '@/jotai/CharacterStatAtom';
-// import { useAtom } from 'jotai';
 import SelectButton from '@/atoms/SelectButton';
+import { isBadWord } from '@/services/PlayerNameService';
 
 const MakeCharacterName = (props: IMakeCharacterName) => {
-  const [isInputValid, setIsInputValid] = useState(InputStatement.VALID);
-  // const [, setCharacterStatus] = useAtom(initCharacterStatusAtom);
-  const navigate = useNavigate();
+  const [isInputValid, setIsInputValid] = useState(InputStatement.EMPTY);
 
   // 시작하기 버튼 눌렀을 경우
   const handleSubmitInput = () => {
-    if (!isNameOK(props.characterStatus.nickname)) {
-      // 올바르지 않은 네임입니다.
+    // BadWordCheck
+    if (isBadWord(props.characterStatus.nickname)) {
+      setIsInputValid(InputStatement.BADINPUT);
       return;
     }
-
-    // atom 갱신
-    // setCharacterStatus(props.characterStatus);
 
     props.onNextLevel();
   };
@@ -72,15 +66,13 @@ const MakeCharacterName = (props: IMakeCharacterName) => {
           '올바르지 않은 입력입니다.'}
         {isInputValid === InputStatement.VALID && '칸채우기'}
       </div>
-      {props.characterStatus.nickname.length > 0 && (
-        <SelectButton
-          height="75px"
-          onClickEvent={handleSubmitInput}
-          text="시작하기"
-          width="350px"
-          disabled={isInputValid === InputStatement.VALID ? undefined : true}
-        />
-      )}
+      <SelectButton
+        height="75px"
+        onClickEvent={handleSubmitInput}
+        text="시작하기"
+        width="350px"
+        disabled={isInputValid === InputStatement.VALID ? undefined : true}
+      />
     </div>
   );
 };
@@ -97,16 +89,11 @@ const isByteExceed = (input: string) => {
   return false;
 };
 
-const isNameOK = (input: string) => {
-  // 욕 검사?
-  input;
-  return true;
-};
-
 const enum InputStatement {
   VALID,
   EXCEED,
   BADINPUT,
+  EMPTY,
 }
 
 export default MakeCharacterName;
