@@ -10,6 +10,4 @@ import org.springframework.stereotype.Repository;
 public interface ItemRepository extends JpaRepository<Item, String> {
 
     Optional<List<Item>> findAllByStoryCode(String storyCode);
-
-    Optional<Item> findByCodeAndStoryCode(String itemCode, String StoryCode);
 }

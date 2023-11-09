@@ -61,9 +61,10 @@ public class Item extends BaseEntity {
     private int weight;
 
     /**
-     * volume: 아이템의 영향력
+     * effectValue: 아이템의 영향력
+     * 데미지량, 회복량, 스탯업량 등
      */
-    private int volume;
+    private int effectValue;
     
     @Builder
     public Item(String code, Story story, String name, String desc, String img, int weight) {

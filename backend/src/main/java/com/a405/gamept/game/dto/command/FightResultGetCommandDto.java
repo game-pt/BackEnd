@@ -20,7 +20,7 @@ public record FightResultGetCommandDto(
         @NotBlank(message = "플레이어 코드는 필수입니다.")
         String playerCode,
         @NotBlank(message = "몬스터 코드는 필수입니다.")
-        String gmonsterCode
+        String fightingEnermyCode
 ) {
 
 }
