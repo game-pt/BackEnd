@@ -15,6 +15,7 @@ import MakeCharacterStatContainer from '@/atoms/MakeCharacterStatContainer';
 import SwitchToMale from '@/assets/switchToMale.png';
 import SwitchToFemale from '@/assets/switchToFemale.png';
 import { useState, MouseEvent } from 'react';
+import { getImgCode } from '@/services/GetImgCode';
 
 const SwitchGenderBtn = (props: ISwitchGender) => {
   return (
@@ -33,34 +34,63 @@ const SwitchGenderBtn = (props: ISwitchGender) => {
 
 const CharacterCard = (props: ICharacterCard) => {
   const [gender, setGender] = useState(props.gender);
-
+  const [imgCode, setImageCode] = useState(
+    getImgCode(props.gender, props.code, props.raceCode)
+  );
   const handleGenderBtn = (event: MouseEvent) => {
     event.stopPropagation();
-    setGender(1 - (gender ?? 1));
+    setGender(1 - (gender ?? 0));
+    setImgCode();
+  };
+
+  const setImgCode = () => {
+    if (props.type === '종족') {
+      setImageCode(getImgCode(gender ?? 0, props.code));
+    } else {
+      setImageCode(
+        getImgCode(gender ?? 0, props.raceCode ?? 'RACE-001', props.code)
+      );
+    }
+  };
+
+  const handleClickCard = () => {
+    if (props.onSetCharacter && props.type === '종족') {
+      props.onSetCharacter(
+        gender ?? 0,
+        getImgCode(gender ?? 0, props.code),
+        props.name,
+        props.code,
+        props.baseStats
+      );
+    } else if (props.onSetCharacter && props.type === '직업') {
+      props.onSetCharacter(
+        gender ?? 0,
+        getImgCode(gender ?? 0, props.raceCode ?? 'RACE-001', props.code),
+        props.name,
+        props.code,
+        props.correctionStats
+      );
+    }
+    if (props.onNextLevel) {
+      props.onNextLevel();
+    }
   };
 
   return (
     <div
-      onClick={() => {
-        if (props.onSetCharacter) {
-          props.onSetCharacter(gender ?? 0, props.characterCode);
-        }
-        if (props.onNextLevel) {
-          props.onNextLevel();
-        }
-      }}
+      onClick={handleClickCard}
       className="relative w-[300px] h-[430px] bg-containerLight drop-shadow-xl rounded-[10px] p-5 flex flex-col justify-between caret-transparent"
     >
       <SwitchGenderBtn gender={gender ?? 1} onClickEvent={handleGenderBtn} />
       <ProfileImage
         hasBorderAsset
         size={160}
-        imgCode={131}
+        imgCode={imgCode}
         alt="프로필 이미지"
         className="mx-auto"
       />
       <div className="text-24 text-primary font-hol text-center">
-        {props.codeName}
+        {props.name}
       </div>
       <MakeCharacterStatContainer
         baseStats={props.baseStats}

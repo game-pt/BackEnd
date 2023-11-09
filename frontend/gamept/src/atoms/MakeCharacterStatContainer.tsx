@@ -6,6 +6,7 @@
  * 실제로 어떻게 API가 response 보내는지는 백과 상의해야 함.
  */
 
+// import { IStatObject } from '@/types/components/CharacterCard.types';
 import {
   IMakeCharacterStat,
   IStatText,
@@ -13,10 +14,10 @@ import {
 
 const StatText = (props: IStatText) => {
   return (
-    <div className="flex flex-row items-center text-white text-16 font-hol mx-auto">
+    <div className="flex flex-row items-center text-white text-16 font-hol mx-auto relative">
       <div className="w-10 text-left grow-0">{props.statType}</div>
       <div className="grow-0">: {props.baseStat}</div>
-      <div className="text-right text-12 grow text-primary leading-[16px] ml-2">
+      <div className="text-right text-12 grow text-primary leading-[16px] ml-2 absolute -right-7">
         {itoa(props.correctionStat)}
       </div>
     </div>
@@ -24,14 +25,18 @@ const StatText = (props: IStatText) => {
 };
 
 const MakeCharacterStatContainer = (props: IMakeCharacterStat) => {
+  console.log(props.baseStats, props.correctionStats, '왜안됨');
   return (
     <div className="bg-[url(./assets/MakeCharacterStatPanel.svg)] grid grid-cols-2 gap-y-1 w-[260px] h-[155px] p-5">
       {props.baseStats.map((stat, idx) => (
         <StatText
-          statType={stat.statType}
+          statType={stat.statName}
           baseStat={stat.statValue}
           correctionStat={
-            props.correctionStats && props.correctionStats[idx].statValue
+            props.correctionStats &&
+            props.correctionStats.find(
+              (bonusStat) => bonusStat.statName === stat.statName
+            )?.statBonus
           }
           key={idx}
         />
@@ -40,7 +45,8 @@ const MakeCharacterStatContainer = (props: IMakeCharacterStat) => {
   );
 };
 
-const itoa = (input: number): string => {
+const itoa = (input: number | undefined): string => {
+  if (input === undefined) return '';
   if (input > 0) {
     return `(+${input})`;
   } else if (input < 0) {
@@ -49,4 +55,7 @@ const itoa = (input: number): string => {
   return '';
 };
 
+// const selectBonusStat = (bonusStat: IStatObject[], statName: string) => {
+//   bonusStat.find();
+// };
 export default MakeCharacterStatContainer;

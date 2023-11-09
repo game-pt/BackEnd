@@ -9,7 +9,7 @@
 import { atom } from 'jotai';
 
 export const gameModeAtom = atom(0);
-export const gameGameAtom = atom('fantasy');
+export const gameCodeAtom = atom('fantasy');
 
 export const selectGameModeAtom = atom(
   (get) => get(gameModeAtom),
@@ -19,10 +19,10 @@ export const selectGameModeAtom = atom(
   }
 );
 
-export const selectGameStoryAtom = atom(
-  (get) => get(gameGameAtom),
+export const selectGameCodeAtom = atom(
+  (get) => get(gameCodeAtom),
   (_get, set, gameCode: string) => {
-    set(gameGameAtom, () => gameCode);
+    set(gameCodeAtom, () => gameCode);
     console.log('게임코드값', gameCode);
   }
 );
