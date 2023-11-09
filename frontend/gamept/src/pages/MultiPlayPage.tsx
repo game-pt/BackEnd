@@ -16,16 +16,12 @@ const MultiPlayPage = () => {
   const [history, setHistory] = useState<string[][] | null>(null);
   const [chat, setChat] = useState<string[] | null>(null);
   const client = useRef<CompatClient | null>(null);
-  const [getPrompt, setPrompt] = usePrompt();
+  const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
   const gameCode = 'YMi8mg';
   const playerCode = 'YMi8mg-yl7q7k';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(promptAtom);
-  }, [promptAtom])
 
   // 웹소캣 객체 생성
   const connectHandler = () => {

@@ -23,7 +23,7 @@ const PromptInterface = (props: IPromptInterface) => {
   }
 
   useEffect(() => {
-    console.log(prompt);
+    // console.log(prompt);
     if (prompt) setIsFetching(false);
   }, [prompt]);
 
