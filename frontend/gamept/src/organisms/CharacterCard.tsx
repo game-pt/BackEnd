@@ -34,7 +34,7 @@ const SwitchGenderBtn = (props: ISwitchGender) => {
 
 const CharacterCard = (props: ICharacterCard) => {
   const [gender, setGender] = useState(props.gender);
-  const [imgCode, setImageCode] = useState(
+  const [, setImageCode] = useState(
     getImgCode(props.gender, props.code, props.raceCode)
   );
   const handleGenderBtn = (event: MouseEvent) => {
@@ -54,26 +54,17 @@ const CharacterCard = (props: ICharacterCard) => {
   };
 
   const handleClickCard = () => {
-    if (props.onSetCharacter && props.type === '종족') {
-      props.onSetCharacter(
-        gender ?? 0,
-        getImgCode(gender ?? 0, props.code),
-        props.name,
-        props.code,
-        props.baseStats
-      );
-    } else if (props.onSetCharacter && props.type === '직업') {
-      props.onSetCharacter(
-        gender ?? 0,
-        getImgCode(gender ?? 0, props.raceCode ?? 'RACE-001', props.code),
-        props.name,
-        props.code,
-        props.correctionStats
-      );
-    }
-    if (props.onNextLevel) {
-      props.onNextLevel();
-    }
+    if (props.onSetCharacter === undefined) return;
+    props.onSetCharacter(
+      gender ?? 0,
+      selectImg(props.type, gender ?? 0, props.code, props.raceCode),
+      props.name,
+      props.code,
+      props.baseStats
+    );
+
+    if (props.onNextLevel === undefined) return;
+    props.onNextLevel();
   };
 
   return (
@@ -85,7 +76,7 @@ const CharacterCard = (props: ICharacterCard) => {
       <ProfileImage
         hasBorderAsset
         size={160}
-        imgCode={imgCode}
+        imgCode={selectImg(props.type, gender ?? 0, props.code, props.raceCode)}
         alt="프로필 이미지"
         className="mx-auto"
       />
@@ -101,4 +92,15 @@ const CharacterCard = (props: ICharacterCard) => {
   );
 };
 
+const selectImg = (
+  type: string,
+  gender: number,
+  code1: string,
+  code2?: string
+) => {
+  if (type === '종족') {
+    return getImgCode(gender ?? 0, code1);
+  }
+  return getImgCode(gender ?? 0, code2 ?? 'RACE-001', code1);
+};
 export default CharacterCard;
