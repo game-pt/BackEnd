@@ -46,17 +46,19 @@ export const fetchPostPlayer = async (request: IPostPlayerRequest) => {
   }
 };
 
-export const fetchGetSkills = async (playerCode: string) => {
+export const fetchGetPlayerInfo = async (
+  gameCode: string,
+  playerCode: string
+) => {
   // 직업 생성하는 post 요청
-  const url = api + '???????????';
+  const url = api + '/player';
   try {
     const response = await axios.get(url, {
-      params: { playerCode },
+      params: { gameCode, playerCode },
     });
-    console.log('스킬 목록', playerCode, response.data);
-
+    console.log('플레이어 정보 열람', playerCode, response.data);
     return response.data;
-  } catch {
-    console.log('스킬 열람 실패');
+  } catch (err) {
+    console.log(err, '플레이어 정보 열람 열람 실패');
   }
 };
