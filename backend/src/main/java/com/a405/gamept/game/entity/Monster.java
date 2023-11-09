@@ -24,11 +24,17 @@ public class Monster extends BaseEntity {
     @Id private String code;
 
     /**
-     * rank : 몬스터의 레벨
+     * level : 몬스터의 레벨
      * */
     @Column(name = "level", nullable = false, columnDefinition = "TINYINT", length=10)
     @Comment("몬스터의 레벨")
     private int level;
+
+    /**
+     * hp : 몬스터의 레벨
+     * */
+    @Comment("몬스터의 체력")
+    private int hp;
 
     /**
      * attack : 몬스터의 공격력

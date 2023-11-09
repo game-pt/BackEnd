@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class Item extends BaseEntity {
 
     /**
-     * [pk] gameCode: Item의 고유한 코드
+     * [pk] Code: Item의 고유한 코드
      */
     @Id
     private String code;
@@ -42,6 +42,14 @@ public class Item extends BaseEntity {
     private String desc;
 
     /**
+     * imgCase: 아이템의 종류
+     * 스탯 업
+     * 회복
+     * 데미지 주는 용
+     */
+    private ItemCase itemCase;
+
+    /**
      * img: 아이템의 이미지명
      */
     private String img;
@@ -52,6 +60,12 @@ public class Item extends BaseEntity {
     @Column(columnDefinition = "TINYINT")
     private int weight;
 
+    /**
+     * effectValue: 아이템의 영향력
+     * 데미지량, 회복량, 스탯업량 등
+     */
+    private int effectValue;
+    
     @Builder
     public Item(String code, Story story, String name, String desc, String img, int weight) {
         this.code = code;

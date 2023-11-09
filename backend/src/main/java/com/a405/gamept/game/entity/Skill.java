@@ -44,6 +44,10 @@ public class Skill extends BaseEntity {
      */
     private String desc;
     /**
+     * damage : 스킬의 위력
+     */
+    private int damage;
+    /**
      * success_std: 스킬의 성공 판정을 가리기 위한 기준치
      */
     @Column(columnDefinition = "TINYINT")
