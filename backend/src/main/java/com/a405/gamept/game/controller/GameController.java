@@ -10,6 +10,7 @@ import com.a405.gamept.game.service.GameService;
 import com.a405.gamept.game.util.exception.GameException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("game")
 public class GameController {
     private final SimpMessagingTemplate webSocket;
@@ -63,8 +65,9 @@ public class GameController {
         return ResponseEntity.ok(gameService.playAct(actResultGetRequestDto.toCommand(gameCode)));
     }
 
-    @MessageMapping("/{gameCode}/fight")
-    public void playFight(@PathVariable String gameCode, @Valid FightResultGetRequestDto fightResultGetRequestDto) {
+    @MessageMapping("/fight/{gameCode}")
+    public void playFight(@DestinationVariable String gameCode, @Valid @Payload FightResultGetRequestDto fightResultGetRequestDto) {
+        log.info("통신 시작");
         FightResultGetResponseDto fightResultGetResponseDto = fightService.getFightResult(fightResultGetRequestDto.toCommand(gameCode));
         webSocket.convertAndSend("/topic/fight/" + gameCode, fightResultGetResponseDto);
         //return ResponseEntity.ok(fightService.getFightResult(fightResultGetRequestDto.toCommand(gameCode)));
