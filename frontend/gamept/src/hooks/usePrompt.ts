@@ -6,33 +6,33 @@ const usePrompt: () => [string[], (update: string[]) => void] = () => {
   const db = useIndexedDB('prompt');
   const getAtom = usePromptAtom();
   const setAtom = useUpdatePromptAtom();
-  const [promptData, setPromptData] = useState<string[]>(
-    getAtom[getAtom.length - 1]
-  );
-
-  const initializePrompt = useCallback(async () => {
-    // IndexedDB에서 데이터 가져오기
-    const dataFromDB = (await db.getAll()).map((e) => e.content);
-    if (dataFromDB.length === 0) {
-      // 데이터가 없으면 초기화
-      setAtom([]);
-      setPromptData([]);
-    } else {
-      // 데이터가 있으면 상태 업데이트
-      dataFromDB.forEach((e) => {
-        setAtom(e);
-        setPromptData(e);
-      });
-    }
-  }, [db, setAtom]);
+  const [promptData, setPromptData] = useState<string[]>(getAtom[getAtom.length - 1]);
 
   useEffect(() => {
-    if (getAtom[0][0] === '') {
-      // 초기 상태인 경우
-      initializePrompt();
-    }
+    const initializePrompt = async () => {
+      // IndexedDB에서 데이터 가져오기
+      const dataFromDB = (await db.getAll()).map((e) => e.content);
+
+      if (dataFromDB.length === 0) {
+        // 데이터가 없으면 초기화
+        setAtom([]);
+        setPromptData([]);
+      } else {
+        // 데이터가 있으면 상태 업데이트
+        dataFromDB.forEach((e) => {
+          setAtom(e);
+          setPromptData(e);
+        });
+      }
+    };
+
+    initializePrompt();
+  }, []);
+
+  useEffect(() => {
+    // 여기서 promptData 업데이트
     setPromptData(getAtom[getAtom.length - 1]);
-  }, [initializePrompt]);
+  }, [getAtom]);
 
   const setPrompt = useCallback(
     (update: string[]) => {

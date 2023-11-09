@@ -16,12 +16,16 @@ const MultiPlayPage = () => {
   const [history, setHistory] = useState<string[][] | null>(null);
   const [chat, setChat] = useState<string[] | null>(null);
   const client = useRef<CompatClient | null>(null);
-  const [_getPrompt, setPrompt] = usePrompt();
+  const [getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
-  const gameCode = 'YMi8mg';
-  const playerCode = 'YMi8mg-yl7q7k';
+  const gameCode = '8VFKOK';
+  const playerCode = '8VFKOK-bOCyuT';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("PROMPT ATOM: ", promptAtom);
+  }, [promptAtom])
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -61,7 +65,7 @@ const MultiPlayPage = () => {
             // 원본 데이터와 프롬프트 구분
             const prompt = body.prompt.split("\n\n");
 
-            setPrompt(prompt);
+            // setPrompt(prompt);
 
             // 기존 프롬프트 내역에 새로운 메시지 추가
             setHistory((prevHistory) => {
@@ -80,18 +84,12 @@ const MultiPlayPage = () => {
       client.current.subscribe(
         `/topic/chat/${gameCode}`,
         async (message) => {
-          console.log(message);
           const arr = [];
           for (let i = 0; i < 3; i++) {
             arr.push(message.body);
           }
-          // db.add({ content: arr });
-          // const get = await db.getAll();
-          // console.log(db.getAll());
-          db.getAll().then((get) => console.log(get[get.length-1].content))
-          // console.log(get);
           setPrompt(arr);
-          console.log(promptAtom, 'hi')
+          // console.log(getPrompt);
           // 기존 대화 내역에 새로운 메시지 추가
           setChat((prevChat) => {
             return prevChat ? [...prevChat, message.body] : [message.body];
@@ -120,7 +118,24 @@ const MultiPlayPage = () => {
     } else console.log('Already Disconnected!!!');
   };
 
+  const sendPromptHandler = (text: string) => {
+    // 사용자가 입력한 프롬프트 송신 메서드
+    if (client.current)
+      client.current.send(
+        `/player/${gameCode}`,
+        {},
+        JSON.stringify({
+          gameCode: gameCode,
+          raceCode: 'RAC-001',
+          jobCode: 'JOB-001',
+          nickName: playerCode,
+          prompt: text,
+        })
+      );
+  }
+
   const sendEventHandler = () => {
+    // 사용자가 선택한 선택지 송신 메서드
     if (client.current)
       client.current.send(
         `/player/${gameCode}`,
@@ -184,8 +199,6 @@ const MultiPlayPage = () => {
     };
   }, []);
 
-  useEffect(() => {}, [history]);
-
   return (
     <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary">
       <div className="w-400 h-full flex flex-col justify-between items-start">
@@ -199,7 +212,7 @@ const MultiPlayPage = () => {
         <div className="w-full flex justify-end py-1 pr-10">
           <TextButton text="게임 나가기" onClickEvent={() => leaveGame()} />
         </div>
-        <PromptInterface gameType="multi" sendEventHandler={sendEventHandler} />
+        <PromptInterface gameType="multi" sendEventHandler={sendEventHandler} sendPromptHandler={sendPromptHandler} />
       </div>
     </div>
   );
