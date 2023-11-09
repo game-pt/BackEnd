@@ -15,6 +15,7 @@ public enum GameErrorMessage  {
     RACE_NOT_FOUND(BAD_REQUEST, "해당 종족이 존재하지 않습니다."),
     JOB_NOT_FOUND(BAD_REQUEST, "해당 직업이 존재하지 않습니다."),
     ACT_NOT_FOUND(BAD_REQUEST, "해당 동작이 존재하지 않습니다."),
+    ITEM_NOT_FOUND(BAD_REQUEST, "아이템이 존재하지 않습니다."),
     DICE_NOT_FOUND(NOT_FOUND, "다이스의 값을 찾을 수 없습니다. 다시 시도해주세요"),
     MONSTER_INVALID(INTERNAL_SERVER_ERROR, "몬스터가 유효하지 않습니다."),
     RACE_INVALID(INTERNAL_SERVER_ERROR, "종족이 유효하지 않습니다."),
