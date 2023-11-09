@@ -5,5 +5,5 @@ export interface ICharacterStatus {
   race: string;
   job: string;
   imgCode: string;
-  stat: IStatObject[];
+  statList: IStatObject[];
 }

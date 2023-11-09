@@ -54,3 +54,33 @@ export interface IPostPlayerRequest {
   jobCode: string;
   nickname: string;
 }
+
+export interface IPlayerStatusResponse {
+  nickname: string;
+  race: {
+    code: string;
+    name: string;
+  };
+  gender?: string;
+  job: {
+    code: string;
+    name: string;
+    skillList: Array<{
+      name: string;
+      desc: string;
+    }>;
+  };
+  hp: 70;
+  exp: 0;
+  statList: Array<{
+    code: string;
+    name: string;
+    value: number;
+  }>;
+  itemList: Array<{
+    code: string;
+    name: string;
+    desc: string;
+    weight: number;
+  }>;
+}

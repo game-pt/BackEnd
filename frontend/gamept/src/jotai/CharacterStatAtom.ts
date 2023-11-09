@@ -9,52 +9,75 @@
  */
 
 import { atom } from 'jotai';
-import { ICharacterStatus } from '@/types/components/CharacterStatus.type';
+import { IPlayerStatusResponse } from '@/types/components/MakeGameProcess.type';
+import { ICharacterStatusAtom } from '@/types/components/CharacterStatAtom.types';
 
-export const characterStatusAtom = atom({
+export const characterStatusAtom = atom<ICharacterStatusAtom>({
   nickname: '',
   race: '',
   job: '',
   imgCode: '',
-  stat: {},
+  hp: 0,
+  exp: 0,
+  statList: [],
+  skillList: [],
+  itemList: [],
 });
 
-export const characterSkillAtom = atom<Array<{ name: string; desc: string }>>(
-  []
-);
-
-//Array<{ name: string; desc: string }>
-// 캐릭터 정보 갱신할 경우 사용, 변경된 스탯으로 이루어진 배열을 매개변수로 전달
-export const setCharacterStatusAtom = atom(
-  (get) => get(characterStatusAtom),
-  (_get, set, changedStat: Record<string, number>[]) => {
-    set(characterStatusAtom, (prev) => ({
-      ...prev,
-      stat: { ...prev.stat, ...changedStat },
-    }));
-  }
-);
-
-// 캐릭터 생성 시 사용
+// 캐릭터 정보 가져오기 및 초기화
+// 이거 백에서 받은 API 그대로 박고 여기서 조절하는 방향으로 가자
+// 그러려면 타입 정의가 필요함.
 export const initCharacterStatusAtom = atom(
   (get) => get(characterStatusAtom),
-  (_get, set, status: ICharacterStatus) => {
-    set(characterStatusAtom, () => ({
-      ...status,
+  (_get, set, status: IPlayerStatusResponse) => {
+    set(characterStatusAtom, {
+      nickname: status.nickname,
+      race: status.race.name,
+      job: status.job.name,
+      imgCode: '',
+      hp: status.hp,
+      exp: status.exp,
+      statList: status.statList.map<{ statName: string; statValue: number }>(
+        (element) => ({ statName: element.name, statValue: element.value })
+      ),
+      skillList: status.job.skillList.map<{ name: string; desc: string }>(
+        (element) => ({ ...element })
+      ),
+      itemList: status.itemList.map<{
+        code: string;
+        name: string;
+        desc: string;
+        weight: number;
+      }>((element) => ({ ...element })),
+    });
+  }
+);
+
+// 이미지코드 초기화
+export const initExtra = atom(
+  null,
+  (_get, set, imgCode: string, gender: number) => {
+    set(characterStatusAtom, (prev) => ({
+      ...prev,
+      imgCode,
+      gender: gender === 0 ? '남성' : '여성',
     }));
   }
 );
 
-// 스킬 가져오기
-export const getSkillAtom = atom((get) => get(characterSkillAtom));
-
-// 스킬 init
-export const setSkillAtom = atom(
-  null,
-  (_get, set, skills: Array<{ name: string; desc: string }>) => {
-    set(
-      characterSkillAtom,
-      skills.map((element) => ({ ...element }))
-    );
+// 캐릭터 스탯 가져오기 및 스탯 수정
+export const statControlAtom = atom(
+  (get) => get(characterStatusAtom).statList,
+  (get, set, changedStat: Array<{ statName: string; statValue: number }>) => {
+    set(characterStatusAtom, {
+      ...get(characterStatusAtom),
+      statList: changedStat.map<{ statName: string; statValue: number }>(
+        (element) => ({ ...element })
+      ),
+    });
   }
 );
+
+// 스킬 가져오기 필요시 구현
+
+// 아이템 set 및 get은 추후 구현 (사용안할수도 있으니)

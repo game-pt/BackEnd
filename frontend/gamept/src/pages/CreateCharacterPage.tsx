@@ -17,11 +17,11 @@ import {
   fetchGetRaces,
   fetchGetJobs,
   fetchPostPlayer,
-  fetchGetSkills,
+  fetchGetPlayerInfo,
 } from '@/services/CreateCharacterService';
 import { IStatObject } from '@/types/components/CharacterCard.types';
 import { useMutation } from 'react-query';
-
+import { initCharacterStatusAtom, initExtra } from '@/jotai/CharacterStatAtom';
 const CreateCharacterPage = () => {
   const [characterStatus, setCharacterStatus] = useState<ICharacterStatus>({
     race: '',
@@ -34,10 +34,12 @@ const CreateCharacterPage = () => {
     statList: [],
     bonusList: [],
   });
-  console.log(characterStatus, '히히히');
+
   const [processLevel, setProcessLevel] = useState(0);
   const navigate = useNavigate();
   const [gameCode] = useAtom(selectGameCodeAtom);
+  const [, initCharacter] = useAtom(initCharacterStatusAtom);
+  const [, initExtraData] = useAtom(initExtra);
   const { data: races, isSuccess: isRaceSuccess } = useQuery({
     queryKey: ['getRaces', gameCode],
     queryFn: () => fetchGetRaces(gameCode),
@@ -46,7 +48,7 @@ const CreateCharacterPage = () => {
     queryKey: ['getJobs', gameCode],
     queryFn: () => fetchGetJobs(gameCode),
   });
-  const { mutate, data } = useMutation(fetchPostPlayer);
+  const { mutate } = useMutation(fetchPostPlayer);
   const handleNextLevel = () => setProcessLevel(processLevel + 1);
   const handlePreviousLevel = () => setProcessLevel(processLevel - 1);
   const handleRaceSelect = (
@@ -88,35 +90,39 @@ const CreateCharacterPage = () => {
   const handleNextStage = (playerCode: string) => {
     const setSkillAtom = async () => {
       // 스킬을 위한 API 요청 보내기
-      const skills = await fetchGetSkills(playerCode);
-      // 스킬 정보 atom에 담기
+      const playerInfo = await fetchGetPlayerInfo(gameCode, playerCode);
+
+      // 받은 API를 atom에 초기화
+      initCharacter(playerInfo);
+      // API response에는 imgCode 없으니 따로 넣어줌
+      initExtraData(characterStatus.imgCode, characterStatus.gender);
+      navigate('/singlePlay');
     };
 
     setSkillAtom();
-    // 정보 atom에 담기
 
-    navigate('/singlePlay');
+    // navigate('/singlePlay');
   };
 
   useEffect(() => {
-    if (processLevel === 3) {
-      mutate(
-        {
-          gameCode,
-          raceCode: characterStatus.raceCode,
-          jobCode: characterStatus.jobCode,
-          nickname: characterStatus.nickname,
+    if (processLevel < 3) return;
+
+    mutate(
+      {
+        gameCode,
+        raceCode: characterStatus.raceCode,
+        jobCode: characterStatus.jobCode,
+        nickname: characterStatus.nickname,
+      },
+      {
+        onSuccess: (res) => {
+          handleNextStage(res.playerCode);
         },
-        {
-          onSuccess: (res) => {
-            handleNextStage(res.playerCode);
-          },
-          onError: (err) => {
-            console.log('에러 근데 검출이 안됨', err);
-          },
-        }
-      );
-    }
+        onError: (err) => {
+          console.log('에러 근데 검출이 안됨', err);
+        },
+      }
+    );
   }, [processLevel]);
 
   const createCharacterProcess = [
