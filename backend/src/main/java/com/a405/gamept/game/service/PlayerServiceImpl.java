@@ -202,12 +202,14 @@ public class PlayerServiceImpl implements PlayerService {
         List<ItemGetResponseDto> itemGetResponseDtoList = new ArrayList<>();
 
         ItemGetResponseDto itemGetResponseDto;
-        for(String item : player.getItemCodeList()) {
-            itemGetResponseDto = ItemGetResponseDto.from(itemRepository.findById(item)
-                    .orElseThrow(() -> new GameException(GameErrorMessage.ITEM_INVALID)));
-            ValidateUtil.validate(itemGetResponseDto);
+        if(player.getItemCodeList() != null) {
+            for(String item : player.getItemCodeList()) {
+                itemGetResponseDto = ItemGetResponseDto.from(itemRepository.findById(item)
+                        .orElseThrow(() -> new GameException(GameErrorMessage.ITEM_INVALID)));
+                ValidateUtil.validate(itemGetResponseDto);
 
-            itemGetResponseDtoList.add(itemGetResponseDto);
+                itemGetResponseDtoList.add(itemGetResponseDto);
+            }
         }
 
         // 플레이어 정보 반환
