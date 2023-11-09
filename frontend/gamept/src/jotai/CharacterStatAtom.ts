@@ -16,6 +16,7 @@ export const characterStatusAtom = atom<ICharacterStatusAtom>({
   nickname: '',
   race: '',
   job: '',
+  gender: '',
   imgCode: '',
   hp: 0,
   exp: 0,

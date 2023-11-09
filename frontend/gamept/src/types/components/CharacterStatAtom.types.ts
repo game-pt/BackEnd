@@ -3,6 +3,7 @@ export interface ICharacterStatusAtom {
   race: string;
   job: string;
   imgCode: string;
+  gender?: string;
   hp: number;
   exp: number;
   statList: Array<{ statName: string; statValue: number }>;
