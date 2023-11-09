@@ -7,7 +7,7 @@ export interface IProfileImage {
   onClickEvent?: any;
   hasBorderAsset?: boolean;
   size: number;
-  imgCode: number;
+  imgCode: string;
   alt: string;
   className?: string;
 }
