@@ -1,6 +1,8 @@
 package com.a405.gamept.game.service;
 
+import com.a405.gamept.game.dto.command.FightResultGetCommandDto;
 import com.a405.gamept.game.dto.command.MonsterGetCommandDto;
+import com.a405.gamept.game.dto.response.FightResultGetResponseDto;
 import com.a405.gamept.game.dto.response.MonsterGetResponseDto;
 import com.a405.gamept.game.util.exception.GameException;
 
@@ -16,5 +18,5 @@ public interface FightService {
      */
     MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameException;
 
-
+    FightResultGetResponseDto getFightResult(FightResultGetCommandDto fightResultGetCommandDto);
 }

@@ -12,8 +12,16 @@ public interface GameData {
         put(-1, 2);  // 레벨 1 차이 확률 2
         put(-2, 1);  // 레벨 2 차이 확률 1
     }};
+
     int PLAYER_MAX_LEVEL = 10;
     int MONSTER_MAX_LEVEL = 10;
     int MAX_STAT = 20;
     int MAX_ITEM_SIZE = 4;
+    int FIRST_STEP = 8;
+    int SECOND_STEP = 12;
+    int THIRD_STEP = 16;
+    int FIRST_BONUS = 1;
+    int SECOND_BONUS = 2;
+    int THIRD_BONUS = 3;
+    int FIRST_DEMERIT = -1;
 }

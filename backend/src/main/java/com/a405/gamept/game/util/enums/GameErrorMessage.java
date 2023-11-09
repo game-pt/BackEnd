@@ -27,7 +27,11 @@ public enum GameErrorMessage  {
     INVALID_ITEM_REQUEST(BAD_REQUEST, "해당 스토리에는 아이템이 없습니다."),
     INVALID_DICE_RESPONSE(BAD_REQUEST, "다이스의 값이 1~6사이의 값이 아닙니다. 다시 시도해주세요"),
     PLAYER_FULL(BAD_REQUEST, "게임의 플레이어 정원이 다 찼습니다."),
-    ITEM_FULL(BAD_REQUEST, "아이템을 더 이상 소지할 수 없습니다.");
+    //스킬 관련 에러 메세지
+    SKILL_NOT_FOUND(BAD_REQUEST, "해당 스킬이 존재하지 않습니다."),
+    //아이템 관련 에러 메세지
+    ITEM_FULL(BAD_REQUEST, "아이템을 더 이상 소지할 수 없습니다."),
+    ITEM_STAT_NOT_FOUND(BAD_REQUEST, "이 스토리에서 사용되는 아이템이 아닙니다.");
 
     private final HttpStatus code;
     private final String message;
