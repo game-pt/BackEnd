@@ -13,7 +13,7 @@ public record ItemSetCommandDto (
         @Pattern(regexp = RegexPatterns.GAME, message = "게임이 올바르지 않습니다.")
         String gameCode,
         @NotBlank(message = "플레이어가 존재하지 않습니다.")
-        @Pattern(regexp = "플레이어가 올바르지 않습니다.")
+        @Pattern(regexp = RegexPatterns.PLAYER, message = "플레이어가 올바르지 않습니다.")
         String playerCode
 ) {
     public static ItemSetCommandDto from(ItemSetRequestDto itemSetRequestDto) {
