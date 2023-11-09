@@ -252,12 +252,12 @@ public class GameServiceImpl implements GameService {
         int extremePoint = act.getExtremeStd();
         int plusPoint = 0;
 
-        if(relationStat >= 16){
-            plusPoint = 3;
-        } else if(relationStat >= 12){
-            plusPoint = 2;
-        } else if(relationStat >= 8){
-            plusPoint = 1;
+        if(relationStat >= GameData.THIRD_STEP){
+            plusPoint = GameData.THIRD_BONUS;
+        } else if(relationStat >= GameData.SECOND_STEP){
+            plusPoint = GameData.SECOND_BONUS;
+        } else if(relationStat >= GameData.FIRST_STEP){
+            plusPoint = GameData.FIRST_BONUS;
         }
         //성공 기준 값
         int successStd = act.getSuccessStd();
