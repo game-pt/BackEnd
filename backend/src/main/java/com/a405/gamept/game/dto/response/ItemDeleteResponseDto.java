@@ -10,7 +10,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record ItemSetResponseDto(
+public record ItemDeleteResponseDto(
         @NotBlank(message = "플레이어 코드가 존재하지 않습니다.")
         @Pattern(regexp = RegexPatterns.PLAYER, message = "플레이어 코드가 올바르지 않습니다.")
         String playerCode,

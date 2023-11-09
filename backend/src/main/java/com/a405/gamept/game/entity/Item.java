@@ -47,6 +47,7 @@ public class Item extends BaseEntity {
      * 회복
      * 데미지 주는 용
      */
+    @Enumerated(EnumType.STRING)
     private ItemCase itemCase;
 
     /**

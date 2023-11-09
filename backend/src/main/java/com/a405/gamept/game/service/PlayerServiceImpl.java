@@ -145,6 +145,8 @@ public class PlayerServiceImpl implements PlayerService {
                 .nickname(playerSetCommandDto.nickname())
                 .stat(stat)
                 .hp(hp)
+                .exp(0)
+                .level(1)
                 .build();
 
         playerList.add(player.getCode());
@@ -220,6 +222,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .job(PlayerJobGetResponseDto.from(job))
                 .hp(player.getHp())
                 .exp(player.getExp())
+                .level(player.getLevel())
                 .statList(statGetResponseDtoList)
                 .itemList(itemGetResponseDtoList)
                 .build();
