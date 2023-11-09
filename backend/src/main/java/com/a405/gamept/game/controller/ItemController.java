@@ -26,7 +26,7 @@ public class ItemController {
     @MessageMapping("/item")
     public void setItem(@Valid ItemSetRequestDto itemSetRequestDto) {
         ItemSetResponseDto itemSetResponseDto = itemService.setItem(ItemSetCommandDto.from(itemSetRequestDto));
-        webSocket.convertAndSendToUser(itemSetResponseDto.playerCode(), "item", itemSetResponseDto.itemList());
+        webSocket.convertAndSendToUser(itemSetResponseDto.playerCode(), "/item", itemSetResponseDto.itemList());
     }
 
 }

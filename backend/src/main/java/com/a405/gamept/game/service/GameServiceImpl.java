@@ -245,6 +245,10 @@ public class GameServiceImpl implements GameService {
 
         // 다이스 값 가져오기
         int diceValue = game.getDiceValue();
+        game = game.toBuilder()
+                .diceValue(0)
+                .build();
+        gameRedisRepository.save(game);
 
         //보너스 스탯
         String statCode = act.getStat().getCode();
@@ -369,7 +373,9 @@ public class GameServiceImpl implements GameService {
         Random random = new Random();
         int index = random.nextInt(itemList.size());
         Item newItem = itemList.get(index);
-        player.toBuilder().newItemCode(newItem.getCode());
+        player = player.toBuilder()
+                .newItemCode(newItem.getCode())
+                .build();
         playerRedisRepository.save(player);
         result.append("< ").append(newItem.getName()).append(" > ").append("이/가 나타났다.");
 

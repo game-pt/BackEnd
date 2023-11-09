@@ -509,9 +509,11 @@ public class FightServiceImpl implements FightService {
         // 플레이어가 가진 아이템 목록에서 아이템을 사용
         StringBuilder result = new StringBuilder();
         boolean haveItemFlag = false;
-        for(String code : player.getItemCodeList()){
+        List<String> itemCodeList = player.getItemCodeList();
+        for(String code : itemCodeList){
             if(code.equals(itemCode)) {
                 haveItemFlag = true;
+                itemCodeList.remove(code);
                 break;
             }
         }
@@ -525,6 +527,8 @@ public class FightServiceImpl implements FightService {
         String itemName = item.getName();
         int itemEffectValue = item.getEffectValue();
         DeathCheckCommandDto deathCheckCommandDto = null;
+
+        //아이템 종류 별 발동
         if(itemCase.equals("STAT_UP")){
             List<ItemStat> itemStatList = itemStatRepository.findAllByItemCode(itemCode)
                     .orElseThrow(()-> new GameException(GameErrorMessage.ITEM_STAT_NOT_FOUND));
@@ -582,6 +586,11 @@ public class FightServiceImpl implements FightService {
             result.append("적에게서 안전하게 도망쳤다...");
             deathCheckCommandDto.of(result.toString(), "Y", player.getHp());
         }
+
+        player = player.toBuilder()
+                .itemCodeList(itemCodeList)
+                .build();
+        playerRedisRepository.save(player);
 
         return deathCheckCommandDto;
     }
