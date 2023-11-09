@@ -34,7 +34,7 @@ const SwitchGenderBtn = (props: ISwitchGender) => {
 
 const CharacterCard = (props: ICharacterCard) => {
   const [gender, setGender] = useState(props.gender);
-  const [imgCode, setImageCode] = useState(
+  const [, setImageCode] = useState(
     getImgCode(props.gender, props.code, props.raceCode)
   );
   const handleGenderBtn = (event: MouseEvent) => {
