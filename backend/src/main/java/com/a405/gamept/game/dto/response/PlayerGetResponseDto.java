@@ -28,6 +28,9 @@ public record PlayerGetResponseDto (
         @PositiveOrZero(message = "플레이어의 경험치는 음수가 될 수 없습니다.")
         int exp,
 
+        @Positive(message = "플레이어의 레벨은 양수여야 합니다.")
+        int level,
+
         @NotNull(message = "플레이어의 스탯이 존재하지 않습니다.")
         List<StatGetResponseDto> statList,
 
