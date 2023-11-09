@@ -145,6 +145,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .nickname(playerSetCommandDto.nickname())
                 .stat(stat)
                 .hp(hp)
+                .exp(0)
                 .build();
 
         playerList.add(player.getCode());
