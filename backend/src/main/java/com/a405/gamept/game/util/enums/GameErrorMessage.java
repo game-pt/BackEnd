@@ -31,7 +31,9 @@ public enum GameErrorMessage  {
     ITEM_FULL(BAD_REQUEST, "아이템을 더 이상 소지할 수 없습니다."),
     INVALID_ITEM_REQUEST(BAD_REQUEST, "해당 스토리에는 아이템이 없습니다."),
     ITEM_INVALID(INTERNAL_SERVER_ERROR, "아이템이 유효하지 않습니다."),
-    ITEM_STAT_NOT_FOUND(BAD_REQUEST, "정상적인 아이템이 아닙니다.");
+    ITEM_STAT_NOT_FOUND(BAD_REQUEST, "정상적인 아이템이 아닙니다."),
+    //스탯 관련 에러 메세지
+    ACT_STAT_NOT_FOUND(BAD_REQUEST, "행동과 관련된 스탯이 없습니다.");
 
     private final HttpStatus code;
     private final String message;
