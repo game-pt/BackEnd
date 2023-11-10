@@ -87,5 +87,5 @@ public interface GameService {
      *                               playerCode : 누가 수행하는지
      * @return : 게임 코드와 prompt
      */
-    PromptResultGetResponseDto playAct(ActResultGetCommandDto actResultGetCommandDto);
+    ActResultGetResponseDto playAct(ActResultGetCommandDto actResultGetCommandDto);
 }
