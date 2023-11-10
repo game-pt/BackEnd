@@ -62,6 +62,7 @@ export interface IPlayerStatusResponse {
     name: string;
   };
   gender?: string;
+  level: number;
   job: {
     code: string;
     name: string;
