@@ -8,7 +8,7 @@
  * stat : 스탯 배열
  */
 
-import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 import { IPlayerStatusResponse } from '@/types/components/MakeGameProcess.type';
 import { ICharacterStatusAtom } from '@/types/components/CharacterStatAtom.types';
 import { IProfileInterface } from '@/types/components/ProfileInterface.type';
