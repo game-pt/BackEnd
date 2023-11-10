@@ -49,8 +49,6 @@ const ProfileInterface = () => {
         client.current.disconnect(() => {
           if (client.current) {
             client.current.unsubscribe('sub-0');
-            client.current.unsubscribe('sub-1');
-            client.current.unsubscribe('sub-2');
           }
         });
       } catch (err) {
