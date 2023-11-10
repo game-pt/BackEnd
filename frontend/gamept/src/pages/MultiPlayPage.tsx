@@ -110,7 +110,7 @@ const MultiPlayPage = () => {
         //     {
         //         actCode: "act-001",
         //         actName: "일반 공격",
-        //         subtask: null
+        //         subtask: 'NONE'
         //     },
         //     {
         //         actCode: "act-002",
