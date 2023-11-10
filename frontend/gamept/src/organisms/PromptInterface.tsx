@@ -5,13 +5,11 @@ import ChoiceGroup from './ChoiceGroup';
 import LoadingSpinner1 from '@/atoms/LoadingSpinner1';
 import { IPromptInterface } from '@/types/components/Prompt.types';
 import { usePromptAtom } from '@/jotai/PromptAtom';
-import usePrompt from '@/hooks/usePrompt';
 
 const PromptInterface = (props: IPromptInterface) => {
   const [text, setText] = useState('');
   const [isFetching, setIsFetching] = useState(true);
   const prompt = usePromptAtom();
-  const [_getPrompt, setPrompt] = usePrompt();
 
   const sendEvent = () => {
     if (props.sendEventHandler) props.sendEventHandler();
@@ -21,7 +19,6 @@ const PromptInterface = (props: IPromptInterface) => {
   const sendPrompt = () => {
     // Prompt 보내는 메서드
     if (props.sendPromptHandler) props.sendPromptHandler(text);
-    setPrompt([text]);
     setText('');
   }
 

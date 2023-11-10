@@ -132,6 +132,8 @@ const MultiPlayPage = () => {
           prompt: text,
         })
       );
+    
+      setPrompt([text]);
   }
 
   const sendEventHandler = () => {

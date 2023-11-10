@@ -9,7 +9,7 @@ const updatePromptAtom = atom(
       return;
     }
     const currentPrompt = get(promptAtom);
-    console.log('CUR : ',promptAtom);
+    
     const updatedPrompt =
       currentPrompt[0][0] === '' && currentPrompt.length === 1
         ? [update]
