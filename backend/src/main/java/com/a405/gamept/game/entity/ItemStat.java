@@ -39,17 +39,18 @@ public class ItemStat extends BaseEntity {
     private Stat stat;
 
     /**
-     * statBonus: 추가 스탯
+     * effectValue: 아이템의 영향력
+     * 데미지량, 회복량, 스탯업량 등
      */
     @Column(columnDefinition = "SMALLINT")
-    private int statBonus;
+    private int effectValue;
 
     @Builder
-    public ItemStat(String code, Item item, Stat stat, int statBonus) {
+    public ItemStat(String code, Item item, Stat stat, int effectValue) {
         this.code = code;
         this.item = item;
         this.stat = stat;
-        this.statBonus = statBonus;
+        this.effectValue = effectValue;
     }
 
 }
