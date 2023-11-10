@@ -177,6 +177,8 @@ public class EventServiceImpl implements EventService {
      * >= 0: 발견한 이벤트 중, 가장 마지막에 등장한 이벤트 리스트에서의 인덱스.
      */
     private int findLastEventInText(List<Event> eventList, String text) {
+        if (text == null) return -1;
+
         int lastEvent = -1;
         int lastEventIndex = -1;
         for (int i = 0; i < eventList.size(); i++) {
