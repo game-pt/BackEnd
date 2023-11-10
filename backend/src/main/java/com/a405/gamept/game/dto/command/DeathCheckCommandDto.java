@@ -1,6 +1,7 @@
 package com.a405.gamept.game.dto.command;
 
 import com.a405.gamept.game.entity.Subtask;
+import com.a405.gamept.play.entity.Player;
 import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
 
@@ -16,13 +17,14 @@ public record DeathCheckCommandDto(
         String prompt,
         @NotBlank(message = "전투 종료 여부는 필수입니다.")
         String endYn,
-        int playerHp
+        int playerHp,
+        Player player
 ) {
-        public DeathCheckCommandDto of(String prompt, String endYn, int playerHp){
-                return new DeathCheckCommandDto(prompt, endYn, playerHp);
+        public DeathCheckCommandDto of(String prompt, String endYn, int playerHp, Player player){
+                return new DeathCheckCommandDto(prompt, endYn, playerHp, player);
         }
 
         public DeathCheckCommandDto from(DeathCheckCommandDto deathCheckCommandDto){
-                return new DeathCheckCommandDto(deathCheckCommandDto.prompt, deathCheckCommandDto.endYn, deathCheckCommandDto.playerHp);
+                return new DeathCheckCommandDto(deathCheckCommandDto.prompt, deathCheckCommandDto.endYn, deathCheckCommandDto.playerHp, deathCheckCommandDto.player);
         }
 }

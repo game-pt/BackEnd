@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface ItemStatRepository extends JpaRepository<ItemStat, String> {
     Optional<List<ItemStat>> findAllByItemCode(String itemCode);
+
+    Optional<ItemStat> findByItemCode(String itemCode);
 }
