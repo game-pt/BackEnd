@@ -8,7 +8,7 @@
  * stat : 스탯 배열
  */
 
-import { atom, useAtom } from 'jotai';
+import { atom, useSetAtom, useAtomValue } from 'jotai';
 import { IPlayerStatusResponse } from '@/types/components/MakeGameProcess.type';
 import { ICharacterStatusAtom } from '@/types/components/CharacterStatAtom.types';
 import { IProfileInterface } from '@/types/components/ProfileInterface.type';
@@ -94,10 +94,11 @@ export const statControlAtom = atom(
 
 // useStatAtom : statList 가져오기
 // useUpdateStatAtom(statList) : 넣은 statList 기준으로 스탯 갱신
-export const [useStatAtom, useUpdateStatAtom] = useAtom(statControlAtom);
+export const useStatAtom = () => useAtomValue(statControlAtom);
+export const useUpdateStatAtom = () => useSetAtom(statControlAtom);
 
 // 프로필 인터페이스 반영 및 가져오기
-const profileInterfaceControlAtom = atom(
+export const profileInterfaceControlAtom = atom(
   (get) => {
     const status = get(characterStatusAtom);
     return {
@@ -114,9 +115,10 @@ const profileInterfaceControlAtom = atom(
   }
 );
 
-export const [useProfileAtom, useUpdateProfileAtom] = useAtom(
-  profileInterfaceControlAtom
-);
+export const useProfileAtom = () => useAtomValue(profileInterfaceControlAtom);
+export const useUpdateProfileAtom = () =>
+  useSetAtom(profileInterfaceControlAtom);
+
 // 스킬 가져오기 필요시 구현
 
 // 아이템 set 및 get은 추후 구현 (사용안할수도 있으니)
