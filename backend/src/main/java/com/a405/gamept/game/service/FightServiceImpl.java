@@ -48,34 +48,26 @@ public class FightServiceImpl implements FightService {
 
     @Override
     public MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameException {
-        Story story = storyRepository.findById(monsterGetCommandDto.storyCode()).orElseThrow(() -> new GameException(GameErrorMessage.MONSTER_INVALID));
+        Story story = storyRepository.findById(monsterGetCommandDto.storyCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
+        int monsterLevel = monsterGetCommandDto.playerLevel();
+        
+        int randNum = (int) Math.floor(Math.random() * GameData.MAX_PERCENTAGE);  // 몬스터 레벨 정비 확률
+        int sumPercentage = 0; // GameData.MAX_PERCENTAGE을 0으로 초기화
 
-        /** 몬스터 레벨 난수 뽑기 **/
-        int sum = 0;  // 랜덤하게 돌릴 숫자
-        for(int i : GameData.monsterRate.values()) {
-            sum += i;  // 각 확률 더하기
-        }
+        for(int i : GameData.monsterRate.keySet()) {
+            sumPercentage += GameData.monsterRate.get(i);  // 각 정비 확률 더하기
 
-        int randNum = (int) Math.floor(Math.random() * sum);  // 몬스터 레벨 확률
-
-        sum = 0;  // 각 확률 더하기
-        int monsterLevel = 0;
-        for(int key : GameData.monsterRate.keySet()) {
-            sum += GameData.monsterRate.get(key);  // 확률 더하기
-            if(randNum < sum) {  // 확률에 해당할 경우
-                monsterLevel = monsterGetCommandDto.playerLevel() + key;
-                if(monsterLevel <= 0){  // 몬스터 레벨이 0 이하일 경우
-                    monsterLevel = 1;  // 몬스터 레벨 1로 설정
-                } else if(GameData.MONSTER_MAX_LEVEL < monsterLevel) {  // 몬스터 레벨이 10 초과일 경우
-                    monsterLevel = GameData.MONSTER_MAX_LEVEL;  // 몬스터 레벨 10으로 설정
-                }
+            if(randNum <= sumPercentage) {  // 해당 확률에 속할 시
+                monsterLevel += i;
                 break;
             }
         }
-
+        // 레벨 조정
+        monsterLevel = Math.max(1, monsterLevel); monsterLevel = Math.min(GameData.MONSTER_MAX_LEVEL, monsterLevel);
         Monster monster = monsterRepository.findByStoryCodeAndLevel(monsterGetCommandDto.storyCode(), monsterLevel)
                 .orElseThrow(()->new GameException(GameErrorMessage.MONSTER_INVALID));
-        //log.info("등장 몬스터: { 레벨: " + monster.getLevel() + " 공격력 : "+ monster.getAttack()+" }");
+        log.info("등장 몬스터: { 레벨: " + monster.getLevel() + " 공격력 : "+ monster.getAttack()+" }");
 
         //몬스터 생성
         String fightingEnermyCode = monsterCreat(monster);
@@ -94,7 +86,6 @@ public class FightServiceImpl implements FightService {
     }
 
     public String monsterCreat(Monster monster){
-        //log.info("Redis에 몬스터 생성");
         // 몬스터 임의 코드 생성
         String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         String code = new Random().ints(6, 0, CHARACTERS.length())
