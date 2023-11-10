@@ -75,8 +75,11 @@ public class GameController {
         //return ResponseEntity.ok(fightService.getFightResult(fightResultGetRequestDto.toCommand(gameCode)));
     }
 
-    @GetMapping("/monster")
-    public ResponseEntity<?> getMonster(@Valid MonsterGetRequestDto monsterGetRequestDto) {
-        return ResponseEntity.ok(fightService.getMonster(monsterGetRequestDto.toCammand()));
+    /*
+    @PostMapping("/monster")
+    public ResponseEntity<?> setMonster(@Valid @RequestBody MonsterSetRequestDto monsterSetRequestDto) {
+        fightService.setMonster(MonsterSetCommandDto.from(monsterSetRequestDto));
+        return ResponseEntity.ok(true);
     }
+     */
 }

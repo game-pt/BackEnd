@@ -30,7 +30,6 @@ import com.a405.gamept.util.ValidateUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -86,13 +85,11 @@ public class GameServiceImpl implements GameService {
 
         Story story = storyRepository.findById(gameSetCommandDto.storyCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
-        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        String code = new Random().ints(6, 0, CHARACTERS.length())
-                .mapToObj(CHARACTERS::charAt)
-                .map(Object::toString)
-                .collect(Collectors.joining());
 
-        log.info("게임 코드: " + code);
+        String code = "";
+        do {
+            code = ValidateUtil.getRandomUID();
+        } while(gameRedisRepository.findById(code).isPresent());
 
         Game game = Game.builder()
                 .code(code)
@@ -117,14 +114,7 @@ public class GameServiceImpl implements GameService {
         Player player = playerRedisRepository.findById(chatCommandDto.playerCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
-        boolean flag = false;  // 방에 존재하는 사용자인지 체크하는 로직
-        for (String playerCode : game.getPlayerList()) {
-            if(playerCode.equals(player.getCode())) {
-                flag = true;
-                break;
-            }
-        }
-        if(!flag) {  // 플레이어가 방에 존재하지 않을 경우
+        if(!ValidateUtil.validatePlayer(player.getCode(), game.getPlayerList())) {
             throw new GameException(GameErrorMessage.PLAYER_NOT_FOUND);
         }
 

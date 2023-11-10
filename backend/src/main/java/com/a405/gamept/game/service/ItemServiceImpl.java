@@ -40,14 +40,7 @@ public class ItemServiceImpl implements ItemService {
         Player player = playerRepository.findById(itemSetCommandDto.playerCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
-        boolean flag = false;  // 방에 존재하는 사용자인지 체크하는 로직
-        for (String playerCode : game.getPlayerList()) {
-            if(playerCode.equals(player.getCode())) {
-                flag = true;
-                break;
-            }
-        }
-        if(!flag) {  // 플레이어가 방에 존재하지 않을 경우
+        if(!ValidateUtil.validatePlayer(player.getCode(), game.getPlayerList())) {
             throw new GameException(GameErrorMessage.PLAYER_NOT_FOUND);
         }
 
@@ -87,18 +80,11 @@ public class ItemServiceImpl implements ItemService {
         Player player = playerRepository.findById(itemDeleteCommandDto.playerCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
-        boolean flag = false;  // 방에 존재하는 사용자인지 체크하는 로직
-        for (String playerCode : game.getPlayerList()) {
-            if(playerCode.equals(player.getCode())) {
-                flag = true;
-                break;
-            }
-        }
-        if(!flag) {  // 플레이어가 방에 존재하지 않을 경우
+        if(!ValidateUtil.validatePlayer(player.getCode(), game.getPlayerList())) {
             throw new GameException(GameErrorMessage.PLAYER_NOT_FOUND);
         }
 
-        flag = false;  // 플레이어가 소지한 아이템인지 체크하는 로직
+        boolean flag = false;  // 플레이어가 소지한 아이템인지 체크하는 로직
         List<String> itemCodeList = player.getItemCodeList();
         if(itemCodeList == null) {  // 아이템 존재할 경우에만 검사
             for (String itemCode : itemCodeList) {
