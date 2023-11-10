@@ -259,7 +259,7 @@ public class GameServiceImpl implements GameService {
 
         //성공, 실패에 따른 진행
         StringBuilder prompt = new StringBuilder();
-        String eventName = act.getEvent().getName();
+        //String eventName = act.getEvent().getName();
 
         prompt.append(player.getNickname()).append("은 ");
         // 극적 성공, 실패 여부 확인
@@ -302,7 +302,9 @@ public class GameServiceImpl implements GameService {
             dead.append("눈앞이 깜깜해진다.....\n");
             gameOverYn = "Y";
         }else{
+            System.out.println("act:______________"+act);
             Event event = act.getEvent();
+            System.out.println("EVENT:______________"+event);
             if((event.getItemYn() == 'Y' && flag) || event.getCode().equals("EV-005")) {
                 itemYn = "Y";
                 promptResult.append("\n").append(getItem(game.getStoryCode(), player));
@@ -314,16 +316,16 @@ public class GameServiceImpl implements GameService {
     }
 
     public String statChane(Player player, Game game, Act act, int bonusPoint){
-        log.info("상태 변화 진행, 이벤트 : "+act.getEvent().getName()+" 행동 : "+act.getName());
+        //log.info("상태 변화 진행, 이벤트 : "+act.getEvent().getName()+" 행동 : "+act.getName());
         List<ActStat> actStatList = actStatRepository.findAllByActCode(act.getCode())
                 .orElseThrow(()->new GameException(GameErrorMessage.ACT_STAT_NOT_FOUND));
         StringBuilder result = new StringBuilder();
         result.append("[ \n").append(" 스탯 변화 발생\n");
 
         for(ActStat actStat : actStatList){
-            log.info("관련 스탯은 : "+actStat.getStat().getName());
+            //log.info("관련 스탯은 : "+actStat.getStat().getName());
             if(actStat.getStat().getCode().equals("STAT-007")){
-                log.info("체력 회복 또는 감소");
+                //log.info("체력 회복 또는 감소");
                 int hp = player.getHp();
                 int maxHp = player.getStat().get("STAT-001") * 10;
 

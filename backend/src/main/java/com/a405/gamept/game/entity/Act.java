@@ -2,9 +2,11 @@ package com.a405.gamept.game.entity;
 
 import com.a405.gamept.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Act
@@ -47,7 +49,8 @@ public class Act extends BaseEntity {
     /**
      * [fk] event : 이 행동이 사용되는 이벤트
      * */
-    @ManyToOne(fetch = FetchType.LAZY)
+    //@ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "event_code")
     private Event event;
 
