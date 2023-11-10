@@ -1,18 +1,27 @@
 // Propmt Atoms Props Type
 export interface IPropmpt {
   type: string;
-  data: string[][] | null;
+  data: IPromptHistory[][] | null;
+  isFetching: boolean;
+}
+
+export interface IPromptHistory {
+  msg: string;
+  mine: boolean;
 }
 
 export interface IPromptInterface {
   gameType: string;
-  sendEventHandler?: () => void;
+  isFetching: boolean;
+  event: IActsType[] | null;
+  sendEventHandler?: (e: IActsType) => void;
   sendPromptHandler?: (text: string) => void;
 }
 
 export interface IChoiceGroup {
   gameType: string;
-  onClickEvent?: () => void;
+  data?: IActsType[] | null; 
+  onClickEvent?: (e: IActsType) => void;
 }
 
 export interface IGetPromptType {
@@ -29,4 +38,10 @@ export interface IGetPromptType {
       },
     ];
   };
+}
+
+export interface IActsType {
+  actCode: string;
+  actName: string;
+  subtask: string | null;
 }
