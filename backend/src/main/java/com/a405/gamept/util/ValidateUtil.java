@@ -5,11 +5,14 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ValidateUtil {
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-    static Set<ConstraintViolation<Object>> violations;
+    private static Set<ConstraintViolation<Object>> violations;
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     public static void validate(Object object) {
         violations = validator.validate(object);
@@ -19,7 +22,16 @@ public class ValidateUtil {
                 throw new GameException(violation.getMessage());
             }
         }
+    }
 
-        return;
+    public static String getRandomUID() {
+        return getRandomUID(6);  // 기본 길이를 6으로 설정
+    }
+
+    public static String getRandomUID(int streamSize) {
+        return new Random().ints(6, 0, CHARACTERS.length())
+                .mapToObj(CHARACTERS::charAt)
+                .map(Object::toString)
+                .collect(Collectors.joining());
     }
 }
