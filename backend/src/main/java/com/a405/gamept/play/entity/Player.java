@@ -46,9 +46,15 @@ public class Player {
      */
     private int exp;
     /**
-     * stat : 사용자의 스탯
+     * stat : 사용자의 스탯 리스트
      */
     private Map<String, Integer> stat;
+
+    /**
+     * tmpAddStat : 아이템 사용으로 인해 추가된 변수
+     * 게임이 끝나면 원래 없어져야함
+     */
+    private Map<String, Integer> tmpAddStat;
 
     /**
      * statPoint : 스탯을 올릴 수 있는 포인트

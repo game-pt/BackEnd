@@ -30,7 +30,6 @@ import com.a405.gamept.util.ValidateUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -86,13 +85,11 @@ public class GameServiceImpl implements GameService {
 
         Story story = storyRepository.findById(gameSetCommandDto.storyCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
-        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        String code = new Random().ints(6, 0, CHARACTERS.length())
-                .mapToObj(CHARACTERS::charAt)
-                .map(Object::toString)
-                .collect(Collectors.joining());
 
-        log.info("게임 코드: " + code);
+        String code = "";
+        do {
+            code = ValidateUtil.getRandomUID();
+        } while(gameRedisRepository.findById(code).isPresent());
 
         Game game = Game.builder()
                 .code(code)
@@ -117,14 +114,7 @@ public class GameServiceImpl implements GameService {
         Player player = playerRedisRepository.findById(chatCommandDto.playerCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
-        boolean flag = false;  // 방에 존재하는 사용자인지 체크하는 로직
-        for (String playerCode : game.getPlayerList()) {
-            if(playerCode.equals(player.getCode())) {
-                flag = true;
-                break;
-            }
-        }
-        if(!flag) {  // 플레이어가 방에 존재하지 않을 경우
+        if(!ValidateUtil.validatePlayer(player.getCode(), game.getPlayerList())) {
             throw new GameException(GameErrorMessage.PLAYER_NOT_FOUND);
         }
 
@@ -235,7 +225,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public PromptResultGetResponseDto playAct(ActResultGetCommandDto actResultGetCommandDto) {
+    public ActResultGetResponseDto playAct(ActResultGetCommandDto actResultGetCommandDto) {
         Act act = actRepository.findById(actResultGetCommandDto.actCode())
                 .orElseThrow(()->new GameException(GameErrorMessage.ACT_NOT_FOUND));
         Game game = gameRedisRepository.findById(actResultGetCommandDto.gameCode())
@@ -245,6 +235,10 @@ public class GameServiceImpl implements GameService {
 
         // 다이스 값 가져오기
         int diceValue = game.getDiceValue();
+        game = game.toBuilder()
+                .diceValue(0)
+                .build();
+        gameRedisRepository.save(game);
 
         //보너스 스탯
         String statCode = act.getStat().getCode();
@@ -265,7 +259,7 @@ public class GameServiceImpl implements GameService {
 
         //성공, 실패에 따른 진행
         StringBuilder prompt = new StringBuilder();
-        String eventName = act.getEvent().getName();
+        //String eventName = act.getEvent().getName();
 
         prompt.append(player.getNickname()).append("은 ");
         // 극적 성공, 실패 여부 확인
@@ -287,51 +281,64 @@ public class GameServiceImpl implements GameService {
             prompt.append("성공적이지 못한 ");
         }
         prompt.append(act.getName()).append("를 했다.");
-
+        log.info(prompt.toString());
         // ChatGPT에 프롬프트 전송
         StringBuilder promptResult = new StringBuilder();
+        promptResult.append(prompt).append("\n");
         promptResult.append(chatGptClientUtil.enterPrompt(promptResult.toString(), game.getMemory(), game.getPromptList()));
 
         // 스탯 변화 진행
-        String tmp = statChane(player, act, bonusPoint);
-        if(tmp == null){
-            Event death = eventRepository.findById("EV-004")
-                    .orElseThrow(()-> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
-            return PromptResultGetResponseDto.from(null, EventCommandDto.from(death, null));
-        }
-        promptResult.append("\n").append(tmp);
+        String tmp = statChane(player, game, act, bonusPoint);
         // 아이템 획득
         String itemYn = "N";
-
-        Event event = act.getEvent();
-        if(event.getItemYn() == 'Y' && flag) {
-            itemYn = "Y";
-            promptResult.append("\n").append(getItem(game.getStoryCode(), player));
+        String gameOverYn = "N";
+        if(tmp == null){
+            //죽음
+            playerRedisRepository.delete(player);
+            gameRedisRepository.delete(game);
+            StringBuilder dead = new StringBuilder();
+            dead.append("HP가 0이 되었다.\n");
+            dead.append(player.getNickname()).append(" 은 쓰러지고 말았다.\n");
+            dead.append("눈앞이 깜깜해진다.....\n");
+            gameOverYn = "Y";
+        }else{
+            System.out.println("act:______________"+act);
+            Event event = act.getEvent();
+            System.out.println("EVENT:______________"+event);
+            if((event.getItemYn() == 'Y' && flag) || event.getCode().equals("EV-005")) {
+                itemYn = "Y";
+                promptResult.append("\n").append(getItem(game.getStoryCode(), player));
+            }
+            promptResult.append("\n").append(tmp);
         }
 
-        return PromptResultGetResponseDto.from(actResultGetCommandDto.gameCode(), promptResult.toString(), itemYn);
+        return ActResultGetResponseDto.of(actResultGetCommandDto.gameCode(), promptResult.toString(), itemYn, gameOverYn);
     }
 
-    public String statChane(Player player, Act act, int bonusPoint){
-        log.info("상태 변화 진행, 이벤트 : "+act.getEvent().getName()+" 행동 : "+act.getName());
+    public String statChane(Player player, Game game, Act act, int bonusPoint){
+        //log.info("상태 변화 진행, 이벤트 : "+act.getEvent().getName()+" 행동 : "+act.getName());
         List<ActStat> actStatList = actStatRepository.findAllByActCode(act.getCode())
-                .orElse(null);
+                .orElseThrow(()->new GameException(GameErrorMessage.ACT_STAT_NOT_FOUND));
         StringBuilder result = new StringBuilder();
         result.append("[ \n").append(" 스탯 변화 발생\n");
+
         for(ActStat actStat : actStatList){
+            //log.info("관련 스탯은 : "+actStat.getStat().getName());
             if(actStat.getStat().getCode().equals("STAT-007")){
-                log.info("체력 회복 또는 감소");
+                //log.info("체력 회복 또는 감소");
                 int hp = player.getHp();
                 int maxHp = player.getStat().get("STAT-001") * 10;
 
-                if(hp + (bonusPoint * 10) <= 0) return null;
-
                 hp = Math.min(hp + (bonusPoint * 10), maxHp);
-                player.toBuilder().hp(hp).build();
+                player = player.toBuilder().hp(hp).build();
                 if(bonusPoint > 0){
                     result.append("< HP >가 "+bonusPoint * 10+" 회복 되었습니다.\n");
-                }else{
-                    result.append("< 대실패!!!! > "+bonusPoint * 10+" 의 피해를 입었습니다.\n");
+                }else if(bonusPoint < 0){
+                    result.append("< HP >가 "+bonusPoint * 10+" 감소 했습니다.\n");
+                    if(hp + (bonusPoint * 10) <= 0) {
+                        result.append(" ] ");
+                        return result.toString();
+                    }
                 }
             }else{
                 log.info("스탯 상승 또는 감소");
@@ -348,8 +355,13 @@ public class GameServiceImpl implements GameService {
                         .orElseThrow(()-> new GameException(GameErrorMessage.STAT_INVALID));
 
                 player.toBuilder().stat(playerStat);
-                result.append("< ").append(stat.getName()).append(" >").append(" 이/가 +").append(bonusPoint)
-                        .append(" 변화 했습니다.\n");
+                if(bonusPoint > 0){
+                    result.append("< ").append(stat.getName()).append(" >").append(" 이/가 +").append(bonusPoint)
+                            .append(" 증가 했습니다.\n");
+                }else {
+                    result.append("< ").append(stat.getName()).append(" >").append(" 이/가 ").append(bonusPoint)
+                            .append(" 감소 했습니다.\n");
+                }
             }
         }
 
@@ -369,7 +381,9 @@ public class GameServiceImpl implements GameService {
         Random random = new Random();
         int index = random.nextInt(itemList.size());
         Item newItem = itemList.get(index);
-        player.toBuilder().newItemCode(newItem.getCode());
+        player = player.toBuilder()
+                .newItemCode(newItem.getCode())
+                .build();
         playerRedisRepository.save(player);
         result.append("< ").append(newItem.getName()).append(" > ").append("이/가 나타났다.");
 
