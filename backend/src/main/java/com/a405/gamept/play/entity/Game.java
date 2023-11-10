@@ -3,7 +3,9 @@ package com.a405.gamept.play.entity;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.a405.gamept.game.util.RegexPatterns;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -60,6 +62,13 @@ public class Game {
     private List<String> playerList;
 
     /**
+     * fightingEnemyCode: 현재 전투 중인 적 코드
+     */
+    @NotBlank(message = "현재 전투 중인 적이 존재하지 않습니다.")
+    @Pattern(regexp = RegexPatterns.FIGHTING_ENEMY, message = "현재 전투 중인 적이 올바르지 않습니다.")
+    private String fightingEnemyCode;
+
+    /**
      * promptList : 최근 prompt 5개
      */
     @Builder.Default
@@ -71,7 +80,7 @@ public class Game {
     private int diceValue;
 
     @Builder
-    public Game(String code, String storyCode, String memory, int turn, int eventCnt, double eventRate, List<String> playerList, List<Prompt> promptList, int diceValue) {
+    public Game(String code, String storyCode, String memory, int turn, int eventCnt, double eventRate, List<String> playerList, String fightingEnemyCode, List<Prompt> promptList, int diceValue) {
         this.code = code;
         this.storyCode = storyCode;
         this.memory = memory;
@@ -79,6 +88,7 @@ public class Game {
         this.eventCnt = eventCnt;
         this.eventRate = eventRate;
         this.playerList = playerList;
+        this.fightingEnemyCode = fightingEnemyCode;
         this.promptList = promptList;
         this.diceValue = diceValue;
     }
