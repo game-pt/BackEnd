@@ -23,7 +23,7 @@ const SinglePlayPage = () => {
             onClickEvent={() => console.log('진짜 나가요?')}
           />
         </div>
-        <PromptInterface gameType='single' />
+        <PromptInterface gameType="single" />
       </div>
     </div>
   );
