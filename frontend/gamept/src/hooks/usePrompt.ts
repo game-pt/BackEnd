@@ -12,12 +12,11 @@ const usePrompt: () => [string[], (update: string[]) => void] = () => {
     const initializePrompt = async () => {
       // IndexedDB에서 데이터 가져오기
       const dataFromDB = (await db.getAll()).map((e) => e.content);
-
       if (dataFromDB.length === 0) {
         // 데이터가 없으면 초기화
         setAtom([]);
         setPromptData([]);
-      } else {
+      } else if (dataFromDB.length > 0 && getAtom[0][0] == '') {
         // 데이터가 있으면 상태 업데이트
         dataFromDB.forEach((e) => {
           setAtom(e);

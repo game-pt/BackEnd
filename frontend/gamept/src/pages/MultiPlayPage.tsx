@@ -14,6 +14,7 @@ import { usePromptAtom } from '@/jotai/PromptAtom';
 
 const MultiPlayPage = () => {
   const [chat, setChat] = useState<string[] | null>(null);
+  const [isPromptFetching, setIsPromptFetching] = useState<boolean>(false);
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
@@ -61,10 +62,12 @@ const MultiPlayPage = () => {
 
           // 프롬포트 응답이라면
           if (body.prompt !== undefined) {
+            console.log(body);
             // 원본 데이터와 프롬프트 구분
             const prompt = body.prompt.split("\n\n");
 
             setPrompt(prompt);
+            setIsPromptFetching(false);
           }
 
         },
@@ -110,18 +113,18 @@ const MultiPlayPage = () => {
   };
 
   const sendPromptHandler = (text: string) => {
-    setPrompt([text]);
     // 사용자가 입력한 프롬프트 송신 메서드
-    // if (client.current) {
-    //   client.current.send(
-    //     `/prompt/${gameCode}`,
-    //     {},
-    //     JSON.stringify({
-    //       prompt: text,
-    //     })
-    //   );
-    //   setPrompt([text]);
-    // }
+    if (client.current) {
+      client.current.send(
+        `/prompt/${gameCode}`,
+        {},
+        JSON.stringify({
+          prompt: text,
+        })
+      );
+      setIsPromptFetching(true);
+      setPrompt([`나 : ${text}`]);
+    }
   }
 
   const sendEventHandler = () => {
@@ -202,7 +205,7 @@ const MultiPlayPage = () => {
         <div className="w-full flex justify-end py-1 pr-10">
           <TextButton text="게임 나가기" onClickEvent={() => leaveGame()} />
         </div>
-        <PromptInterface gameType="single" sendEventHandler={sendEventHandler} sendPromptHandler={sendPromptHandler} />
+        <PromptInterface isFetching={isPromptFetching} gameType="single" sendEventHandler={sendEventHandler} sendPromptHandler={sendPromptHandler} />
       </div>
     </div>
   );

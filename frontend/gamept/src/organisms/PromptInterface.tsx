@@ -36,7 +36,7 @@ const PromptInterface = (props: IPromptInterface) => {
           <LoadingSpinner1 />
         </div>
       ) : (
-        <Prompt type="in-game" data={prompt} />
+        <Prompt isFetching={props.isFetching} type="in-game" data={prompt} />
       )}
       {/* 선택지 버튼 출력할 Area */}
       <div className="w-full h-[250px] flex justify-center self-center">

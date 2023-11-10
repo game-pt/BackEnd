@@ -2,10 +2,12 @@
 export interface IPropmpt {
   type: string;
   data: string[][] | null;
+  isFetching: boolean;
 }
 
 export interface IPromptInterface {
   gameType: string;
+  isFetching: boolean;
   sendEventHandler?: () => void;
   sendPromptHandler?: (text: string) => void;
 }
