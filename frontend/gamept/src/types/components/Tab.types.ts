@@ -7,6 +7,7 @@ export interface TabContent {
 
 // SKill
 export interface SkillValuesType {
+  name: string;
   img: string;
   desc: string;
 }
