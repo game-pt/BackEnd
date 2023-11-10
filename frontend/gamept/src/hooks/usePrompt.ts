@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useIndexedDB } from 'react-indexed-db-hook';
 
 const usePrompt: () => [string[], (update: string[]) => void] = () => {
-  console.log("usePrompt Hook");
   const db = useIndexedDB('prompt');
   const getAtom = usePromptAtom();
   const setAtom = useUpdatePromptAtom();
@@ -11,7 +10,6 @@ const usePrompt: () => [string[], (update: string[]) => void] = () => {
 
   useEffect(() => {
     const initializePrompt = async () => {
-      console.log("initial Enter");
       // IndexedDB에서 데이터 가져오기
       const dataFromDB = (await db.getAll()).map((e) => e.content);
 
@@ -27,7 +25,6 @@ const usePrompt: () => [string[], (update: string[]) => void] = () => {
         });
       }
     };
-    console.log("initialPrompt")
     initializePrompt();
   }, []);
 

@@ -5,7 +5,6 @@ import { IPropmpt } from '@/types/components/Prompt.types';
  * 현재 더미 데이터로 출력 중 / props.data 를 출력해줘야함
  */
 const Prompt = (props: IPropmpt) => {
-  console.log(props.data);
   const promptHeight =
     props.type === 'in-game' ? 'h-[330px]' : 'min-h-[330px] h-[60%]';
   return (

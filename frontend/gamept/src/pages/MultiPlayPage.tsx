@@ -16,7 +16,7 @@ const MultiPlayPage = () => {
   const [history, setHistory] = useState<string[][] | null>(null);
   const [chat, setChat] = useState<string[] | null>(null);
   const client = useRef<CompatClient | null>(null);
-  const [getPrompt, setPrompt] = usePrompt();
+  const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
   const gameCode = '8VFKOK';
   const playerCode = '8VFKOK-bOCyuT';
