@@ -20,6 +20,7 @@ const Prompt = (props: IPropmpt) => {
     >
       {props.data && (
         <div className={props.type}>
+          <p className="w-full h-8 bg-transparent"></p>
           {props.data.map((e, i) => (
             <div
               key={`prompt_${i}`}
