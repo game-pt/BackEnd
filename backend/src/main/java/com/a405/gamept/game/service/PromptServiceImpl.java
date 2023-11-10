@@ -104,11 +104,7 @@ public class PromptServiceImpl implements PromptService {
         List<Prompt> promptList = game.getPromptList();
 
         // 랜덤 코드 발생
-        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        String code = new Random().ints(6, 0, CHARACTERS.length())
-                .mapToObj(CHARACTERS::charAt)
-                .map(Object::toString)
-                .collect(Collectors.joining());
+        String code = ValidateUtil.getRandomUID();
 
         // 새로운 프롬프트 로그 생성
         Prompt newPrompt = Prompt.builder()

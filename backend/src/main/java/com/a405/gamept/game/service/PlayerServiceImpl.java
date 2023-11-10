@@ -132,11 +132,10 @@ public class PlayerServiceImpl implements PlayerService {
         }
         int hp = stat.get("STAT-001") * 10;
         // 플레이어 임의 코드 생성
-        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        String code = new Random().ints(6, 0, CHARACTERS.length())
-                .mapToObj(CHARACTERS::charAt)
-                .map(Object::toString)
-                .collect(Collectors.joining());
+        String code = "";
+        do {
+            code = ValidateUtil.getRandomUID();
+        } while(playerRepository.findById(game.getCode() + "-" + code).isPresent());
 
         Player player = Player.builder()
                 .code(game.getCode() + "-" + code)  // 임의의 코드 생성
