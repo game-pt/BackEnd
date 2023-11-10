@@ -9,11 +9,11 @@ import { useRef, useEffect } from 'react';
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import { IProfileInterface } from '@/types/components/ProfileInterface.type';
-
+import ProfileImage from '@/atoms/ProfileImage';
 const ProfileInterface = () => {
   const [getStatusAtom] = useAtom(initCharacterStatusAtom);
   const client = useRef<CompatClient | null>(null);
-
+  const setProfileStat = useUpdateProfileAtom();
   const connectHandler = () => {
     const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
     client.current = Stomp.over(() => sock);
@@ -35,7 +35,7 @@ const ProfileInterface = () => {
           // message.body를 통해 데이터 받아서
           // 프로필 업데이트 로직 수행
           // 해당 방 구독하는 모든 플레이어들 데이터 저장하는 객체에다가 업데이트
-          useUpdateProfileAtom(message.body as IProfileInterface);
+          setProfileStat(message.body as IProfileInterface);
         },
         {}
       );
@@ -83,10 +83,10 @@ const ProfileInterface = () => {
   return (
     <div className="w-[400px] h-[173.58px] flex bg-[url(./src/assets/interface/profile_interface.png)] bg-cover">
       <div className="min-w-[174px] h-full flex justify-center items-center">
-        <img
-          className="min-w-[150px]"
-          src={`./src/assets/profile/${getStatusAtom.imgCode}`}
+        <ProfileImage
           alt="player_profile"
+          imgCode={getStatusAtom.imgCode}
+          size={150}
         />
       </div>
       <div className="w-full h-full flex flex-col">
@@ -129,5 +129,5 @@ const getMaxHp = (helathStat: number) => {
   return INIT_MAX_HP + helathStat * GROW_FACTOR;
 };
 
-const gameCode = '';
+const gameCode = '8VFKOK';
 export default ProfileInterface;
