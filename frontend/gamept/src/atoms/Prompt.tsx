@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react';
  * 현재 더미 데이터로 출력 중 / props.data 를 출력해줘야함
  */
 const Prompt = (props: IPropmpt) => {
-  const lastPromptRef = useRef<HTMLParagraphElement | null>(null);
+  const lastPromptRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (lastPromptRef.current) {
@@ -26,17 +26,23 @@ const Prompt = (props: IPropmpt) => {
         <div className={props.type}>
           {props.data.map((e, i) =>
             <div key={`prompt_${i}`}
-            className="my-4">{
+            className="my-4 flex"
+            ref={
+              props.data && props.data.length - 1 === i
+                ? lastPromptRef
+                : null
+            }>{
+              e[0].mine && 
+              <img src='./src/assets/player_profile.png'
+              className="w-6 h-6 mt-2 mr-2" />
+            }{
               e.map((v, j) => (
                 <p
+                  className={v.mine ? `text-secondaryContainer` : ``}
                   key={`promptMsg_${i}_${j}`}
-                  ref={
-                    props.data && props.data.length - 1 === i
-                      ? lastPromptRef
-                      : null
-                  }
+                  
                 >
-                  {v}
+                  {v.msg}
                 </p>
               ))}</div>
           )}

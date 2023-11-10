@@ -1,17 +1,22 @@
+import { IPromptHistory } from '@/types/components/Prompt.types';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 
-const promptAtom = atom([['']]);
+const initValue: IPromptHistory = {
+  msg: '',
+  mine: false,
+}
+
+const promptAtom = atom([[initValue]]);
 
 const updatePromptAtom = atom(
   [['']],
-  (get, set, update: string[]) => {
+  (get, set, update: IPromptHistory[]) => {
     if (update.length == 0) {
       return;
     }
     const currentPrompt = get(promptAtom);
-    
     const updatedPrompt =
-      currentPrompt[0][0] === '' && currentPrompt.length === 1
+      currentPrompt[0][0] === initValue && currentPrompt.length === 1
         ? [update]
         : [...currentPrompt, update];
     set(promptAtom, updatedPrompt);

@@ -11,9 +11,11 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import usePrompt from '@/hooks/usePrompt';
 import { usePromptAtom } from '@/jotai/PromptAtom';
+import { IActsType, IPromptHistory } from '@/types/components/Prompt.types';
 
 const MultiPlayPage = () => {
   const [chat, setChat] = useState<string[] | null>(null);
+  const [event, setEvent] = useState<IActsType[] | null>(null);
   const [isPromptFetching, setIsPromptFetching] = useState<boolean>(false);
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
@@ -24,7 +26,7 @@ const MultiPlayPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("PROMPT ATOM: ", promptAtom);
+    if (promptAtom[promptAtom.length - 1][0].mine) setIsPromptFetching(true);
   }, [promptAtom])
 
   // 웹소캣 객체 생성
@@ -60,16 +62,40 @@ const MultiPlayPage = () => {
         async (message) => {
           const body = JSON.parse(message.body);
 
-          // 프롬포트 응답이라면
+          // 프롬포트가 있다면
           if (body.prompt !== undefined) {
             console.log(body);
             // 원본 데이터와 프롬프트 구분
-            const prompt = body.prompt.split("\n\n");
+            const prompt = body.prompt.split("\n").map((e: IPromptHistory) => {
+              return { msg: e, mine: false }
+            });
 
             setPrompt(prompt);
             setIsPromptFetching(false);
           }
 
+          // Event가 있다면
+          if (body.event !== null) {
+            const event = body.event;
+            setEvent(event.acts);
+          }
+        //   setEvent([
+        //     {
+        //         actCode: "act-001",
+        //         actName: "일반 공격",
+        //         subtask: null
+        //     },
+        //     {
+        //         actCode: "act-002",
+        //         actName: "스킬",
+        //         subtask: "SKILL"
+        //     },
+        //     {
+        //         actCode: "act-003",
+        //         actName: "아이템",
+        //         subtask: "ITEM"
+        //     }
+        // ]);
         },
         {}
       );
@@ -80,7 +106,7 @@ const MultiPlayPage = () => {
         async (message) => {
           const arr = [];
           for (let i = 0; i < 3; i++) {
-            arr.push(message.body);
+            arr.push({msg: message.body, mine: false });
           }
           setPrompt(arr);
           // console.log(getPrompt);
@@ -123,11 +149,12 @@ const MultiPlayPage = () => {
         })
       );
       setIsPromptFetching(true);
-      setPrompt([`나 : ${text}`]);
+      setPrompt([{ msg: text, mine: true }]);
     }
   }
 
-  const sendEventHandler = () => {
+  const sendEventHandler = (choice: IActsType) => {
+    console.log(choice);
     // 사용자가 선택한 선택지 송신 메서드
     if (client.current)
       client.current.send(
@@ -205,7 +232,7 @@ const MultiPlayPage = () => {
         <div className="w-full flex justify-end py-1 pr-10">
           <TextButton text="게임 나가기" onClickEvent={() => leaveGame()} />
         </div>
-        <PromptInterface isFetching={isPromptFetching} gameType="single" sendEventHandler={sendEventHandler} sendPromptHandler={sendPromptHandler} />
+        <PromptInterface event={event} isFetching={isPromptFetching} gameType="single" sendEventHandler={sendEventHandler} sendPromptHandler={sendPromptHandler} />
       </div>
     </div>
   );
