@@ -1,13 +1,7 @@
 package com.a405.gamept.game.service;
 
-import com.a405.gamept.game.dto.command.JobGetCommandDto;
-import com.a405.gamept.game.dto.command.PlayerGetCommandDto;
-import com.a405.gamept.game.dto.command.PlayerSetCommandDto;
-import com.a405.gamept.game.dto.command.RaceGetCommandDto;
-import com.a405.gamept.game.dto.response.JobGetResponseDto;
-import com.a405.gamept.game.dto.response.PlayerGetResponseDto;
-import com.a405.gamept.game.dto.response.PlayerSetResponseDto;
-import com.a405.gamept.game.dto.response.RaceGetResponseDto;
+import com.a405.gamept.game.dto.command.*;
+import com.a405.gamept.game.dto.response.*;
 import com.a405.gamept.game.util.exception.GameException;
 
 import java.util.List;
@@ -48,4 +42,18 @@ public interface PlayerService {
      * @author  : 유영
      */
     PlayerGetResponseDto getPlayer(PlayerGetCommandDto playerGetCommandDto) throws GameException;
+
+    /**
+     * 해당 플레이어의 스탯을 조회한다.
+     * @param playStatGetCommandDto
+     * @return  : 플레이어 스탯
+     * @author  : 우석
+     */
+    PlayerStatGetResponseDto getPlayerStat(PlayerStatGetCommandDto playStatGetCommandDto) throws GameException;
+
+    /**
+     *
+     * @return
+     */
+    PlayerStatGetResponseDto addPlayerStat(PlayerStatUpdateCommandDto playerStatUpdateCommandDto) throws GameException;
 }
