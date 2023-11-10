@@ -93,11 +93,7 @@ const ProfileInterface = () => {
         <div className="w-full">
           <Gauge
             value={getStatusAtom.hp ?? 100}
-            total={getMaxHp(
-              getStatusAtom.statList.find(
-                (element) => element.statName === '건강'
-              )?.statValue ?? 0
-            )}
+            total={getHealthStat(getStatusAtom.statList) * GROW_FACTOR}
             type="hp"
           />
           <div style={{ marginTop: '-15px' }}>
@@ -121,12 +117,15 @@ const ProfileInterface = () => {
   );
 };
 
-const INIT_MAX_HP = 100;
 const GROW_FACTOR = 10;
 
 // 건강 스텟 가져와서 MaxHP 계산
-const getMaxHp = (helathStat: number) => {
-  return INIT_MAX_HP + helathStat * GROW_FACTOR;
+const getHealthStat = (
+  statList: Array<{ statName: string; statValue: number; code: string }>
+) => {
+  return (
+    statList.find((element) => element.statName === '건강')?.statValue ?? 0
+  );
 };
 
 const gameCode = '8VFKOK';
