@@ -176,14 +176,7 @@ public class PlayerServiceImpl implements PlayerService {
         Job job = jobRepository.findById(player.getJobCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.JOB_INVALID));
 
-        boolean flag = false;  // 방에 존재하는 사용자인지 체크하는 로직
-        for (String playerCode : game.getPlayerList()) {
-            if(playerCode.equals(player.getCode())) {
-                flag = true;
-                break;
-            }
-        }
-        if(!flag) {  // 플레이어가 방에 존재하지 않을 경우
+        if(!ValidateUtil.validatePlayer(player.getCode(), game.getPlayerList())) {
             throw new GameException(GameErrorMessage.PLAYER_NOT_FOUND);
         }
 
