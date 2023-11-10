@@ -1,10 +1,12 @@
 package com.a405.gamept.util;
 
+import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.game.util.exception.GameException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,5 +35,16 @@ public class ValidateUtil {
                 .mapToObj(CHARACTERS::charAt)
                 .map(Object::toString)
                 .collect(Collectors.joining());
+    }
+
+    // 방에 존재하는 사용자인지 체크하는 로직
+    public static boolean validatePlayer(String player, List<String> playerCodeList) {
+        for (String playerCode : playerCodeList) {
+            if(playerCode.equals(player)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
