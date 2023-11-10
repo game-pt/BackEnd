@@ -13,7 +13,6 @@ import usePrompt from '@/hooks/usePrompt';
 import { usePromptAtom } from '@/jotai/PromptAtom';
 
 const MultiPlayPage = () => {
-  const [history, setHistory] = useState<string[][] | null>(null);
   const [chat, setChat] = useState<string[] | null>(null);
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
@@ -54,9 +53,9 @@ const MultiPlayPage = () => {
         {}
       );
 
-      // 연결 성공 시 해당 방을 구독하면 서버로부터 이벤트 발생 & 프롬프트 추가 시 마다 메세지 수신
+      // 연결 성공 시 해당 방을 구독하면 서버로부터 이벤트 발생
       client.current.subscribe(
-        `/topic/game/${gameCode}`,
+        `/topic/prompt/${gameCode}`,
         async (message) => {
           const body = JSON.parse(message.body);
 
@@ -65,15 +64,7 @@ const MultiPlayPage = () => {
             // 원본 데이터와 프롬프트 구분
             const prompt = body.prompt.split("\n\n");
 
-            // setPrompt(prompt);
-
-            // 기존 프롬프트 내역에 새로운 메시지 추가
-            setHistory((prevHistory) => {
-              console.log(history);
-              return prevHistory
-                ? [...prevHistory, prompt]
-                : JSON.parse(message.body);
-            });
+            setPrompt(prompt);
           }
 
         },
@@ -119,21 +110,18 @@ const MultiPlayPage = () => {
   };
 
   const sendPromptHandler = (text: string) => {
+    setPrompt([text]);
     // 사용자가 입력한 프롬프트 송신 메서드
-    if (client.current)
-      client.current.send(
-        `/player/${gameCode}`,
-        {},
-        JSON.stringify({
-          gameCode: gameCode,
-          raceCode: 'RAC-001',
-          jobCode: 'JOB-001',
-          nickName: playerCode,
-          prompt: text,
-        })
-      );
-    
-      setPrompt([text]);
+    // if (client.current) {
+    //   client.current.send(
+    //     `/prompt/${gameCode}`,
+    //     {},
+    //     JSON.stringify({
+    //       prompt: text,
+    //     })
+    //   );
+    //   setPrompt([text]);
+    // }
   }
 
   const sendEventHandler = () => {
@@ -143,7 +131,7 @@ const MultiPlayPage = () => {
         `/player/${gameCode}`,
         {},
         JSON.stringify({
-          gameCode: gameCode,
+          gameCode,
           raceCode: 'RAC-001',
           jobCode: 'JOB-001',
           nickName: playerCode,
@@ -214,7 +202,7 @@ const MultiPlayPage = () => {
         <div className="w-full flex justify-end py-1 pr-10">
           <TextButton text="게임 나가기" onClickEvent={() => leaveGame()} />
         </div>
-        <PromptInterface gameType="multi" sendEventHandler={sendEventHandler} sendPromptHandler={sendPromptHandler} />
+        <PromptInterface gameType="single" sendEventHandler={sendEventHandler} sendPromptHandler={sendPromptHandler} />
       </div>
     </div>
   );
