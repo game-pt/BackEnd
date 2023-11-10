@@ -25,8 +25,8 @@ public record PromptResultGetCommandDto(
     public static PromptResultGetCommandDto from(PromptResultGetRequestDto promptResultGetRequestDto, String gameCode) {
         return PromptResultGetCommandDto.builder()
                 .gameCode(gameCode)
+                .playerCode(promptResultGetRequestDto.playerCode())
                 .prompt(promptResultGetRequestDto.prompt())
-                .eventCommandDto(null)
                 .build();
     }
 
