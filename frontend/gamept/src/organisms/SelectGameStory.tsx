@@ -14,17 +14,20 @@ import { useAtom } from 'jotai';
 import { useNavigate } from 'react-router-dom';
 import GameModeCard from './GameModeCard';
 // import { useState } from 'react';
+import { useGameCode } from '@/hooks/useCode';
 
 const SelectGameStory = (props: ISelectGameStory) => {
   // const [selected, setSelected] = useState(0);
   const [, setGameCode] = useAtom(gameCodeAtom);
+  const [getGCode, setGCode] = useGameCode();
   const navigate = useNavigate();
 
   const handleSelectStory = (storyCode: string) => {
     const setGameCodeFromAPI = async () => {
       const gameCode = (await fetchPostGame(storyCode)).code;
       console.log('게임코드뭐임', gameCode);
-      setGameCode(gameCode);
+      // setGameCode(gameCode);
+      setGCode(gameCode);
       navigate('/createCharacter');
     };
     setGameCodeFromAPI();

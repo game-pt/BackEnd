@@ -22,7 +22,12 @@ import {
 import { IStatObject } from '@/types/components/CharacterCard.types';
 import { useMutation } from 'react-query';
 import { initCharacterStatusAtom, initExtra } from '@/jotai/CharacterStatAtom';
+// import { useGetGameCode } from '@/jotai/MakeGameAtom';
+import { useGameCode } from '@/hooks/useCode';
 const CreateCharacterPage = () => {
+  const [gameCode, _setGameCode] = useGameCode();
+  // const getGameCodeAtom = useGetGameCode();
+  console.log('fasdfasdfasdf', gameCode);
   const [characterStatus, setCharacterStatus] = useState<ICharacterStatus>({
     race: '',
     raceCode: '',
@@ -37,7 +42,7 @@ const CreateCharacterPage = () => {
 
   const [processLevel, setProcessLevel] = useState(0);
   const navigate = useNavigate();
-  const [gameCode] = useAtom(selectGameCodeAtom);
+  // const [gameCode] = useAtom(selectGameCodeAtom);
   const [, initCharacter] = useAtom(initCharacterStatusAtom);
   const [, initExtraData] = useAtom(initExtra);
   const { data: races, isSuccess: isRaceSuccess } = useQuery({
