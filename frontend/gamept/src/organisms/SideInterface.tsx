@@ -5,7 +5,6 @@ import './SideInterface.css'; // Import your CSS file
 import { SkillValuesType, TabContent } from '@/types/components/Tab.types';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 
-
 import ChattingTab from '@/atoms/ChattingTab';
 import { ISideInterface } from '@/types/components/SideInterface.types';
 import { TbNavigation } from "react-icons/tb";
@@ -16,6 +15,8 @@ import { GiCardDiscard } from "react-icons/gi";
 // const getStat = useStatAtom();
 
 
+//////////////////////////////////////////////////////////////////////////
+/* 빌드 에러 방지용 임시 주석
 const fetchInitialStats = async () => {
   try {
     const response = await axios.get('/api/initial-stats'); // API 엔드포인트를 백엔드에 맞게 수정
@@ -25,7 +26,8 @@ const fetchInitialStats = async () => {
     return {}; // API 요청 실패 시 빈 객체 반환
   }
 };
-
+*/
+/////////////////////////////////////////////////////////////////////////
 
 const StatTab = () => {
   const [statList, setStatList] = useState<Record<string, number>>({
@@ -105,8 +107,10 @@ const StatTab = () => {
           <p className="basis-1/4 text-center">{statName}</p>
           <p className="basis-3/4 text-center">{statList[statName]}</p>
           {statPoints > 0 && (
-             
-            <button onClick={() => increaseStat(statName)} className="bg-transparent px-0 py-0">
+            <button
+              onClick={() => increaseStat(statName)}
+              className="bg-transparent px-0 py-0"
+            >
               <TbNavigation />
             </button>
           )}
@@ -114,7 +118,9 @@ const StatTab = () => {
       ))}
       <div className="text-base flex items-center justify-center">
         <p>스탯 포인트 :&nbsp;</p>
-        <div className="border-2 shadow-md border-primary px-2">{statPoints}</div>
+        <div className="border-2 shadow-md border-primary px-2">
+          {statPoints}
+        </div>
       </div>
     </div>
   );
@@ -129,13 +135,16 @@ const SkillTab = () => {
     const fetchSkills = async () => {
       try {
         // API 엔드포인트에 맞게 수정
-        const response = await axios.get(import.meta.env.VITE_SERVER_URL + '/player', {
-          // 요청에 필요한 데이터가 있다면 여기에 추가
-          params: {
-            gameCode: 'MmwNxr',
-            playerCode: 'MmwNxr-kX3zr1',
-          },
-        });
+        const response = await axios.get(
+          import.meta.env.VITE_SERVER_URL + '/player',
+          {
+            // 요청에 필요한 데이터가 있다면 여기에 추가
+            params: {
+              gameCode: 'MmwNxr',
+              playerCode: 'MmwNxr-kX3zr1',
+            },
+          }
+        );
 
         // "job" 객체에서 "skillList"를 추출
         const jobSkillList = response.data.job.skillList;
@@ -146,6 +155,7 @@ const SkillTab = () => {
           img: `/${skill.name}.png`, // 이미지 경로에 대한 로직은 필요에 따라 수정
           desc: skill.desc,
         }));
+
 
         setSkillList(updatedSkillList); // 서버에서 받아온 스킬 목록을 상태에 저장
         setLoading(false); // 로딩 상태를 해제
@@ -159,7 +169,7 @@ const SkillTab = () => {
   }, []);
 
   return (
-  <div className="w-full h-full flex flex-col p-6 bg-transparent text-16 overflow-y-auto">
+    <div className="w-full h-full flex flex-col p-6 bg-transparent text-16 overflow-y-auto">
       {loading ? (
         <div>스킬을 불러오는 중입니다...</div>
       ) : (
@@ -181,7 +191,6 @@ const SkillTab = () => {
     </div>
   );
 };
-
 
 const ItemTab = () => {
   const [itemList, setItemList] = useState<{
@@ -214,7 +223,7 @@ const ItemTab = () => {
   const handleMouseLeave = () => {
     setHoveredItem('');
   };
-  
+
   const handleItemDelete = (itemName: string) => {
     const updatedItemList = { ...itemList };
     delete updatedItemList[itemName];
@@ -224,7 +233,7 @@ const ItemTab = () => {
   return (
     <div className="w-full h-full flex flex-col p-6 bg-transparent text-16">
       {Object.keys(itemList).map((e, i) => (
-          <div
+        <div
           key={`item_${i}`}
           className="w-full flex my-2 items-center"
           onMouseEnter={() => handleMouseEnter(e)}
@@ -241,13 +250,13 @@ const ItemTab = () => {
             {e}: {itemList[e].desc}
           </div>
           {hoveredItem === e && (
-          <button
-          className="bg-transparent px-0 py-0 ml-2"
-          onClick={() => handleItemDelete(e)}
-        >
-          <GiCardDiscard />
-        </button>
-        )}
+            <button
+              className="bg-transparent px-0 py-0 ml-2"
+              onClick={() => handleItemDelete(e)}
+            >
+              <GiCardDiscard />
+            </button>
+          )}
         </div>
       ))}
     </div>
@@ -269,16 +278,16 @@ const SideInterface = (props: ISideInterface) => {
   const connectHandler = () => {
     const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
     client.current = Stomp.over(() => sock);
-  
+
     // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
     // client.current.debug = () => null;
-  
+
     client.current.connect({}, () => {
       if (client.current == null) {
         console.log('Error');
         return;
       }
-  
+
       // 멀티플레이 용
       // 유저 데이터 업데이트 시 정보 송수신용
       client.current.subscribe(
@@ -292,15 +301,14 @@ const SideInterface = (props: ISideInterface) => {
         {}
       );
 
-      client.current.subscribe(
-        `/topic/player`,
-        (message) => {
-          console.log(JSON.parse(message.body));
-        }
-      );
+      client.current.subscribe(`/topic/player`, (message) => {
+        console.log(JSON.parse(message.body));
+      });
     });
   };
-  
+
+  //////////////////////////////////////////////////////////////////////////
+  /* 빌드 에러 방지용 임시 주석
   const disConnected = () => {
     if (client.current !== null) {
       try {
@@ -318,11 +326,13 @@ const SideInterface = (props: ISideInterface) => {
       client.current = null;
     } else console.log('Already Disconnected!!!');
   };
-  
+  */
+  //////////////////////////////////////////////////////////////////////////
+
   const sendEventHandler = () => {
     if (client.current)
       client.current.send(
-        `/player`,  
+        `/player`,
         {},
         JSON.stringify({
           gameCode: gameCode,
@@ -331,38 +341,39 @@ const SideInterface = (props: ISideInterface) => {
       );
   };
 
-  const tabContents: Record<string, TabContent> = props.sendChat ? {
-    스탯: {
-      content: <StatTab />,
-      color: '#290E08',
-    },
-    스킬: {
-      content: <SkillTab />,
-      color: '#2E130D',
-    },
-    아이템: {
-      content: <ItemTab />,
-      color: '#331812',
-    },
-    채팅: {
-
-      content: <ChattingTab chat={props.chat} sendChat={props.sendChat} />,
-      color: '#422721',
-    },
-  } : {
-    스탯: {
-      content: <StatTab />,
-      color: '#331812',
-    },
-    스킬: {
-      content: <SkillTab />,
-      color: '#381D17',
-    },
-    아이템: {
-      content: <ItemTab />,
-      color: '#3D221C',
-    },
-  };
+  const tabContents: Record<string, TabContent> = props.sendChat
+    ? {
+        스탯: {
+          content: <StatTab />,
+          color: '#290E08',
+        },
+        스킬: {
+          content: <SkillTab />,
+          color: '#2E130D',
+        },
+        아이템: {
+          content: <ItemTab />,
+          color: '#331812',
+        },
+        채팅: {
+          content: <ChattingTab chat={props.chat} sendChat={props.sendChat} />,
+          color: '#422721',
+        },
+      }
+    : {
+        스탯: {
+          content: <StatTab />,
+          color: '#331812',
+        },
+        스킬: {
+          content: <SkillTab />,
+          color: '#381D17',
+        },
+        아이템: {
+          content: <ItemTab />,
+          color: '#3D221C',
+        },
+      };
 
   const changeTab = (tabName: string) => {
     setSelectedTab(tabName);
