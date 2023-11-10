@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import usePrompt from '@/hooks/usePrompt';
 import { usePromptAtom } from '@/jotai/PromptAtom';
-import { IActsType, IPromptHistory } from '@/types/components/Prompt.types';
+import { IActsType } from '@/types/components/Prompt.types';
 
 const MultiPlayPage = () => {
   const [chat, setChat] = useState<string[] | null>(null);
@@ -20,8 +20,8 @@ const MultiPlayPage = () => {
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
-  const gameCode = '8VFKOK';
-  const playerCode = '8VFKOK-bOCyuT';
+  const gameCode = 'YhFFcf';
+  const playerCode = 'YhFFcf-u3GDog';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
@@ -56,6 +56,33 @@ const MultiPlayPage = () => {
         {}
       );
 
+      // 전투 이벤트 업데이트 시 정보 송수신용
+      client.current.subscribe(
+        `/topic/fight/${gameCode}`,
+        (message) => {
+          const body = JSON.parse(message.body);
+
+          if (body.prompt !== undefined) {
+            console.log(body);
+            // 원본 데이터와 프롬프트 구분
+            const prompt = body.prompt.split("\n").map((e: string) => {
+              return { msg: e, mine: false }
+            });
+
+            setPrompt(prompt);
+            setIsPromptFetching(false);
+          }
+
+          if (body.endYn === "Y") setEvent(null);
+
+          // setHP
+          // HP 상태 값 변화
+          // body.playerHp
+
+        },
+        {}
+      );
+
       // 연결 성공 시 해당 방을 구독하면 서버로부터 이벤트 발생
       client.current.subscribe(
         `/topic/prompt/${gameCode}`,
@@ -66,7 +93,7 @@ const MultiPlayPage = () => {
           if (body.prompt !== undefined) {
             console.log(body);
             // 원본 데이터와 프롬프트 구분
-            const prompt = body.prompt.split("\n").map((e: IPromptHistory) => {
+            const prompt = body.prompt.split("\n").map((e: string) => {
               return { msg: e, mine: false }
             });
 
@@ -104,12 +131,6 @@ const MultiPlayPage = () => {
       client.current.subscribe(
         `/topic/chat/${gameCode}`,
         async (message) => {
-          const arr = [];
-          for (let i = 0; i < 3; i++) {
-            arr.push({msg: message.body, mine: false });
-          }
-          setPrompt(arr);
-          // console.log(getPrompt);
           // 기존 대화 내역에 새로운 메시지 추가
           setChat((prevChat) => {
             return prevChat ? [...prevChat, message.body] : [message.body];
@@ -129,6 +150,7 @@ const MultiPlayPage = () => {
             client.current.unsubscribe('sub-0');
             client.current.unsubscribe('sub-1');
             client.current.unsubscribe('sub-2');
+            client.current.unsubscribe('sub-3');
           }
         });
       } catch (err) {
@@ -154,11 +176,14 @@ const MultiPlayPage = () => {
   }
 
   const sendEventHandler = (choice: IActsType) => {
+    // 주사위 돌리고 난 후
+    // 선택지 선택 요청
+
     console.log(choice);
     // 사용자가 선택한 선택지 송신 메서드
-    if (client.current)
+    if (client.current) {
       client.current.send(
-        `/player/${gameCode}`,
+        `/event/${gameCode}`,
         {},
         JSON.stringify({
           gameCode,
@@ -167,6 +192,8 @@ const MultiPlayPage = () => {
           nickName: playerCode,
         })
       );
+    }
+      
   };
 
   const sendChatHandler = (text: string) => {

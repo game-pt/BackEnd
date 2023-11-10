@@ -2,10 +2,6 @@ import { IPropmpt } from '@/types/components/Prompt.types';
 import LoadingSpinner1 from './LoadingSpinner1';
 import { useEffect, useRef } from 'react';
 
-/**
- * props => data (프롬프트 출력 데이터), type (인게임, 엔딩 여부)
- * 현재 더미 데이터로 출력 중 / props.data 를 출력해줘야함
- */
 const Prompt = (props: IPropmpt) => {
   const lastPromptRef = useRef<HTMLDivElement | null>(null);
 
