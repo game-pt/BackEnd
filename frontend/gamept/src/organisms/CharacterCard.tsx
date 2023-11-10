@@ -15,6 +15,7 @@ import MakeCharacterStatContainer from '@/atoms/MakeCharacterStatContainer';
 import SwitchToMale from '@/assets/switchToMale.png';
 import SwitchToFemale from '@/assets/switchToFemale.png';
 import { useState, MouseEvent } from 'react';
+import { getImgCode } from '@/services/GetImgCode';
 
 const SwitchGenderBtn = (props: ISwitchGender) => {
   return (
@@ -33,34 +34,54 @@ const SwitchGenderBtn = (props: ISwitchGender) => {
 
 const CharacterCard = (props: ICharacterCard) => {
   const [gender, setGender] = useState(props.gender);
-
+  const [, setImageCode] = useState(
+    getImgCode(props.gender, props.code, props.raceCode)
+  );
   const handleGenderBtn = (event: MouseEvent) => {
     event.stopPropagation();
-    setGender(1 - (gender ?? 1));
+    setGender(1 - (gender ?? 0));
+    setImgCode();
+  };
+
+  const setImgCode = () => {
+    if (props.type === '종족') {
+      setImageCode(getImgCode(gender ?? 0, props.code));
+    } else {
+      setImageCode(
+        getImgCode(gender ?? 0, props.raceCode ?? 'RACE-001', props.code)
+      );
+    }
+  };
+
+  const handleClickCard = () => {
+    if (props.onSetCharacter === undefined) return;
+    props.onSetCharacter(
+      gender ?? 0,
+      selectImg(props.type, gender ?? 0, props.code, props.raceCode),
+      props.name,
+      props.code,
+      props.baseStats
+    );
+
+    if (props.onNextLevel === undefined) return;
+    props.onNextLevel();
   };
 
   return (
     <div
-      onClick={() => {
-        if (props.onSetCharacter) {
-          props.onSetCharacter(gender ?? 0, props.characterCode);
-        }
-        if (props.onNextLevel) {
-          props.onNextLevel();
-        }
-      }}
+      onClick={handleClickCard}
       className="relative w-[300px] h-[430px] bg-containerLight drop-shadow-xl rounded-[10px] p-5 flex flex-col justify-between caret-transparent"
     >
       <SwitchGenderBtn gender={gender ?? 1} onClickEvent={handleGenderBtn} />
       <ProfileImage
         hasBorderAsset
         size={160}
-        imgCode={131}
+        imgCode={selectImg(props.type, gender ?? 0, props.code, props.raceCode)}
         alt="프로필 이미지"
         className="mx-auto"
       />
       <div className="text-24 text-primary font-hol text-center">
-        {props.codeName}
+        {props.name}
       </div>
       <MakeCharacterStatContainer
         baseStats={props.baseStats}
@@ -71,4 +92,15 @@ const CharacterCard = (props: ICharacterCard) => {
   );
 };
 
+const selectImg = (
+  type: string,
+  gender: number,
+  code1: string,
+  code2?: string
+) => {
+  if (type === '종족') {
+    return getImgCode(gender ?? 0, code1);
+  }
+  return getImgCode(gender ?? 0, code2 ?? 'RACE-001', code1);
+};
 export default CharacterCard;

@@ -18,6 +18,7 @@ const CreateGamePage = () => {
     queryKey: ['getStories'],
     queryFn: () => fetchGetStories(),
   });
+
   const goSelectStory = () => {
     setIsSelectStory(true);
   };

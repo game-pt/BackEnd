@@ -17,7 +17,7 @@ const ProfileImage = (props: IProfileImage) => {
   //   import.meta.url
   // ).href;
 
-  const profileImgUrl = `./src/assets/profile${props.imgCode}.svg`;
+  const profileImgUrl = `./src/assets/profile/${props.imgCode}`;
   return (
     <div
       onClick={props.onClickEvent}
