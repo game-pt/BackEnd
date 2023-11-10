@@ -60,12 +60,6 @@ public class Item extends BaseEntity {
      */
     @Column(columnDefinition = "TINYINT")
     private int weight;
-
-    /**
-     * effectValue: 아이템의 영향력
-     * 데미지량, 회복량, 스탯업량 등
-     */
-    private int effectValue;
     
     @Builder
     public Item(String code, Story story, String name, String desc, String img, int weight) {

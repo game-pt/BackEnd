@@ -308,7 +308,7 @@ public class GameServiceImpl implements GameService {
         String itemYn = "N";
 
         Event event = act.getEvent();
-        if(event.getItemYn() == 'Y' && flag) {
+        if((event.getItemYn() == 'Y' && flag) || event.getCode().equals("EV-005")) {
             itemYn = "Y";
             promptResult.append("\n").append(getItem(game.getStoryCode(), player));
         }
