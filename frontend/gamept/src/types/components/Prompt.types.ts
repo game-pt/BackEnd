@@ -7,7 +7,7 @@ export interface IPropmpt {
 export interface IPromptInterface {
   gameType: string;
   sendEventHandler?: () => void;
-  sendPromptHandler: (text: string) => void;
+  sendPromptHandler?: (text: string) => void;
 }
 
 export interface IChoiceGroup {
