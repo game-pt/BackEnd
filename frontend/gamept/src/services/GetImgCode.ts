@@ -4,7 +4,7 @@ export const getImgCode = (
   jobCode?: string
 ) => {
   console.log('코드확인', gender, raceCode, jobCode);
-  let imgCode = 'profile' + gender ?? 0;
+  let imgCode = 'profile01' + gender ?? 0;
   imgCode += raceCode.substring(6);
   console.log('종족추가', imgCode);
   if (jobCode) {
