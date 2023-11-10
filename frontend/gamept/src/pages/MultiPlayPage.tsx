@@ -6,19 +6,26 @@ import SideInterface from '@/organisms/SideInterface';
 import PromptInterface from '@/organisms/PromptInterface';
 import TextButton from '@/atoms/TextButton';
 import ProfileInterface from '@/organisms/ProfileInterface';
-import { getPromptTopic } from '@/services/GameService';
 import { useIndexedDB } from 'react-indexed-db-hook';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import usePrompt from '@/hooks/usePrompt';
+import { usePromptAtom } from '@/jotai/PromptAtom';
 
 const MultiPlayPage = () => {
-  const [history, setHistory] = useState<string[] | null>(null);
+  const [history, setHistory] = useState<string[][] | null>(null);
   const [chat, setChat] = useState<string[] | null>(null);
   const client = useRef<CompatClient | null>(null);
-  const gameCode = 'YMi8mg';
-  const playerCode = 'YMi8mg-yl7q7k';
+  const [_getPrompt, setPrompt] = usePrompt();
+  const promptAtom = usePromptAtom();
+  const gameCode = '8VFKOK';
+  const playerCode = '8VFKOK-bOCyuT';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("PROMPT ATOM: ", promptAtom);
+  }, [promptAtom])
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -50,24 +57,25 @@ const MultiPlayPage = () => {
       // 연결 성공 시 해당 방을 구독하면 서버로부터 이벤트 발생 & 프롬프트 추가 시 마다 메세지 수신
       client.current.subscribe(
         `/topic/game/${gameCode}`,
-        (message) => {
+        async (message) => {
           const body = JSON.parse(message.body);
+
           // 프롬포트 응답이라면
           if (body.prompt !== undefined) {
             // 원본 데이터와 프롬프트 구분
-            const { origin, prompt } = getPromptTopic(body);
-            console.log(origin);
-            // 인덱스 디비에 프롬프트 데이터 저장.
-            db.add({ content: prompt });
+            const prompt = body.prompt.split("\n\n");
+
+            // setPrompt(prompt);
+
+            // 기존 프롬프트 내역에 새로운 메시지 추가
+            setHistory((prevHistory) => {
+              console.log(history);
+              return prevHistory
+                ? [...prevHistory, prompt]
+                : JSON.parse(message.body);
+            });
           }
 
-          // 기존 프롬프트 내역에 새로운 메시지 추가
-          setHistory((prevHistory) => {
-            console.log(history);
-            return prevHistory
-              ? [...prevHistory, JSON.parse(message.body)]
-              : JSON.parse(message.body);
-          });
         },
         {}
       );
@@ -75,7 +83,13 @@ const MultiPlayPage = () => {
       // 채팅 구독
       client.current.subscribe(
         `/topic/chat/${gameCode}`,
-        (message) => {
+        async (message) => {
+          const arr = [];
+          for (let i = 0; i < 3; i++) {
+            arr.push(message.body);
+          }
+          setPrompt(arr);
+          // console.log(getPrompt);
           // 기존 대화 내역에 새로운 메시지 추가
           setChat((prevChat) => {
             return prevChat ? [...prevChat, message.body] : [message.body];
@@ -104,7 +118,26 @@ const MultiPlayPage = () => {
     } else console.log('Already Disconnected!!!');
   };
 
+  const sendPromptHandler = (text: string) => {
+    // 사용자가 입력한 프롬프트 송신 메서드
+    if (client.current)
+      client.current.send(
+        `/player/${gameCode}`,
+        {},
+        JSON.stringify({
+          gameCode: gameCode,
+          raceCode: 'RAC-001',
+          jobCode: 'JOB-001',
+          nickName: playerCode,
+          prompt: text,
+        })
+      );
+    
+      setPrompt([text]);
+  }
+
   const sendEventHandler = () => {
+    // 사용자가 선택한 선택지 송신 메서드
     if (client.current)
       client.current.send(
         `/player/${gameCode}`,
@@ -168,8 +201,6 @@ const MultiPlayPage = () => {
     };
   }, []);
 
-  useEffect(() => {}, [history]);
-
   return (
     <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary">
       <div className="w-400 h-full flex flex-col justify-between items-start">
@@ -183,7 +214,7 @@ const MultiPlayPage = () => {
         <div className="w-full flex justify-end py-1 pr-10">
           <TextButton text="게임 나가기" onClickEvent={() => leaveGame()} />
         </div>
-        <PromptInterface gameType="multi" sendEventHandler={sendEventHandler} />
+        <PromptInterface gameType="multi" sendEventHandler={sendEventHandler} sendPromptHandler={sendPromptHandler} />
       </div>
     </div>
   );

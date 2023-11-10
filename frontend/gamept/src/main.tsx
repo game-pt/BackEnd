@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
@@ -28,9 +28,10 @@ const queryClient = new QueryClient();
 initDB(DBConfig);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // Rendering 중복 막기 위해 꺼놨어용. 프롬프트가 두번씩 저장되는 거 방지!
+  // <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
     </QueryClientProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

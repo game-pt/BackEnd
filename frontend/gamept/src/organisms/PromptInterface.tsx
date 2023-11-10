@@ -1,13 +1,15 @@
 import Input from '@/atoms/Input';
 import Prompt from '@/atoms/Prompt';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ChoiceGroup from './ChoiceGroup';
 import LoadingSpinner1 from '@/atoms/LoadingSpinner1';
 import { IPromptInterface } from '@/types/components/Prompt.types';
+import { usePromptAtom } from '@/jotai/PromptAtom';
 
 const PromptInterface = (props: IPromptInterface) => {
   const [text, setText] = useState('');
   const [isFetching, setIsFetching] = useState(true);
+  const prompt = usePromptAtom();
 
   const sendEvent = () => {
     if (props.sendEventHandler) props.sendEventHandler();
@@ -16,9 +18,13 @@ const PromptInterface = (props: IPromptInterface) => {
 
   const sendPrompt = () => {
     // Prompt 보내는 메서드
-    console.log(text);
-    // if (props.sendPromptHandler) props.sendPromptHandler(text);
+    if (props.sendPromptHandler) props.sendPromptHandler(text);
+    setText('');
   }
+
+  useEffect(() => {
+    if (prompt) setIsFetching(false);
+  }, [prompt]);
 
   return (
     <div className="relative max-w-[1110px] min-w-[500px] h-[657px] mx-auto border-primary border-4">
@@ -30,7 +36,7 @@ const PromptInterface = (props: IPromptInterface) => {
           <LoadingSpinner1 />
         </div>
       ) : (
-        <Prompt type="in-game" data={null} />
+        <Prompt type="in-game" data={prompt} />
       )}
       {/* 선택지 버튼 출력할 Area */}
       <div className="w-full h-[250px] flex justify-center self-center">

@@ -1,12 +1,13 @@
 // Propmt Atoms Props Type
 export interface IPropmpt {
   type: string;
-  data: string | null;
+  data: string[][] | null;
 }
 
 export interface IPromptInterface {
   gameType: string;
   sendEventHandler?: () => void;
+  sendPromptHandler?: (text: string) => void;
 }
 
 export interface IChoiceGroup {
