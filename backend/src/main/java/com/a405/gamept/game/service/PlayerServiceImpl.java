@@ -250,13 +250,17 @@ public class PlayerServiceImpl implements PlayerService {
 
         StatGetResponseDto statGetResponseDto;
         for(String statCode : player.getStat().keySet()) {
-            statGetResponseDto = StatGetResponseDto.from(statRepository.findById(statCode)
-                    .orElseThrow(() -> new GameException(GameErrorMessage.STAT_INVALID)), player.getStat().get(statCode));
             if (statCode.equals(playerStatUpdateCommandDto.statCode()) &&
                     checkAvailableStatPoint(playerStatUpdateCommandDto.playerCode(), playerStatUpdateCommandDto.statValue())) {
-                log.info("됌?");
                 player.getStat().put(statCode, player.getStat().get(statCode) + playerStatUpdateCommandDto.statValue());
+                playerRepository.save(player.toBuilder()
+                        .statPoint(player.getStatPoint() - playerStatUpdateCommandDto.statValue())
+                        .build());
             }
+
+            statGetResponseDto = StatGetResponseDto.from(statRepository.findById(statCode)
+                    .orElseThrow(() -> new GameException(GameErrorMessage.STAT_INVALID)), player.getStat().get(statCode));
+
             ValidateUtil.validate(statGetResponseDto);
 
             statGetResponseDtoList.add(statGetResponseDto);

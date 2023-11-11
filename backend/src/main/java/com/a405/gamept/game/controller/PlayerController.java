@@ -63,7 +63,6 @@ public class PlayerController {
             @Valid @DestinationVariable String playerCode,
             @Valid @DestinationVariable String statCode) {
         PlayerStatGetResponseDto playerStatGetResponseDto = playerService.addPlayerStat(PlayerStatUpdateCommandDto.of(gameCode, playerCode, statCode, 1));
-        log.info("전송이 안되는 거야?");
         webSocket.convertAndSendToUser(playerCode, "/stat", playerStatGetResponseDto);
     }
 }
