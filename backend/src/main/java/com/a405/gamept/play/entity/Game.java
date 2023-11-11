@@ -64,7 +64,7 @@ public class Game {
     /**
      * fightingEnemyCode: 현재 전투 중인 적 코드
      */
-//    @NotBlank(message = "현재 전투 중인 적이 존재하지 않습니다.")
+    // @NotBlank(message = "현재 전투 중인 적이 존재하지 않습니다.")
     @Pattern(regexp = RegexPatterns.FIGHTING_ENEMY, message = "현재 전투 중인 적이 올바르지 않습니다.")
     private String fightingEnemyCode;
 
