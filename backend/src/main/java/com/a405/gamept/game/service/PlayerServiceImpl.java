@@ -1,9 +1,6 @@
 package com.a405.gamept.game.service;
 
-import com.a405.gamept.game.dto.command.JobGetCommandDto;
-import com.a405.gamept.game.dto.command.PlayerGetCommandDto;
-import com.a405.gamept.game.dto.command.PlayerSetCommandDto;
-import com.a405.gamept.game.dto.command.RaceGetCommandDto;
+import com.a405.gamept.game.dto.command.*;
 import com.a405.gamept.game.dto.response.*;
 import com.a405.gamept.game.entity.*;
 import com.a405.gamept.game.repository.*;
@@ -26,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PlayerServiceImpl implements PlayerService {
     private final GameRedisRepository gameRepository;
     private final PlayerRedisRepository playerRepository;
@@ -221,5 +219,64 @@ public class PlayerServiceImpl implements PlayerService {
         ValidateUtil.validate(playerGetResponseDto);
 
         return playerGetResponseDto;
+    }
+
+    @Override
+    public PlayerStatGetResponseDto getPlayerStat(PlayerStatGetCommandDto playerStatGetCommandDto) throws GameException {
+        Player player = playerRepository.findById(playerStatGetCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+
+        List<StatGetResponseDto> statGetResponseDtoList = new ArrayList<>();
+
+        StatGetResponseDto statGetResponseDto;
+        for(String stat : player.getStat().keySet()) {
+            statGetResponseDto = StatGetResponseDto.from(statRepository.findById(stat)
+                    .orElseThrow(() -> new GameException(GameErrorMessage.STAT_INVALID)), player.getStat().get(stat));
+            ValidateUtil.validate(statGetResponseDto);
+
+            statGetResponseDtoList.add(statGetResponseDto);
+        }
+
+        return PlayerStatGetResponseDto.from(playerStatGetCommandDto, statGetResponseDtoList, player.getStatPoint());
+    }
+
+    @Override
+    @Transactional
+    public PlayerStatGetResponseDto addPlayerStat(PlayerStatUpdateCommandDto playerStatUpdateCommandDto) throws GameException {
+        Player player = playerRepository.findById(playerStatUpdateCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+
+        List<StatGetResponseDto> statGetResponseDtoList = new ArrayList<>();
+
+        StatGetResponseDto statGetResponseDto;
+        for(String statCode : player.getStat().keySet()) {
+            if (statCode.equals(playerStatUpdateCommandDto.statCode()) &&
+                    checkAvailableStatPoint(playerStatUpdateCommandDto.playerCode(), playerStatUpdateCommandDto.statValue())) {
+                Map<String, Integer> statMap = player.getStat();
+                statMap.put(statCode, statMap.get(statCode) + playerStatUpdateCommandDto.statValue());
+
+                player = player.toBuilder()
+                        .stat(statMap)
+                        .statPoint(player.getStatPoint() - playerStatUpdateCommandDto.statValue())
+                        .build();
+                playerRepository.save(player);
+            }
+
+            statGetResponseDto = StatGetResponseDto.from(statRepository.findById(statCode)
+                    .orElseThrow(() -> new GameException(GameErrorMessage.STAT_INVALID)), player.getStat().get(statCode));
+
+            ValidateUtil.validate(statGetResponseDto);
+
+            statGetResponseDtoList.add(statGetResponseDto);
+        }
+
+        return PlayerStatGetResponseDto.of(player, statGetResponseDtoList);
+    }
+
+    private boolean checkAvailableStatPoint(String playerCode, int statValue) {
+        Player player = playerRepository.findById(playerCode)
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+        if (player.getStatPoint() >= statValue) return true;
+        return false;
     }
 }
