@@ -237,7 +237,7 @@ public class PlayerServiceImpl implements PlayerService {
             statGetResponseDtoList.add(statGetResponseDto);
         }
 
-        return PlayerStatGetResponseDto.from(playerStatGetCommandDto, statGetResponseDtoList);
+        return PlayerStatGetResponseDto.from(playerStatGetCommandDto, statGetResponseDtoList, player.getStatPoint());
     }
 
     @Override
@@ -252,10 +252,14 @@ public class PlayerServiceImpl implements PlayerService {
         for(String statCode : player.getStat().keySet()) {
             if (statCode.equals(playerStatUpdateCommandDto.statCode()) &&
                     checkAvailableStatPoint(playerStatUpdateCommandDto.playerCode(), playerStatUpdateCommandDto.statValue())) {
-                player.getStat().put(statCode, player.getStat().get(statCode) + playerStatUpdateCommandDto.statValue());
-                playerRepository.save(player.toBuilder()
+                Map<String, Integer> statMap = player.getStat();
+                statMap.put(statCode, statMap.get(statCode) + playerStatUpdateCommandDto.statValue());
+
+                player = player.toBuilder()
+                        .stat(statMap)
                         .statPoint(player.getStatPoint() - playerStatUpdateCommandDto.statValue())
-                        .build());
+                        .build();
+                playerRepository.save(player);
             }
 
             statGetResponseDto = StatGetResponseDto.from(statRepository.findById(statCode)
@@ -266,7 +270,7 @@ public class PlayerServiceImpl implements PlayerService {
             statGetResponseDtoList.add(statGetResponseDto);
         }
 
-        return PlayerStatGetResponseDto.of(player.getCode(), statGetResponseDtoList);
+        return PlayerStatGetResponseDto.of(player, statGetResponseDtoList);
     }
 
     private boolean checkAvailableStatPoint(String playerCode, int statValue) {
