@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface FightingEnermyRedisRepository extends CrudRepository<FightingEnermy, String> {
-    Optional<FightingEnermy> findByGameCode(String gameCode);
+    // Optional<FightingEnermy> findByGameCode(String gameCode);
 }
