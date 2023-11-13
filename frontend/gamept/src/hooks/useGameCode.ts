@@ -8,19 +8,19 @@ export const useGameCode: () => [string, (gameCode: string) => void] = () => {
   const [getGameCodeAtom, setGameCodeAtom] = useAtom(gameCodeAtom);
 
   useEffect(() => {
-    const checkGameCode = async () => {
-      if (getGameCodeAtom === '') {
-        const dbDatas = await db.getAll();
-        // const test = await db.getByIndex('gameCode')
-        // console.log('시시시시시시', test);
-        const dbData = dbDatas[0].gameCode;
-        setGameCodeAtom(dbData);
-        setGameCode(dbData);
-        return;
-      }
-      // code가 남아있을 때 새로 채우기
-      setGameCode(getGameCodeAtom);
-    };
+    // const checkGameCode = async () => {
+    //   if (getGameCodeAtom === '') {
+    //     const dbDatas = await db.getAll();
+    //     // const test = await db.getByIndex('gameCode')
+    //     // console.log('시시시시시시', test);
+    //     const dbData = dbDatas[0].gameCode;
+    //     setGameCodeAtom(dbData);
+    //     setGameCode(dbData);
+    //     return;
+    //   }
+    //   // code가 남아있을 때 새로 채우기
+    //   setGameCode(getGameCodeAtom);
+    // };
     // console.log('??????', getGameCodeAtom);
     // checkGameCode();
 
