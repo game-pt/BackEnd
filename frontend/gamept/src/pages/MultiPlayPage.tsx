@@ -11,11 +11,36 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import usePrompt from '@/hooks/usePrompt';
 import { usePromptAtom } from '@/jotai/PromptAtom';
-import { IEventType, IActsType } from '@/types/components/Prompt.types';
+import {
+  IEventType,
+  IActsType,
+  IGetPromptType,
+  ISubtaskType,
+} from '@/types/components/Prompt.types';
 
 const MultiPlayPage = () => {
   const [chat, setChat] = useState<string[] | null>(null);
-  const [event, setEvent] = useState<IEventType | null>(null);
+  const [event, setEvent] = useState<IEventType | null>({
+    eventCode: 'EVT-001',
+    eventName: '전투',
+    acts: [
+      {
+        actCode: 'act-001',
+        actName: '일반 공격',
+        subtask: 'NONE',
+      },
+      {
+        actCode: 'act-002',
+        actName: '스킬',
+        subtask: 'SKILL',
+      },
+      {
+        actCode: 'act-003',
+        actName: '아이템',
+        subtask: 'ITEM',
+      },
+    ],
+  });
   const [isPromptFetching, setIsPromptFetching] = useState<boolean>(false);
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
@@ -26,29 +51,9 @@ const MultiPlayPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setEvent({
-      eventCode: 'EVT-001',
-      eventName: '전투',
-      acts: [
-        {
-          actCode: 'act-001',
-          actName: '일반 공격',
-          subtask: 'NONE',
-        },
-        {
-          actCode: 'act-002',
-          actName: '스킬',
-          subtask: 'SKILL',
-        },
-        {
-          actCode: 'act-003',
-          actName: '아이템',
-          subtask: 'ITEM',
-        },
-      ],
-    });
+    console.log(event);
     if (promptAtom[promptAtom.length - 1][0].mine) setIsPromptFetching(true);
-  }, [promptAtom]);
+  }, [promptAtom, event]);
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -93,10 +98,25 @@ const MultiPlayPage = () => {
       client.current.subscribe(
         `/topic/subtask/${gameCode}`,
         (message) => {
-          console.log(JSON.parse(message.body));
-          // message.body를 통해 데이터 받아서
-          // 프로필 업데이트 로직 수행
-          // 해당 방 구독하는 모든 플레이어들 데이터 저장하는 객체에다가 업데이트
+          // 하위 선택지 요청에 대한 데이터가 들어온다면
+          // 선택지에다가 하위 선택지로 업데이트를 해줘야한다.
+          const body = JSON.parse(message.body);
+
+          const newActs: IActsType[] = body.map((e: ISubtaskType) => {
+            return {
+              actCode: e.code,
+              actName: e.name,
+              subtask: `isSubTask_${e.code.split("-")[0]}`
+            }
+          })
+          console.log(body);
+          // event 상태를 업데이트
+          // acts 부분만 body로 변경
+          setEvent((prevEvent) => {
+            if (prevEvent !== null) {
+              return { ...prevEvent, acts: newActs };
+            } else return null;
+          });
         },
         {}
       );
@@ -118,7 +138,10 @@ const MultiPlayPage = () => {
             setIsPromptFetching(false);
           }
 
-          if (body.endYn === 'Y') setEvent(null);
+          if (body.endYn === 'Y') {
+            // 종료 API 호출
+            setEvent(null);
+          }
 
           // setHP
           // HP 상태 값 변화
@@ -155,36 +178,15 @@ const MultiPlayPage = () => {
 
             // 직전 선택지 인덱스 디비에 저장
             if (ChoiceFromDB.length === 0) {
-              await db.add({ choice: 'Tasting' });
+              await db.add({ choice: body });
             } else if (ChoiceFromDB.length <= 1) {
-              await db.update({ choice: 'Testing', id: ChoiceFromDB[0].id });
+              await db.update({ choice: body, id: ChoiceFromDB[0].id });
             } else {
               for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
                 await db.deleteRecord(ChoiceFromDB[i].id);
               }
             }
           }
-          setEvent({
-            eventCode: 'EVT-001',
-            eventName: '전투',
-            acts: [
-              {
-                actCode: 'act-001',
-                actName: '일반 공격',
-                subtask: 'NONE',
-              },
-              {
-                actCode: 'act-002',
-                actName: '스킬',
-                subtask: 'SKILL',
-              },
-              {
-                actCode: 'act-003',
-                actName: '아이템',
-                subtask: 'ITEM',
-              },
-            ],
-          });
         },
         {}
       );
@@ -240,6 +242,20 @@ const MultiPlayPage = () => {
     }
   };
 
+  const getSubtaskHandler = (eventCode: string, subtask: string) => {
+    if (client.current) {
+      client.current.send(
+        `/subtask/${gameCode}`,
+        {},
+        JSON.stringify({
+          playerCode,
+          eventCode,
+          subtask,
+        })
+      );
+    }
+  };
+
   const sendEventHandler = async (choice: IActsType) => {
     // 주사위 돌리고 난 후
     // 선택지 선택 요청
@@ -248,6 +264,35 @@ const MultiPlayPage = () => {
     console.log(promptAtom);
     // 사용자가 선택한 선택지 송신 메서드
     if (client.current) {
+      const body: IGetPromptType = (await db.getAll())
+        .filter((v) => v.choice !== undefined)
+        .map((e) => e.choice)[0];
+      // SubTask를 선택했다면
+      const checkSub = choice.subtask.split("_");
+
+      if (checkSub.length > 1 && checkSub[0] === "isSubTask") {
+        // client.current.send(
+        //   `/fight/${gameCode}`,
+        //   {},
+        //   JSON.stringify({
+        //     playerCode,
+        //     actCode: choice.actCode,
+        //     subtask: checkSub[1],
+        //     gmonsterCode: body.monster
+        //   })
+        // )
+
+        return;
+      }
+
+      // subtask가 있다면
+      if (choice.subtask !== 'NONE') {
+        console.log(event);
+        // getSubtaskHandler(body.event.eventCode, choice.subtask);
+        if (event)
+          getSubtaskHandler(event.eventCode, choice.subtask);
+      }
+
       client.current.send(
         `/select/${gameCode}`,
         {},

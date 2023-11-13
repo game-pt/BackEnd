@@ -47,7 +47,7 @@ export interface ISubtaskType {
 export interface IActsType {
   actCode: string;
   actName: string;
-  subtask: ISubtaskType[] | string;
+  subtask: string;
 }
 
 export interface IEventType {
