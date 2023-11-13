@@ -3,12 +3,10 @@ package com.a405.gamept.game.controller;
 
 import com.a405.gamept.game.dto.command.*;
 import com.a405.gamept.game.dto.request.*;
-import com.a405.gamept.game.dto.response.ActResultGetResponseDto;
-import com.a405.gamept.game.dto.response.ChatResponseDto;
-import com.a405.gamept.game.dto.response.DiceGetResponseDto;
-import com.a405.gamept.game.dto.response.FightResultGetResponseDto;
+import com.a405.gamept.game.dto.response.*;
 import com.a405.gamept.game.service.FightService;
 import com.a405.gamept.game.service.GameService;
+import com.a405.gamept.game.service.PlayerService;
 import com.a405.gamept.game.util.exception.GameException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +25,7 @@ public class GameController {
     private final SimpMessagingTemplate webSocket;
     private final GameService gameService;
     private final FightService fightService;
+    private final PlayerService playerService;
 
     @GetMapping("/{gameCode}")
     public ResponseEntity<?> getActList(@PathVariable String gameCode, @Valid ActGetRequestDto actGetRequestDto){
@@ -71,7 +70,9 @@ public class GameController {
     @MessageMapping("/fight/{gameCode}")
     public void playFight(@DestinationVariable String gameCode, @Valid @Payload FightResultGetRequestDto fightResultGetRequestDto) {
         FightResultGetResponseDto fightResultGetResponseDto = fightService.getFightResult(fightResultGetRequestDto.toCommand(gameCode));
+        PlayerStatusGetResponseDto playerStatusGetResponseDto = playerService.getPlayerStatus(PlayerStatusGetCommandDto.of(fightResultGetRequestDto.playerCode()));
         webSocket.convertAndSend("/topic/fight/" + gameCode, fightResultGetResponseDto);
+        webSocket.convertAndSendToUser(fightResultGetRequestDto.playerCode(), "status", playerStatusGetResponseDto);
         //return ResponseEntity.ok(fightService.getFightResult(fightResultGetRequestDto.toCommand(gameCode)));
     }
 

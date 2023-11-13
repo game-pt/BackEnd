@@ -60,6 +60,14 @@ public interface PlayerService {
     PlayerStatGetResponseDto addPlayerStat(PlayerStatUpdateCommandDto playerStatUpdateCommandDto) throws GameException;
 
     /**
+     * 해당 플레이어의 스테이터스를 조회한다.
+     * @param playerStatusGetCommandDto
+     * @return  : 플레이어 스테이터스
+     * @author  : 이우석
+     */
+    PlayerStatusGetResponseDto getPlayerStatus(PlayerStatusGetCommandDto playerStatusGetCommandDto) throws GameException;
+
+    /**
      * 해당 플레이어의 HP를 수정한다.
      * @param playerHpUpdateCommandDto
      * @return  : 플레이어 스테이터스 (웹소켓)

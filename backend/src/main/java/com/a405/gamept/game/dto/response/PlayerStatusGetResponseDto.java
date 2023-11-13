@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
-public record PlayerStatusUpdateResponseDto(
+public record PlayerStatusGetResponseDto(
         @NotBlank(message = "플레이어의 코드가 존재하지 않습니다.")
         String playerCode,
         @NotBlank(message = "플레이어의 레벨이 존재하지 않습니다.")
@@ -16,8 +16,8 @@ public record PlayerStatusUpdateResponseDto(
         @NotBlank(message = "플레이어의 경험치가 존재하지 않습니다.")
         int exp
 ) {
-        public static PlayerStatusUpdateResponseDto of(Player player) {
-                return PlayerStatusUpdateResponseDto.builder()
+        public static PlayerStatusGetResponseDto of(Player player) {
+                return PlayerStatusGetResponseDto.builder()
                         .playerCode(player.getCode())
                         .level(player.getLevel())
                         .hp(player.getHp())

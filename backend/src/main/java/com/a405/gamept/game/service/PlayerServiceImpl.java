@@ -275,6 +275,14 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    public PlayerStatusGetResponseDto getPlayerStatus(PlayerStatusGetCommandDto playerStatusGetCommandDto) throws GameException {
+        Player player = playerRepository.findById(playerStatusGetCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+
+        return PlayerStatusGetResponseDto.of(player);
+    }
+
+    @Override
     @Transactional
     public void updatePlayerHp(PlayerHpUpdateCommandDto playerHpUpdateCommandDto) throws GameException {
         Player player = playerRepository.findById(playerHpUpdateCommandDto.playerCode())
@@ -284,7 +292,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .build();
         playerRepository.save(player);
 
-        webSocket.convertAndSendToUser(playerHpUpdateCommandDto.playerCode(), "/status", PlayerStatusUpdateResponseDto.of(player));
+        webSocket.convertAndSendToUser(playerHpUpdateCommandDto.playerCode(), "/status", PlayerStatusGetResponseDto.of(player));
     }
 
     @Override
@@ -306,7 +314,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .build();
         playerRepository.save(player);
 
-        webSocket.convertAndSendToUser(playerExpUpdateCommandDto.playerCode(), "/status", PlayerStatusUpdateResponseDto.of(player));
+        webSocket.convertAndSendToUser(playerExpUpdateCommandDto.playerCode(), "/status", PlayerStatusGetResponseDto.of(player));
     }
 
     @Override
@@ -319,7 +327,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .build();
         playerRepository.save(player);
 
-        webSocket.convertAndSendToUser(playerLevelUpdateCommand.playerCode(), "/status", PlayerStatusUpdateResponseDto.of(player));
+        webSocket.convertAndSendToUser(playerLevelUpdateCommand.playerCode(), "/status", PlayerStatusGetResponseDto.of(player));
     }
 
     private boolean checkAvailableStatPoint(String playerCode, int statValue) {
