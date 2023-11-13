@@ -117,8 +117,8 @@ const Dice = (props: IDice) => {
 
   return (
     <div className="diceWrap">
-      {diceList.map((num) => (
-        <DiceFace idx={num} />
+      {diceList.map((num, i) => (
+        <DiceFace idx={num} key={`dice_${i}`} />
       ))}
       <span id="diceVal"></span>
     </div>
