@@ -6,7 +6,7 @@ const api = import.meta.env.VITE_SERVER_URL;
 export const fetchGetRaces = async (gameCode: string) => {
   // 종족 목록 받아오는 get 요청
   const url = api + '/player/race';
-  console.log(url, gameCode);
+  console.log('fetchRace 중 gameCode', gameCode);
   try {
     const response = await axios.get(url, {
       params: { gameCode },
@@ -21,6 +21,7 @@ export const fetchGetRaces = async (gameCode: string) => {
 export const fetchGetJobs = async (gameCode: string) => {
   // 직업 생성하는 post 요청
   const url = api + '/player/job';
+  console.log('fetchJob 중 gameCode', gameCode);
   try {
     const response = await axios.get(url, {
       params: { gameCode },
