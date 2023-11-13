@@ -215,6 +215,7 @@ public class GameServiceImpl implements GameService {
                 ValidateUtil.validate(subtaskResponseDtoList.get(subtaskResponseDtoList.size()-1));
             }
         }else if(subtask.getKey().equals("ITEM")){
+            if(player.getItemCodeList() == null) { return  subtaskResponseDtoList;}
             for(String itemCode : player.getItemCodeList()){
                 Item item = itemRepository.findById(itemCode)
                         .orElseThrow(() -> new GameException(GameErrorMessage.ITEM_INVALID));

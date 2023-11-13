@@ -7,10 +7,12 @@ import com.a405.gamept.game.dto.response.ActResultGetResponseDto;
 import com.a405.gamept.game.dto.response.ChatResponseDto;
 import com.a405.gamept.game.dto.response.DiceGetResponseDto;
 import com.a405.gamept.game.dto.response.FightResultGetResponseDto;
+import com.a405.gamept.game.dto.response.SubtaskResponseDto;
 import com.a405.gamept.game.service.FightService;
 import com.a405.gamept.game.service.GameService;
 import com.a405.gamept.game.util.exception.GameException;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -47,9 +49,10 @@ public class GameController {
         return ResponseEntity.ok(gameService.getStory(StoryGetCommandDto.of(storyCode)));
     }
 
-    @GetMapping("/{gameCode}/subtask")
-    public ResponseEntity<?> getSubtask(@PathVariable String gameCode, @Valid SubtaskRequestDto subtaskRequestDto) {
-        return ResponseEntity.ok(gameService.getSubtask(subtaskRequestDto.toCommand(gameCode)));
+    @MessageMapping("/subtask/{gameCode}")
+    public void getSubtask(@DestinationVariable String gameCode, @Valid @Payload SubtaskRequestDto subtaskRequestDto) {
+        List<SubtaskResponseDto> subtaskResponseDto = gameService.getSubtask(subtaskRequestDto.toCommand(gameCode));
+        webSocket.convertAndSend("/topic/subtask/"+gameCode, subtaskResponseDto);
     }
     @MessageMapping("/chat/{gameCode}")
     public void chat(@Payload ChatRequestDto chatRequestDto, @DestinationVariable String gameCode) throws GameException {
