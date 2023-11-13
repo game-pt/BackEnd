@@ -1,10 +1,10 @@
-import { useIndexedDB } from 'react-indexed-db-hook';
+// import { useIndexedDB } from 'react-indexed-db-hook';
 import { useAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';
 import { gameCodeAtom } from '@/jotai/MakeGameAtom';
 
 export const useGameCode: () => [string, (gameCode: string) => void] = () => {
-  const db = useIndexedDB('codeStore');
+  // const db = useIndexedDB('codeStore');
   const [getGameCodeAtom, setGameCodeAtom] = useAtom(gameCodeAtom);
 
   useEffect(() => {

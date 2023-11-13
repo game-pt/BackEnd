@@ -51,7 +51,7 @@ const MultiPlayPage = () => {
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
-  const [status, setStatus] = useAtom(characterStatusAtom);
+  const [status, _setStatus] = useAtom(characterStatusAtom);
   const gameCode = 'NngIB9';
   const playerCode = 'NngIB9-aZxrO5';
   const db = useIndexedDB('prompt');
