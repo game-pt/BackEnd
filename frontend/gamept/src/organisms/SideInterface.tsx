@@ -7,8 +7,13 @@ import { CompatClient, Stomp } from '@stomp/stompjs';
 
 import ChattingTab from '@/atoms/ChattingTab';
 import { ISideInterface } from '@/types/components/SideInterface.types';
-import { TbNavigation } from 'react-icons/tb';
-import { GiCardDiscard } from 'react-icons/gi';
+import { TbNavigation } from "react-icons/tb";
+import { GiCardDiscard } from "react-icons/gi";
+// import { useStatAtom, useUpdateProfileAtom } from '@/jotai/CharacterStatAtom';
+
+// const setProfileStat = useUpdateProfileAtom();
+// const getStat = useStatAtom();
+
 
 //////////////////////////////////////////////////////////////////////////
 /* 빌드 에러 방지용 임시 주석
@@ -145,13 +150,12 @@ const SkillTab = () => {
         const jobSkillList = response.data.job.skillList;
 
         // jobSkillList를 객체로 변환하여 상태에 저장
-        const updatedSkillList = jobSkillList.map(
-          (skill: { name: string; desc: string }) => ({
-            name: skill.name,
-            img: `path-to-images/${skill.name}.png`, // 이미지 경로에 대한 로직은 필요에 따라 수정
-            desc: skill.desc,
-          })
-        );
+        const updatedSkillList = jobSkillList.map((skill: { name: string; desc: string }) => ({
+          name: skill.name,
+          img: `/${skill.name}.png`, // 이미지 경로에 대한 로직은 필요에 따라 수정
+          desc: skill.desc,
+        }));
+
 
         setSkillList(updatedSkillList); // 서버에서 받아온 스킬 목록을 상태에 저장
         setLoading(false); // 로딩 상태를 해제
@@ -171,11 +175,13 @@ const SkillTab = () => {
       ) : (
         skillList.map((skill, i) => (
           <div key={`skill_${i}`} className="w-full flex my-2 items-center">
+            <div className="border border-[#5C5C5C] rounded">
             <img
-              className="w-[63px]"
+              className="w-[64px] rounded"
               src={`./src/assets/skill/${skill.img}`}
               alt={`${i}_skill`}
             />
+            </div>
             <p className="basis-3/4 text-left pl-4 text-white">
               {skill.name}: {skill.desc}
             </p>
@@ -190,20 +196,20 @@ const ItemTab = () => {
   const [itemList, setItemList] = useState<{
     [key: string]: { img: string; desc: string };
   }>({
-    빨간포션: {
-      img: 'Small Potion_00.png',
+    '세계수의 이파리': {
+      img: '세계수의 이파리.png',
       desc: '마시면 체력+10.',
     },
-    크리스탈: {
-      img: 'protection crystal.png',
+    '암기빵': {
+      img: '암기빵.png',
       desc: '가지고 있으면 공격력+10.',
     },
-    보석: {
-      img: 'Gems_03.png',
+    '세계수의 선물': {
+      img: '세계수의 선물.png',
       desc: '가지고 있으면 공격력+1.',
     },
-    망원경: {
-      img: 'advance lens.png',
+    '포츈 붐바': {
+      img: '포츈 붐바.png',
       desc: '멀리보기 가능.',
     },
   });
@@ -235,7 +241,7 @@ const ItemTab = () => {
         >
           <div className="border border-[#4F3F2B] rounded">
             <img
-              className="w-[63px] rounded"
+              className="w-[64px] rounded"
               src={`./src/assets/items/${itemList[e].img}`}
               alt={`${i}item`}
             />
