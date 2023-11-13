@@ -45,8 +45,8 @@ const MultiPlayPage = () => {
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
-  const gameCode = 'gq6KR1';
-  const playerCode = 'gq6KR1-jBSe9s';
+  const gameCode = 'NngIB9';
+  const playerCode = 'NngIB9-aZxrO5';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
@@ -69,10 +69,15 @@ const MultiPlayPage = () => {
         return;
       }
 
+      client.current.onStompError = function (frame) {
+        console.log('Broker reported error: ' + frame.headers['message']);
+        console.log('Additional details: ' + frame.body);
+      };
+
       // 멀티플레이 용
       // 유저 데이터 업데이트 시 정보 송수신용
       client.current.subscribe(
-        `/topic/player/${gameCode}`,
+        `/topic/dice/${gameCode}`,
         (message) => {
           console.log(JSON.parse(message.body));
           // message.body를 통해 데이터 받아서
@@ -86,10 +91,28 @@ const MultiPlayPage = () => {
       client.current.subscribe(
         `/topic/select/${gameCode}`,
         (message) => {
-          console.log(JSON.parse(message.body));
-          // message.body를 통해 데이터 받아서
-          // 프로필 업데이트 로직 수행
-          // 해당 방 구독하는 모든 플레이어들 데이터 저장하는 객체에다가 업데이트
+          const body = JSON.parse(message.body);
+
+          if (body.prompt !== undefined) {
+            console.log(body);
+            // 원본 데이터와 프롬프트 구분
+            const prompt = body.prompt.split('\n').map((e: string) => {
+              return { msg: e, mine: false };
+            });
+
+            setPrompt(prompt);
+            setIsPromptFetching(false);
+          }
+
+          if (body.gameOverYn === 'Y') {
+            // 게임 종료 API 호출
+            setEvent(null);
+            return;
+          }
+
+          if (body.itemYn === 'Y') {
+            // Item 획득 로직
+          }
         },
         {}
       );
@@ -225,6 +248,14 @@ const MultiPlayPage = () => {
       client.current = null;
     } else console.log('Already Disconnected!!!');
   };
+
+  const getDicesHandler = () => {
+    if (client.current) {
+      client.current.send(
+        `/dice/${gameCode}`
+      )
+    }
+  }
 
   const sendPromptHandler = (text: string) => {
     // 사용자가 입력한 프롬프트 송신 메서드
