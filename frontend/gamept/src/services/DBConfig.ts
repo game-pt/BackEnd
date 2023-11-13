@@ -4,21 +4,9 @@ export const DBConfig = {
   objectStoresMeta: [
     {
       store: 'prompt',
-      storeConfig: { keyPath: 'id', autoIncrement: true },
+      storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
-        { name: 'content', keypath: 'content', options: { unique: false } },
-      ],
-    },
-    {
-      store: 'codeStore',
-      storeConfig: { keyPath: 'id', autoIncrement: true },
-      storeSchema: [
-        { name: 'gameCode', keypath: 'gameCode', options: { unique: true } },
-        {
-          name: 'playerCode',
-          keypath: 'playerCode',
-          options: { unique: true },
-        },
+        { name: 'content', keypath: 'content', options: { unique: true } },
       ],
     },
   ],
