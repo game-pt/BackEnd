@@ -9,7 +9,7 @@ const Prompt = (props: IPropmpt) => {
     if (lastPromptRef.current) {
       lastPromptRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [props.isFetching]);
+  }, [props.isFetching, props.data]);
 
   if (props.type === undefined) return <LoadingSpinner1 />;
   const promptHeight =

@@ -111,8 +111,9 @@ const MultiPlayPage = () => {
             } else {
               await db.deleteRecord(1);
             }
-            
+
           }
+          console.log("setEvent")
           setEvent({
             "eventCode": "EVT-001",
             "eventName": "전투",
