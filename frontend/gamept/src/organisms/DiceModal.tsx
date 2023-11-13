@@ -25,7 +25,7 @@ const DiceModal = (props: IDiceModal) => {
         dice3: props.dice3,
       });
       setThrowDice(true);
-    }, 3000);
+    }, 2000);
   }, [props])
 
   useEffect(() => {

@@ -115,6 +115,7 @@ const MultiPlayPage = () => {
           if (body.gameOverYn === 'Y') {
             // 게임 종료 API 호출
             setEvent(null);
+            navigate('/ending');
             return;
           }
 
@@ -302,7 +303,6 @@ const MultiPlayPage = () => {
   const sendEventHandler = async (choice: IActsType) => {
     // 주사위 돌리고 난 후
     // 선택지 선택 요청
-    getDicesHandler();
     console.log(choice);
     console.log(promptAtom);
     // 사용자가 선택한 선택지 송신 메서드
@@ -312,7 +312,7 @@ const MultiPlayPage = () => {
         .map((e) => e.choice)[0];
       // SubTask를 선택했다면
       const checkSub = choice.subtask.split("_");
-
+      console.log("body ", body);
       if (checkSub.length > 1 && checkSub[0] === "isSubTask") {
         // client.current.send(
         //   `/fight/${gameCode}`,
@@ -324,7 +324,8 @@ const MultiPlayPage = () => {
         //     gmonsterCode: body.monster
         //   })
         // )
-
+        console.log("전투")
+        getDicesHandler();
         return;
       }
 
@@ -346,6 +347,7 @@ const MultiPlayPage = () => {
           nickName: playerCode,
         })
       );
+      getDicesHandler();
     }
   };
 
