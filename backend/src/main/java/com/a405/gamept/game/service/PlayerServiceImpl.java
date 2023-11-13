@@ -14,12 +14,11 @@ import com.a405.gamept.play.repository.PlayerRedisRepository;
 import com.a405.gamept.util.ValidateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +31,8 @@ public class PlayerServiceImpl implements PlayerService {
     private final JobRepository jobRepository;
     private final StatRepository statRepository;
     private final ItemRepository itemRepository;
+
+    private final SimpMessagingTemplate webSocket;
 
     @Override
     @Transactional(readOnly = true)
@@ -271,6 +272,62 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
         return PlayerStatGetResponseDto.of(player, statGetResponseDtoList);
+    }
+
+    @Override
+    public PlayerStatusGetResponseDto getPlayerStatus(PlayerStatusGetCommandDto playerStatusGetCommandDto) throws GameException {
+        Player player = playerRepository.findById(playerStatusGetCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+
+        return PlayerStatusGetResponseDto.of(player);
+    }
+
+    @Override
+    @Transactional
+    public void updatePlayerHp(PlayerHpUpdateCommandDto playerHpUpdateCommandDto) throws GameException {
+        Player player = playerRepository.findById(playerHpUpdateCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+        player = player.toBuilder()
+                .hp(player.getHp() + playerHpUpdateCommandDto.changeAmount())
+                .build();
+        playerRepository.save(player);
+
+        webSocket.convertAndSendToUser(playerHpUpdateCommandDto.playerCode(), "/status", PlayerStatusGetResponseDto.of(player));
+    }
+
+    @Override
+    @Transactional
+    public void updatePlayerExp(PlayerExpUpdateCommandDto playerExpUpdateCommandDto) throws GameException {
+        Player player = playerRepository.findById(playerExpUpdateCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+
+        int exp = player.getExp() + playerExpUpdateCommandDto.changeAmount();
+        while (exp >= 10) {
+            exp -= 10;
+            updatePlayerLevel(PlayerLevelUpdateCommand.of(player.getCode()));
+        }
+
+        player = playerRepository.findById(playerExpUpdateCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+        player = player.toBuilder()
+                .exp(exp)
+                .build();
+        playerRepository.save(player);
+
+        webSocket.convertAndSendToUser(playerExpUpdateCommandDto.playerCode(), "/status", PlayerStatusGetResponseDto.of(player));
+    }
+
+    @Override
+    @Transactional
+    public void updatePlayerLevel(PlayerLevelUpdateCommand playerLevelUpdateCommand) {
+        Player player = playerRepository.findById(playerLevelUpdateCommand.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+        player = player.toBuilder()
+                .level(player.getLevel() + 1)
+                .build();
+        playerRepository.save(player);
+
+        webSocket.convertAndSendToUser(playerLevelUpdateCommand.playerCode(), "/status", PlayerStatusGetResponseDto.of(player));
     }
 
     private boolean checkAvailableStatPoint(String playerCode, int statValue) {
