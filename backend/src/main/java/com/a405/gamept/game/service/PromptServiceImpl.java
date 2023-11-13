@@ -72,7 +72,7 @@ public class PromptServiceImpl implements PromptService {
         // ValidateUtil.validate(promptResultGetResponseDto);
 
         // 전투 로직 찾기 : 유영 추가
-        if(promptResultGetResponseDto.event().eventCode().equals("EV-001")) {  // 이벤트가 전투일 경우
+        if(promptResultGetResponseDto.event() != null && promptResultGetResponseDto.event().eventCode().equals("EV-001")) {  // 이벤트가 전투일 경우
             fightService.setMonster(MonsterSetCommandDto.builder()
                     .gameCode(game.getCode())
                     .playerCode(player.getCode())
