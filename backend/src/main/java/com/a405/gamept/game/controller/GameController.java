@@ -74,7 +74,7 @@ public class GameController {
         FightResultGetResponseDto fightResultGetResponseDto = fightService.getFightResult(fightResultGetRequestDto.toCommand(gameCode));
         PlayerStatusGetResponseDto playerStatusGetResponseDto = playerService.getPlayerStatus(PlayerStatusGetCommandDto.of(fightResultGetRequestDto.playerCode()));
         webSocket.convertAndSend("/topic/fight/" + gameCode, fightResultGetResponseDto);
-        webSocket.convertAndSendToUser(fightResultGetRequestDto.playerCode(), "status", playerStatusGetResponseDto);
+        webSocket.convertAndSendToUser(fightResultGetRequestDto.playerCode(), "/status", playerStatusGetResponseDto);
         //return ResponseEntity.ok(fightService.getFightResult(fightResultGetRequestDto.toCommand(gameCode)));
     }
 
