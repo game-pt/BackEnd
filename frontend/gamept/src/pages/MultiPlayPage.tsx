@@ -19,6 +19,8 @@ import {
 } from '@/types/components/Prompt.types';
 import DiceModal from '@/organisms/DiceModal';
 import { IDice } from '@/types/components/Dice.types';
+import { useAtom } from 'jotai';
+import { characterStatusAtom } from '@/jotai/CharacterStatAtom';
 
 const MultiPlayPage = () => {
   const [chat, setChat] = useState<string[] | null>(null);
@@ -49,6 +51,7 @@ const MultiPlayPage = () => {
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
+  const [status, setStatus] = useAtom(characterStatusAtom);
   const gameCode = 'NngIB9';
   const playerCode = 'NngIB9-aZxrO5';
   const db = useIndexedDB('prompt');
@@ -314,16 +317,17 @@ const MultiPlayPage = () => {
       const checkSub = choice.subtask.split("_");
       console.log("body ", body);
       if (checkSub.length > 1 && checkSub[0] === "isSubTask") {
-        // client.current.send(
-        //   `/fight/${gameCode}`,
-        //   {},
-        //   JSON.stringify({
-        //     playerCode,
-        //     actCode: choice.actCode,
-        //     subtask: checkSub[1],
-        //     gmonsterCode: body.monster
-        //   })
-        // )
+        client.current.send(
+          `/fight/${gameCode}`,
+          {},
+          JSON.stringify({
+            playerCode,
+            actCode: choice.actCode,
+            subtask: checkSub[1],
+            // gmonsterCode: body.monster
+            gmonsterCode: 'ILQFak'
+          })
+        )
         console.log("전투")
         getDicesHandler();
         return;
@@ -332,9 +336,29 @@ const MultiPlayPage = () => {
       // subtask가 있다면
       if (choice.subtask !== 'NONE') {
         console.log(event);
+        if (choice.subtask === 'ITEM' && status.itemList.length === 0) {
+          Swal.fire({
+            title: '경고문',
+            text: '가지고 계신 아이템이 없습니다! 다른 선택지를!',
+            width: 600,
+            padding: '2.5rem',
+            color: '#FBCB73',
+            background: '#240903',
+            confirmButtonText: '확인',
+            confirmButtonColor: '#F0B279',
+            customClass: {
+              container: 'font-hol',
+              popup: 'rounded-lg',
+              title: 'text-48 mb-8',
+            },
+          });
+          return;
+        }
         // getSubtaskHandler(body.event.eventCode, choice.subtask);
         if (event)
           getSubtaskHandler(event.eventCode, choice.subtask);
+
+        return;
       }
 
       client.current.send(

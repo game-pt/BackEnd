@@ -48,7 +48,7 @@ const DiceModal = (props: IDiceModal) => {
             dice3={dice.dice3}
           />
         </div>
-        <div className='flex justify-center'>
+        <div className='flex justify-center text-'>
         <SelectButton width='150px' height='70px' text='확인' onClickEvent={() => props.onClose()} />
         </div>
       </div>
