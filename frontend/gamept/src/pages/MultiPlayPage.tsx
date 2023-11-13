@@ -11,23 +11,56 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import usePrompt from '@/hooks/usePrompt';
 import { usePromptAtom } from '@/jotai/PromptAtom';
-import { IActsType } from '@/types/components/Prompt.types';
+import {
+  IEventType,
+  IActsType,
+  IGetPromptType,
+  ISubtaskType,
+} from '@/types/components/Prompt.types';
+import DiceModal from '@/organisms/DiceModal';
+import { IDice } from '@/types/components/Dice.types';
+import { useAtom } from 'jotai';
+import { characterStatusAtom } from '@/jotai/CharacterStatAtom';
 
 const MultiPlayPage = () => {
   const [chat, setChat] = useState<string[] | null>(null);
-  const [event, setEvent] = useState<IActsType[] | null>(null);
+  const [event, setEvent] = useState<IEventType | null>({
+    eventCode: 'EVT-001',
+    eventName: '전투',
+    acts: [
+      {
+        actCode: 'act-001',
+        actName: '일반 공격',
+        subtask: 'NONE',
+      },
+      {
+        actCode: 'act-002',
+        actName: '스킬',
+        subtask: 'SKILL',
+      },
+      {
+        actCode: 'act-003',
+        actName: '아이템',
+        subtask: 'ITEM',
+      },
+    ],
+  });
   const [isPromptFetching, setIsPromptFetching] = useState<boolean>(false);
+  const [isShowDice, setIsShowDice] = useState<boolean>(false);
+  const [dice, setDice] = useState<IDice | null>(null);
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
-  const gameCode = 'YhFFcf';
-  const playerCode = 'YhFFcf-u3GDog';
+  const [status, _setStatus] = useAtom(characterStatusAtom);
+  const gameCode = 'NngIB9';
+  const playerCode = 'NngIB9-aZxrO5';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(event);
     if (promptAtom[promptAtom.length - 1][0].mine) setIsPromptFetching(true);
-  }, [promptAtom])
+  }, [promptAtom, event]);
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -43,15 +76,82 @@ const MultiPlayPage = () => {
         return;
       }
 
+      client.current.onStompError = function (frame) {
+        console.log('Broker reported error: ' + frame.headers['message']);
+        console.log('Additional details: ' + frame.body);
+      };
+
       // 멀티플레이 용
       // 유저 데이터 업데이트 시 정보 송수신용
       client.current.subscribe(
-        `/topic/player/${gameCode}`,
+        `/topic/dice/${gameCode}`,
         (message) => {
-          console.log(JSON.parse(message.body));
-          // message.body를 통해 데이터 받아서
-          // 프로필 업데이트 로직 수행
-          // 해당 방 구독하는 모든 플레이어들 데이터 저장하는 객체에다가 업데이트
+          const body = JSON.parse(message.body);
+
+          if (body.dice1) {
+            console.log(body);
+            console.log(event);
+            setDice(body);
+            setIsShowDice(true);
+          }
+        },
+        {}
+      );
+
+      // 선택지 데이터 정보 송신용
+      client.current.subscribe(
+        `/topic/select/${gameCode}`,
+        (message) => {
+          const body = JSON.parse(message.body);
+
+          if (body.prompt !== undefined) {
+            console.log(body);
+            // 원본 데이터와 프롬프트 구분
+            const prompt = body.prompt.split('\n').map((e: string) => {
+              return { msg: e, mine: false };
+            });
+
+            setPrompt(prompt);
+            setIsPromptFetching(false);
+          }
+
+          if (body.gameOverYn === 'Y') {
+            // 게임 종료 API 호출
+            setEvent(null);
+            navigate('/ending');
+            return;
+          }
+
+          if (body.itemYn === 'Y') {
+            // Item 획득 로직
+          }
+        },
+        {}
+      );
+
+      // 하위 선택지 조회 데이터 송수신용
+      client.current.subscribe(
+        `/topic/subtask/${gameCode}`,
+        (message) => {
+          // 하위 선택지 요청에 대한 데이터가 들어온다면
+          // 선택지에다가 하위 선택지로 업데이트를 해줘야한다.
+          const body = JSON.parse(message.body);
+
+          const newActs: IActsType[] = body.map((e: ISubtaskType) => {
+            return {
+              actCode: e.code,
+              actName: e.name,
+              subtask: `isSubTask_${e.code.split("-")[0]}`
+            }
+          })
+          console.log(body);
+          // event 상태를 업데이트
+          // acts 부분만 body로 변경
+          setEvent((prevEvent) => {
+            if (prevEvent !== null) {
+              return { ...prevEvent, acts: newActs };
+            } else return null;
+          });
         },
         {}
       );
@@ -65,25 +165,27 @@ const MultiPlayPage = () => {
           if (body.prompt !== undefined) {
             console.log(body);
             // 원본 데이터와 프롬프트 구분
-            const prompt = body.prompt.split("\n").map((e: string) => {
-              return { msg: e, mine: false }
+            const prompt = body.prompt.split('\n').map((e: string) => {
+              return { msg: e, mine: false };
             });
 
             setPrompt(prompt);
             setIsPromptFetching(false);
           }
 
-          if (body.endYn === "Y") setEvent(null);
+          if (body.endYn === 'Y') {
+            // 종료 API 호출
+            setEvent(null);
+          }
 
           // setHP
           // HP 상태 값 변화
           // body.playerHp
-
         },
         {}
       );
 
-      // 연결 성공 시 해당 방을 구독하면 서버로부터 이벤트 발생
+      // 프롬프트 데이터 송수신용
       client.current.subscribe(
         `/topic/prompt/${gameCode}`,
         async (message) => {
@@ -93,8 +195,8 @@ const MultiPlayPage = () => {
           if (body.prompt !== undefined) {
             console.log(body);
             // 원본 데이터와 프롬프트 구분
-            const prompt = body.prompt.split("\n").map((e: string) => {
-              return { msg: e, mine: false }
+            const prompt = body.prompt.split('\n').map((e: string) => {
+              return { msg: e, mine: false };
             });
 
             setPrompt(prompt);
@@ -103,26 +205,23 @@ const MultiPlayPage = () => {
 
           // Event가 있다면
           if (body.event !== null) {
-            const event = body.event;
-            setEvent(event.acts);
+            // setEvent(body.event);
+
+            const ChoiceFromDB = (await db.getAll())
+              .filter((v) => v.choice !== undefined)
+              .map((e) => e);
+
+            // 직전 선택지 인덱스 디비에 저장
+            if (ChoiceFromDB.length === 0) {
+              await db.add({ choice: body });
+            } else if (ChoiceFromDB.length <= 1) {
+              await db.update({ choice: body, id: ChoiceFromDB[0].id });
+            } else {
+              for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
+                await db.deleteRecord(ChoiceFromDB[i].id);
+              }
+            }
           }
-        //   setEvent([
-        //     {
-        //         actCode: "act-001",
-        //         actName: "일반 공격",
-        //         subtask: 'NONE'
-        //     },
-        //     {
-        //         actCode: "act-002",
-        //         actName: "스킬",
-        //         subtask: "SKILL"
-        //     },
-        //     {
-        //         actCode: "act-003",
-        //         actName: "아이템",
-        //         subtask: "ITEM"
-        //     }
-        // ]);
         },
         {}
       );
@@ -151,6 +250,8 @@ const MultiPlayPage = () => {
             client.current.unsubscribe('sub-1');
             client.current.unsubscribe('sub-2');
             client.current.unsubscribe('sub-3');
+            client.current.unsubscribe('sub-4');
+            client.current.unsubscribe('sub-5');
           }
         });
       } catch (err) {
@@ -160,6 +261,18 @@ const MultiPlayPage = () => {
     } else console.log('Already Disconnected!!!');
   };
 
+  const getDicesHandler = () => {
+    if (client.current) {
+      client.current.send(
+        `/dice/${gameCode}`,
+        {},
+        JSON.stringify({
+          playerCode
+        })
+      )
+    }
+  }
+
   const sendPromptHandler = (text: string) => {
     // 사용자가 입력한 프롬프트 송신 메서드
     if (client.current) {
@@ -167,23 +280,89 @@ const MultiPlayPage = () => {
         `/prompt/${gameCode}`,
         {},
         JSON.stringify({
+          playerCode,
           prompt: text,
         })
       );
       setIsPromptFetching(true);
       setPrompt([{ msg: text, mine: true }]);
     }
-  }
+  };
 
-  const sendEventHandler = (choice: IActsType) => {
-    // 주사위 돌리고 난 후
-    // 선택지 선택 요청
-
-    console.log(choice);
-    // 사용자가 선택한 선택지 송신 메서드
+  const getSubtaskHandler = (eventCode: string, subtask: string) => {
     if (client.current) {
       client.current.send(
-        `/event/${gameCode}`,
+        `/subtask/${gameCode}`,
+        {},
+        JSON.stringify({
+          playerCode,
+          eventCode,
+          subtask,
+        })
+      );
+    }
+  };
+
+  const sendEventHandler = async (choice: IActsType) => {
+    // 주사위 돌리고 난 후
+    // 선택지 선택 요청
+    console.log(choice);
+    console.log(promptAtom);
+    // 사용자가 선택한 선택지 송신 메서드
+    if (client.current) {
+      const body: IGetPromptType = (await db.getAll())
+        .filter((v) => v.choice !== undefined)
+        .map((e) => e.choice)[0];
+      // SubTask를 선택했다면
+      const checkSub = choice.subtask.split("_");
+      console.log("body ", body);
+      if (checkSub.length > 1 && checkSub[0] === "isSubTask") {
+        client.current.send(
+          `/fight/${gameCode}`,
+          {},
+          JSON.stringify({
+            playerCode,
+            actCode: choice.actCode,
+            subtask: checkSub[1],
+            // gmonsterCode: body.monster
+            gmonsterCode: 'ILQFak'
+          })
+        )
+        console.log("전투")
+        getDicesHandler();
+        return;
+      }
+
+      // subtask가 있다면
+      if (choice.subtask !== 'NONE') {
+        console.log(event);
+        if (choice.subtask === 'ITEM' && status.itemList.length === 0) {
+          Swal.fire({
+            title: '경고문',
+            text: '가지고 계신 아이템이 없습니다! 다른 선택지를!',
+            width: 600,
+            padding: '2.5rem',
+            color: '#FBCB73',
+            background: '#240903',
+            confirmButtonText: '확인',
+            confirmButtonColor: '#F0B279',
+            customClass: {
+              container: 'font-hol',
+              popup: 'rounded-lg',
+              title: 'text-48 mb-8',
+            },
+          });
+          return;
+        }
+        // getSubtaskHandler(body.event.eventCode, choice.subtask);
+        if (event)
+          getSubtaskHandler(event.eventCode, choice.subtask);
+
+        return;
+      }
+
+      client.current.send(
+        `/select/${gameCode}`,
         {},
         JSON.stringify({
           gameCode,
@@ -192,8 +371,8 @@ const MultiPlayPage = () => {
           nickName: playerCode,
         })
       );
+      getDicesHandler();
     }
-      
   };
 
   const sendChatHandler = (text: string) => {
@@ -259,8 +438,15 @@ const MultiPlayPage = () => {
         <div className="w-full flex justify-end py-1 pr-10">
           <TextButton text="게임 나가기" onClickEvent={() => leaveGame()} />
         </div>
-        <PromptInterface event={event} isFetching={isPromptFetching} gameType="single" sendEventHandler={sendEventHandler} sendPromptHandler={sendPromptHandler} />
+        <PromptInterface
+          event={event}
+          isFetching={isPromptFetching}
+          gameType="single"
+          sendEventHandler={sendEventHandler}
+          sendPromptHandler={sendPromptHandler}
+        />
       </div>
+      {(dice && isShowDice) && <DiceModal dice1={dice.dice1} dice2={dice.dice2} dice3={dice.dice3} onClose={() => setIsShowDice(false)} />}
     </div>
   );
 };
