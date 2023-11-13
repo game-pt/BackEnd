@@ -17,6 +17,8 @@ import {
   IGetPromptType,
   ISubtaskType,
 } from '@/types/components/Prompt.types';
+import DiceModal from '@/organisms/DiceModal';
+import { IDice } from '@/types/components/Dice.types';
 
 const MultiPlayPage = () => {
   const [chat, setChat] = useState<string[] | null>(null);
@@ -42,6 +44,8 @@ const MultiPlayPage = () => {
     ],
   });
   const [isPromptFetching, setIsPromptFetching] = useState<boolean>(false);
+  const [isShowDice, setIsShowDice] = useState<boolean>(false);
+  const [dice, setDice] = useState<IDice | null>(null);
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
@@ -79,10 +83,14 @@ const MultiPlayPage = () => {
       client.current.subscribe(
         `/topic/dice/${gameCode}`,
         (message) => {
-          console.log(JSON.parse(message.body));
-          // message.body를 통해 데이터 받아서
-          // 프로필 업데이트 로직 수행
-          // 해당 방 구독하는 모든 플레이어들 데이터 저장하는 객체에다가 업데이트
+          const body = JSON.parse(message.body);
+
+          if (body.dice1) {
+            console.log(body);
+            console.log(event);
+            setDice(body);
+            setIsShowDice(true);
+          }
         },
         {}
       );
@@ -252,7 +260,11 @@ const MultiPlayPage = () => {
   const getDicesHandler = () => {
     if (client.current) {
       client.current.send(
-        `/dice/${gameCode}`
+        `/dice/${gameCode}`,
+        {},
+        JSON.stringify({
+          playerCode
+        })
       )
     }
   }
@@ -290,7 +302,7 @@ const MultiPlayPage = () => {
   const sendEventHandler = async (choice: IActsType) => {
     // 주사위 돌리고 난 후
     // 선택지 선택 요청
-
+    getDicesHandler();
     console.log(choice);
     console.log(promptAtom);
     // 사용자가 선택한 선택지 송신 메서드
@@ -408,6 +420,7 @@ const MultiPlayPage = () => {
           sendPromptHandler={sendPromptHandler}
         />
       </div>
+      {(dice && isShowDice) && <DiceModal dice1={dice.dice1} dice2={dice.dice2} dice3={dice.dice3} onClose={() => setIsShowDice(false)} />}
     </div>
   );
 };
