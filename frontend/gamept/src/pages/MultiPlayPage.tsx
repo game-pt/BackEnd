@@ -11,17 +11,17 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import usePrompt from '@/hooks/usePrompt';
 import { usePromptAtom } from '@/jotai/PromptAtom';
-import { IActsType } from '@/types/components/Prompt.types';
+import { IEventType, IActsType } from '@/types/components/Prompt.types';
 
 const MultiPlayPage = () => {
   const [chat, setChat] = useState<string[] | null>(null);
-  const [event, setEvent] = useState<IActsType[] | null>(null);
+  const [event, setEvent] = useState<IEventType | null>(null);
   const [isPromptFetching, setIsPromptFetching] = useState<boolean>(false);
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
-  const gameCode = 'YhFFcf';
-  const playerCode = 'YhFFcf-u3GDog';
+  const gameCode = 'gq6KR1';
+  const playerCode = 'gq6KR1-jBSe9s';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
@@ -103,8 +103,7 @@ const MultiPlayPage = () => {
 
           // Event가 있다면
           if (body.event !== null) {
-            const event = body.event;
-            setEvent(event.acts);
+            setEvent(body.event);
           }
         //   setEvent([
         //     {
@@ -167,6 +166,7 @@ const MultiPlayPage = () => {
         `/prompt/${gameCode}`,
         {},
         JSON.stringify({
+          playerCode,
           prompt: text,
         })
       );

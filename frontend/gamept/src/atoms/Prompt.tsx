@@ -9,7 +9,7 @@ const Prompt = (props: IPropmpt) => {
     if (lastPromptRef.current) {
       lastPromptRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [props]);
+  }, [props.isFetching]);
 
   if (props.type === undefined) return <LoadingSpinner1 />;
   const promptHeight =
@@ -24,7 +24,7 @@ const Prompt = (props: IPropmpt) => {
           {props.data.map((e, i) => (
             <div
               key={`prompt_${i}`}
-              className="my-4 flex"
+              className={`my-4 ${e[0].mine && `flex`}`}
               ref={
                 (props.data && props.data.length - 1 === i) && !props.isFetching
                   ? lastPromptRef
