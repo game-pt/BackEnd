@@ -25,7 +25,9 @@ export interface IChoiceGroup {
 }
 
 export interface IMonsterType {
-  
+  code: string;
+  monsterLevel: number;
+  monsterAttack: number;
 }
 
 export interface IGetPromptType {

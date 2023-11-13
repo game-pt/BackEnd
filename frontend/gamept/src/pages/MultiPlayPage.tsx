@@ -103,25 +103,37 @@ const MultiPlayPage = () => {
 
           // Event가 있다면
           if (body.event !== null) {
-            setEvent(body.event);
+            // setEvent(body.event);
+            
+            const ChoiceFromDB = (await db.getAll()).map((e) => e.content);
+            if (ChoiceFromDB.length === 0) {
+              await db.add({ choice: body });
+            } else {
+              await db.deleteRecord(1);
+            }
+            
           }
-        //   setEvent([
-        //     {
-        //         actCode: "act-001",
-        //         actName: "일반 공격",
-        //         subtask: 'NONE'
-        //     },
-        //     {
-        //         actCode: "act-002",
-        //         actName: "스킬",
-        //         subtask: "SKILL"
-        //     },
-        //     {
-        //         actCode: "act-003",
-        //         actName: "아이템",
-        //         subtask: "ITEM"
-        //     }
-        // ]);
+          setEvent({
+            "eventCode": "EVT-001",
+            "eventName": "전투",
+            "acts": [
+              {
+                  actCode: "act-001",
+                  actName: "일반 공격",
+                  subtask: 'NONE'
+              },
+              {
+                  actCode: "act-002",
+                  actName: "스킬",
+                  subtask: "SKILL"
+              },
+              {
+                  actCode: "act-003",
+                  actName: "아이템",
+                  subtask: "ITEM"
+              }
+          ]
+        });
         },
         {}
       );
