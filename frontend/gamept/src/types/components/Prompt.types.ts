@@ -55,3 +55,10 @@ export interface IEventType {
   eventName: string;
   acts: IActsType[] | null;
 }
+
+export interface ISendChoiceType {
+  actCode: string;
+  playerCode: string;
+  gmonsterCode?: string;
+  subtask?: string;
+}

@@ -23,12 +23,32 @@ const MultiPlayPage = () => {
   const gameCode = 'gq6KR1';
   const playerCode = 'gq6KR1-jBSe9s';
   const db = useIndexedDB('prompt');
-  const choiceDb = useIndexedDB('choice');
   const navigate = useNavigate();
 
   useEffect(() => {
+    setEvent({
+      eventCode: 'EVT-001',
+      eventName: '전투',
+      acts: [
+        {
+          actCode: 'act-001',
+          actName: '일반 공격',
+          subtask: 'NONE',
+        },
+        {
+          actCode: 'act-002',
+          actName: '스킬',
+          subtask: 'SKILL',
+        },
+        {
+          actCode: 'act-003',
+          actName: '아이템',
+          subtask: 'ITEM',
+        },
+      ],
+    });
     if (promptAtom[promptAtom.length - 1][0].mine) setIsPromptFetching(true);
-  }, [promptAtom])
+  }, [promptAtom]);
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -57,6 +77,30 @@ const MultiPlayPage = () => {
         {}
       );
 
+      // 선택지 데이터 정보 송신용
+      client.current.subscribe(
+        `/topic/select/${gameCode}`,
+        (message) => {
+          console.log(JSON.parse(message.body));
+          // message.body를 통해 데이터 받아서
+          // 프로필 업데이트 로직 수행
+          // 해당 방 구독하는 모든 플레이어들 데이터 저장하는 객체에다가 업데이트
+        },
+        {}
+      );
+
+      // 하위 선택지 조회 데이터 송수신용
+      client.current.subscribe(
+        `/topic/subtask/${gameCode}`,
+        (message) => {
+          console.log(JSON.parse(message.body));
+          // message.body를 통해 데이터 받아서
+          // 프로필 업데이트 로직 수행
+          // 해당 방 구독하는 모든 플레이어들 데이터 저장하는 객체에다가 업데이트
+        },
+        {}
+      );
+
       // 전투 이벤트 업데이트 시 정보 송수신용
       client.current.subscribe(
         `/topic/fight/${gameCode}`,
@@ -66,25 +110,24 @@ const MultiPlayPage = () => {
           if (body.prompt !== undefined) {
             console.log(body);
             // 원본 데이터와 프롬프트 구분
-            const prompt = body.prompt.split("\n").map((e: string) => {
-              return { msg: e, mine: false }
+            const prompt = body.prompt.split('\n').map((e: string) => {
+              return { msg: e, mine: false };
             });
 
             setPrompt(prompt);
             setIsPromptFetching(false);
           }
 
-          if (body.endYn === "Y") setEvent(null);
+          if (body.endYn === 'Y') setEvent(null);
 
           // setHP
           // HP 상태 값 변화
           // body.playerHp
-
         },
         {}
       );
 
-      // 연결 성공 시 해당 방을 구독하면 서버로부터 이벤트 발생
+      // 프롬프트 데이터 송수신용
       client.current.subscribe(
         `/topic/prompt/${gameCode}`,
         async (message) => {
@@ -94,8 +137,8 @@ const MultiPlayPage = () => {
           if (body.prompt !== undefined) {
             console.log(body);
             // 원본 데이터와 프롬프트 구분
-            const prompt = body.prompt.split("\n").map((e: string) => {
-              return { msg: e, mine: false }
+            const prompt = body.prompt.split('\n').map((e: string) => {
+              return { msg: e, mine: false };
             });
 
             setPrompt(prompt);
@@ -105,36 +148,43 @@ const MultiPlayPage = () => {
           // Event가 있다면
           if (body.event !== null) {
             // setEvent(body.event);
-            
-            const ChoiceFromDB = (await choiceDb.getAll()).map((e) => e.content);
-            if (ChoiceFromDB.length === 0) {
-              await choiceDb.add({ choice: body });
-            } else {
-              await choiceDb.deleteRecord(1);
-            }
 
+            const ChoiceFromDB = (await db.getAll())
+              .filter((v) => v.choice !== undefined)
+              .map((e) => e);
+
+            // 직전 선택지 인덱스 디비에 저장
+            if (ChoiceFromDB.length === 0) {
+              await db.add({ choice: 'Tasting' });
+            } else if (ChoiceFromDB.length <= 1) {
+              await db.update({ choice: 'Testing', id: ChoiceFromDB[0].id });
+            } else {
+              for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
+                await db.deleteRecord(ChoiceFromDB[i].id);
+              }
+            }
           }
           setEvent({
-            "eventCode": "EVT-001",
-            "eventName": "전투",
-            "acts": [
+            eventCode: 'EVT-001',
+            eventName: '전투',
+            acts: [
               {
-                  actCode: "act-001",
-                  actName: "일반 공격",
-                  subtask: 'NONE'
+                actCode: 'act-001',
+                actName: '일반 공격',
+                subtask: 'NONE',
               },
               {
-                  actCode: "act-002",
-                  actName: "스킬",
-                  subtask: "SKILL"
+                actCode: 'act-002',
+                actName: '스킬',
+                subtask: 'SKILL',
               },
               {
-                  actCode: "act-003",
-                  actName: "아이템",
-                  subtask: "ITEM"
-              }
-          ]
-        });
+                actCode: 'act-003',
+                actName: '아이템',
+                subtask: 'ITEM',
+              },
+            ],
+          });
         },
         {}
       );
@@ -163,6 +213,8 @@ const MultiPlayPage = () => {
             client.current.unsubscribe('sub-1');
             client.current.unsubscribe('sub-2');
             client.current.unsubscribe('sub-3');
+            client.current.unsubscribe('sub-4');
+            client.current.unsubscribe('sub-5');
           }
         });
       } catch (err) {
@@ -186,17 +238,18 @@ const MultiPlayPage = () => {
       setIsPromptFetching(true);
       setPrompt([{ msg: text, mine: true }]);
     }
-  }
+  };
 
-  const sendEventHandler = (choice: IActsType) => {
+  const sendEventHandler = async (choice: IActsType) => {
     // 주사위 돌리고 난 후
     // 선택지 선택 요청
 
     console.log(choice);
+    console.log(promptAtom);
     // 사용자가 선택한 선택지 송신 메서드
     if (client.current) {
       client.current.send(
-        `/event/${gameCode}`,
+        `/select/${gameCode}`,
         {},
         JSON.stringify({
           gameCode,
@@ -206,7 +259,6 @@ const MultiPlayPage = () => {
         })
       );
     }
-      
   };
 
   const sendChatHandler = (text: string) => {
@@ -244,7 +296,6 @@ const MultiPlayPage = () => {
       if (result.isDenied) {
         disConnected();
         db.clear();
-        choiceDb.clear();
         navigate('/');
       }
     });
@@ -273,7 +324,13 @@ const MultiPlayPage = () => {
         <div className="w-full flex justify-end py-1 pr-10">
           <TextButton text="게임 나가기" onClickEvent={() => leaveGame()} />
         </div>
-        <PromptInterface event={event} isFetching={isPromptFetching} gameType="single" sendEventHandler={sendEventHandler} sendPromptHandler={sendPromptHandler} />
+        <PromptInterface
+          event={event}
+          isFetching={isPromptFetching}
+          gameType="single"
+          sendEventHandler={sendEventHandler}
+          sendPromptHandler={sendPromptHandler}
+        />
       </div>
     </div>
   );
