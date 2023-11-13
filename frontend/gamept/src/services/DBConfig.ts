@@ -4,9 +4,9 @@ export const DBConfig = {
   objectStoresMeta: [
     {
       store: 'prompt',
-      storeConfig: { keyPath: 'id', autoIncrement: false },
+      storeConfig: { keyPath: 'id', autoIncrement: true },
       storeSchema: [
-        { name: 'content', keypath: 'content', options: { unique: true } },
+        { name: 'content', keypath: 'content', options: { unique: false } },
       ],
     },
   ],
