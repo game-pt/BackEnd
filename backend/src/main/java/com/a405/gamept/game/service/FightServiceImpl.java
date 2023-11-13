@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +65,7 @@ public class FightServiceImpl implements FightService {
     }
 
     @Override
+    @Transactional
     public void setMonster(MonsterSetCommandDto monsterSetCommandDto) {
         ValidateUtil.validate(monsterSetCommandDto);
 
@@ -89,13 +91,13 @@ public class FightServiceImpl implements FightService {
                 .orElseThrow(()->new GameException(GameErrorMessage.MONSTER_INVALID));
         log.info("등장 몬스터: { 레벨: " + monster.getLevel() + " 공격력 : "+ monster.getAttack()+" }");
 
-        FightingEnermy fightingEnermy = fightingEnermyRedisRepository.save(FightingEnermy.builder()
+        FightingEnermy fightingEnemy = fightingEnermyRedisRepository.save(FightingEnermy.builder()
                 .code(code)
                 .level(monster.getLevel())
                 .hp(monster.getHp())
                 .attack(monster.getAttack())
                 .build());
-        gameRedisRepository.save(game.toBuilder().fightingEnemyCode(fightingEnermy.getCode()).build());
+        gameRedisRepository.save(game.toBuilder().fightingEnemyCode(fightingEnemy.getCode()).build());
     }
 
     @Override
@@ -105,7 +107,7 @@ public class FightServiceImpl implements FightService {
         Game game = gameRedisRepository.findById(monsterGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
-        MonsterGetResponseDto monsterGetResponseDto = MonsterGetResponseDto.from(fightingEnermyRedisRepository.findByGameCode(game.getCode())
+        MonsterGetResponseDto monsterGetResponseDto = MonsterGetResponseDto.from(fightingEnermyRedisRepository.findById(game.getFightingEnemyCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.FIGHTING_ENEMY_INVALID)));
         ValidateUtil.validate(monsterGetResponseDto);
 
