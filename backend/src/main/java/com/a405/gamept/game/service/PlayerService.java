@@ -45,15 +45,49 @@ public interface PlayerService {
 
     /**
      * 해당 플레이어의 스탯을 조회한다.
-     * @param playStatGetCommandDto
+     * @param playerStatGetCommandDto
      * @return  : 플레이어 스탯
-     * @author  : 우석
+     * @author  : 이우석
      */
-    PlayerStatGetResponseDto getPlayerStat(PlayerStatGetCommandDto playStatGetCommandDto) throws GameException;
+    PlayerStatGetResponseDto getPlayerStat(PlayerStatGetCommandDto playerStatGetCommandDto) throws GameException;
 
     /**
-     *
-     * @return
+     * 해당 플레이어의 스탯을 추가한다.
+     * @param playerStatUpdateCommandDto
+     * @return  : 플레이어 스탯
+     * @author  : 이우석
      */
     PlayerStatGetResponseDto addPlayerStat(PlayerStatUpdateCommandDto playerStatUpdateCommandDto) throws GameException;
+
+    /**
+     * 해당 플레이어의 스테이터스를 조회한다.
+     * @param playerStatusGetCommandDto
+     * @return  : 플레이어 스테이터스
+     * @author  : 이우석
+     */
+    PlayerStatusGetResponseDto getPlayerStatus(PlayerStatusGetCommandDto playerStatusGetCommandDto) throws GameException;
+
+    /**
+     * 해당 플레이어의 HP를 수정한다.
+     * @param playerHpUpdateCommandDto
+     * @return  : 플레이어 스테이터스 (웹소켓)
+     * @author  : 이우석
+     */
+    void updatePlayerHp(PlayerHpUpdateCommandDto playerHpUpdateCommandDto) throws GameException;
+
+    /**
+     * 해당 플레이어의 경험치를 수정한다.
+     * @param playerExpUpdateCommandDto
+     * @return  : 플레이어 스테이터스 (웹소켓)
+     * @author  : 이우석
+     */
+    void updatePlayerExp(PlayerExpUpdateCommandDto playerExpUpdateCommandDto) throws GameException;
+
+    /**
+     * 해당 플레이어의 레벨을 업 시킨다.
+     * @param playerLevelUpdateCommand
+     * @return  : 플레이어 스테이터스 (웹소켓)
+     * @author  : 이우석
+     */
+    void updatePlayerLevel(PlayerLevelUpdateCommand playerLevelUpdateCommand) throws GameException;
 }

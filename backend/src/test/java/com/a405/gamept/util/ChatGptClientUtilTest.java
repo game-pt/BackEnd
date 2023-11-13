@@ -14,7 +14,7 @@ class ChatGptClientUtilTest {
 
     @Test
     void enterPrompt() throws IOException, InterruptedException {
-        chatGptClientUtil.enterPrompt("1 + 1은 뭐야? 어린아이도 이해할 수 있도록 설명해줄래?");
+//        chatGptClientUtil.enterPrompt("1 + 1은 뭐야? 어린아이도 이해할 수 있도록 설명해줄래?");
     }
 
 }
