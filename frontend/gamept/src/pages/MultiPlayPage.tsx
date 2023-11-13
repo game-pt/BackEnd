@@ -23,6 +23,7 @@ const MultiPlayPage = () => {
   const gameCode = 'gq6KR1';
   const playerCode = 'gq6KR1-jBSe9s';
   const db = useIndexedDB('prompt');
+  const choiceDb = useIndexedDB('choice');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -105,15 +106,14 @@ const MultiPlayPage = () => {
           if (body.event !== null) {
             // setEvent(body.event);
             
-            const ChoiceFromDB = (await db.getAll()).map((e) => e.content);
+            const ChoiceFromDB = (await choiceDb.getAll()).map((e) => e.content);
             if (ChoiceFromDB.length === 0) {
-              await db.add({ choice: body });
+              await choiceDb.add({ choice: body });
             } else {
-              await db.deleteRecord(1);
+              await choiceDb.deleteRecord(1);
             }
 
           }
-          console.log("setEvent")
           setEvent({
             "eventCode": "EVT-001",
             "eventName": "전투",
@@ -244,6 +244,7 @@ const MultiPlayPage = () => {
       if (result.isDenied) {
         disConnected();
         db.clear();
+        choiceDb.clear();
         navigate('/');
       }
     });

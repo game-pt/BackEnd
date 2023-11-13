@@ -7,18 +7,16 @@ import { IActsType, IPromptInterface } from '@/types/components/Prompt.types';
 import { usePromptAtom } from '@/jotai/PromptAtom';
 
 const PromptInterface = (props: IPromptInterface) => {
-  console.log(props);
   const [text, setText] = useState('');
   const [isFetching, setIsFetching] = useState(true);
   const prompt = usePromptAtom();
 
   const sendEvent = (e: IActsType) => {
     if (props.sendEventHandler) props.sendEventHandler(e);
-    setIsFetching(!isFetching);
+    console.log(e);
   }
 
   const sendPrompt = () => {
-    // Prompt 보내는 메서드
     if (props.sendPromptHandler) props.sendPromptHandler(text);
     setText('');
   }
