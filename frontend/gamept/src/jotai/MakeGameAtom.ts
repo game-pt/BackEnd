@@ -6,10 +6,11 @@
  *  문자열 코드로 관리?
  */
 
-import { atom } from 'jotai';
+import { atom, useAtomValue } from 'jotai';
 
 export const gameModeAtom = atom(0);
-export const gameCodeAtom = atom('fantasy');
+export const gameCodeAtom = atom('');
+export const playerCodeAtom = atom('');
 
 export const selectGameModeAtom = atom(
   (get) => get(gameModeAtom),
@@ -26,3 +27,13 @@ export const selectGameCodeAtom = atom(
     console.log('게임코드값', gameCode);
   }
 );
+
+// export const selectPlayerCodeAtom = atom(
+//   (get) => get(playerCodeAtom),
+//   (_get, set, playerCode: string) => {
+//     set(playerCodeAtom, () => playerCode);
+//     console.log('플코값', playerCodeAtom);
+//   }
+// );
+
+export const useGetGameCode = () => useAtomValue(gameCodeAtom);

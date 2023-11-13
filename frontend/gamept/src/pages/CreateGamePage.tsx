@@ -14,6 +14,7 @@ import { fetchGetStories } from '@/services/CreateGameService';
 
 const CreateGamePage = () => {
   const [isSelectStory, setIsSelectStory] = useState(false);
+
   const { data, isSuccess } = useQuery({
     queryKey: ['getStories'],
     queryFn: () => fetchGetStories(),
