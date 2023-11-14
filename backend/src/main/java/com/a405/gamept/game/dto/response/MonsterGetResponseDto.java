@@ -5,24 +5,23 @@ import com.a405.gamept.game.util.GameData;
 import com.a405.gamept.game.util.RegexPatterns;
 import com.a405.gamept.play.entity.FightingEnermy;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Builder(access = AccessLevel.PRIVATE)
 @Slf4j
 public record MonsterGetResponseDto(
-        // @NotBlank(message = "G몬스터 코드는 필수 입니다.") String gmonsterCode,
-        @NotBlank(message = "현재 전투 중인 몬스터가 존재하지 않습니다.")
-        @Pattern(regexp = RegexPatterns.FIGHTING_ENEMY, message = "현재 전투 중인 몬스터가 올바르지 않습니다.")
+        @NotBlank(message = "몬스터가 존재하지 않습니다.")
+        @Pattern(regexp = RegexPatterns.MONSTER, message = "몬스터가 올바르지 않습니다.")
         String code,
         @JsonProperty("level")
         @Positive(message = "몬스터 레벨은 양수여야 합니다.")
         @Max(value = GameData.MONSTER_MAX_LEVEL, message = "몬스터 레벨은 " + GameData.MONSTER_MAX_LEVEL + "을 넘을 수 없습니다.")
         int monsterLevel,
+        @JsonProperty("hp")
+        @PositiveOrZero(message = "몬스터 체력은 양수여야 합니다.")
+        int hp,
         @JsonProperty("attack")
         @Positive(message = "몬스터 공격력은 양수여야 합니다.")
         int monsterAttack
@@ -32,7 +31,16 @@ public record MonsterGetResponseDto(
                 return MonsterGetResponseDto.builder()
                         .code(fightingEnermy.getCode())
                         .monsterLevel(fightingEnermy.getLevel())
+                        .hp(fightingEnermy.getHp())
                         .monsterAttack(fightingEnermy.getAttack())
+                        .build();
+        }
+        public static MonsterGetResponseDto from(Monster monster) {
+                return MonsterGetResponseDto.builder()
+                        .code(monster.getCode())
+                        .monsterLevel(monster.getLevel())
+                        .hp(monster.getHp())
+                        .monsterAttack(monster.getAttack())
                         .build();
         }
     /*
