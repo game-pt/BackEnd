@@ -21,6 +21,9 @@ public enum GameErrorMessage  {
     JOB_INVALID(INTERNAL_SERVER_ERROR, "직업이 유효하지 않습니다."),
     INVALID_GAME_REQUEST(BAD_REQUEST, "해당 유저의 게임이 아닙니다."),
 
+    // 프롬프트 관련 에러 메시지
+    PROMPT_INVALID(INTERNAL_SERVER_ERROR, "ChatGPT 응답이 유효하지 않습니다."),
+
     // 이벤트 관련 에러 메시지
     ACT_NOT_FOUND(BAD_REQUEST, "해당 동작이 존재하지 않습니다."),
     DICE_NOT_FOUND(NOT_FOUND, "다이스의 값을 찾을 수 없습니다. 다시 시도해주세요"),

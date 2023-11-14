@@ -12,4 +12,5 @@ public interface RegexPatterns {
     String JOB = "^JOB-[0-9]{3}$";
     String RACE = "^RACE-[0-9]{3}$";
     String ITEM = "^ITEM-[0-9]{3}$";
+    String MONSTER = "^MON-[0-9]{3}$";
 }

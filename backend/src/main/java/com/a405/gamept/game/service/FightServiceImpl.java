@@ -66,9 +66,32 @@ public class FightServiceImpl implements FightService {
 
     @Override
     @Transactional
-    public void setMonster(MonsterSetCommandDto monsterSetCommandDto) {
+    public MonsterGetResponseDto getMonster(MonsterSetCommandDto monsterSetCommandDto) {
         ValidateUtil.validate(monsterSetCommandDto);
 
+        Game game = gameRedisRepository.findById(monsterSetCommandDto.gameCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+        Player player = playerRedisRepository.findById(monsterSetCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+
+        Monster monster = monsterRepository.findById(game.getFightingEnemyCode()).orElse(null);
+        if(monster == null) {
+            int monsterLevel = getRandomMonsterLevel(game.getStoryCode(), player.getLevel());
+
+            monster = monsterRepository.findByStoryCodeAndLevel(game.getStoryCode(), monsterLevel)
+                    .orElseThrow(()->new GameException(GameErrorMessage.MONSTER_INVALID));
+            log.info("등장 몬스터: { 레벨: " + monster.getLevel() + " 공격력 : "+ monster.getAttack()+" }");
+        }
+
+        MonsterGetResponseDto monsterGetResponseDto = MonsterGetResponseDto.from(monster);
+        ValidateUtil.validate(monsterGetResponseDto);
+
+        return monsterGetResponseDto;
+    }
+
+    @Override
+    @Transactional
+    public void setMonster(MonsterSetCommandDto monsterSetCommandDto) {
         Game game = gameRedisRepository.findById(monsterSetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
@@ -79,27 +102,23 @@ public class FightServiceImpl implements FightService {
         Player player = playerRedisRepository.findById(monsterSetCommandDto.playerCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
-        // 몬스터 임의 코드 생성
-        String code = "";
-        do {
-            code = ValidateUtil.getRandomUID();
-        } while(fightingEnermyRedisRepository.findById(code).isPresent());
-
         int monsterLevel = getRandomMonsterLevel(game.getStoryCode(), player.getLevel());
 
         Monster monster = monsterRepository.findByStoryCodeAndLevel(game.getStoryCode(), monsterLevel)
                 .orElseThrow(()->new GameException(GameErrorMessage.MONSTER_INVALID));
         log.info("등장 몬스터: { 레벨: " + monster.getLevel() + " 공격력 : "+ monster.getAttack()+" }");
 
-        FightingEnermy fightingEnemy = fightingEnermyRedisRepository.save(FightingEnermy.builder()
+        /*FightingEnermy fightingEnemy = fightingEnermyRedisRepository.save(FightingEnermy.builder()
                 .code(code)
                 .level(monster.getLevel())
                 .hp(monster.getHp())
                 .attack(monster.getAttack())
-                .build());
-        gameRedisRepository.save(game.toBuilder().fightingEnemyCode(fightingEnemy.getCode()).build());
+                .build());*/
+
+        gameRedisRepository.save(game.toBuilder().fightingEnemyCode(monster.getCode()).build());
     }
 
+    /*
     @Override
     public MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameException {
         ValidateUtil.validate(monsterGetCommandDto);
@@ -113,6 +132,7 @@ public class FightServiceImpl implements FightService {
 
         return monsterGetResponseDto;
     }
+     */
 
 
     /*
