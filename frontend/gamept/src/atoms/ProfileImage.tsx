@@ -26,7 +26,7 @@ const ProfileImage = (props: IProfileImage) => {
     >
       <img
         src={profileImgUrl}
-        className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]"
+        className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] rounded-full"
         style={{
           width: props.hasBorderAsset ? props.size - 10 : '100%',
           height: props.hasBorderAsset ? props.size - 10 : '100%',
