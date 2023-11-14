@@ -42,11 +42,11 @@ export const initCharacterStatusAtom = atom(
       statList: status.statList.map<{
         statName: string;
         statValue: number;
-        code: string;
+        statCode: string;
       }>((element) => ({
         statName: element.name,
         statValue: element.value,
-        code: element.code,
+        statCode: element.code,
       })),
       skillList: status.job.skillList.map<{ name: string; desc: string }>(
         (element) => ({ ...element })
@@ -79,14 +79,14 @@ export const statControlAtom = atom(
   (
     get,
     set,
-    changedStat: Array<{ statName: string; statValue: number; code: string }>
+    changedStat: Array<{ statName: string; statValue: number; statCode: string }>
   ) => {
     set(characterStatusAtom, {
       ...get(characterStatusAtom),
       statList: changedStat.map<{
         statName: string;
         statValue: number;
-        code: string;
+        statCode: string;
       }>((element) => ({ ...element })),
     });
   }
