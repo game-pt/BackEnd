@@ -19,6 +19,7 @@ export interface ICharacterCard {
     statList: IStatObject[] | Array<{ statName: string; statBonus: number }>
   ) => void;
   raceCode?: string;
+  idx: number;
 }
 
 export interface ISwitchGender {

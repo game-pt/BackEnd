@@ -67,10 +67,23 @@ const CharacterCard = (props: ICharacterCard) => {
     props.onNextLevel();
   };
 
+  const animate = [
+    'animate-[fadeIn_1s_ease-in-out,_slideUp_1s_ease-in-out]',
+    'animate-[fadeIn_1.3s_ease-in-out,_slideUp_1s_ease-in-out]',
+    'animate-[fadeIn_1.6s_ease-in-out,_slideUp_1s_ease-in-out]',
+    'animate-[fadeIn_1.9s_ease-in-out,_slideUp_1s_ease-in-out]',
+  ];
+
   return (
     <div
       onClick={handleClickCard}
-      className="relative w-[300px] h-[430px] bg-containerLight drop-shadow-xl rounded-[10px] p-5 flex flex-col justify-between caret-transparent"
+      className={`relative w-[300px] ${
+        animate[props.idx]
+      } h-[430px] bg-containerLight drop-shadow-xl rounded-[10px] p-5 flex flex-col justify-between caret-transparent`}
+      // style={{
+      //   animationDelay: `${props.idx * 0.1}s`,
+      //   animationFillMode: 'forwards',
+      // }}
     >
       <SwitchGenderBtn gender={gender ?? 1} onClickEvent={handleGenderBtn} />
       <ProfileImage

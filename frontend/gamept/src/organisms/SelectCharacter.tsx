@@ -19,7 +19,7 @@ const SelectCharacter = (props: ISelectCharacter) => {
         당신의 {props.type}은 무엇입니까?
       </div>
       <div className="flex flex-row gap-10 justify-center my-[30px]">
-        {props.data.map((character) => (
+        {props.data.map((character, idx) => (
           <CharacterCard
             baseStats={props.type === '종족' ? character.statList : statList}
             code={character.code}
@@ -31,6 +31,7 @@ const SelectCharacter = (props: ISelectCharacter) => {
             onNextLevel={props.onNextLevel}
             raceCode={props.raceCode}
             key={character.code}
+            idx={idx}
           />
         ))}
       </div>
