@@ -214,6 +214,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .hp(player.getHp())
                 .exp(player.getExp())
                 .level(player.getLevel())
+                .statPoint(player.getStatPoint())
                 .statList(statGetResponseDtoList)
                 .itemList(itemGetResponseDtoList)
                 .build();
