@@ -59,8 +59,8 @@ export interface IActsType {
 }
 
 export interface IEventType {
-  eventCode: string;
-  eventName: string;
+  eventCode?: string;
+  eventName?: string;
   acts: IActsType[] | null;
 }
 

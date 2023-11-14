@@ -20,7 +20,7 @@ import {
 import DiceModal from '@/organisms/DiceModal';
 import { IDice } from '@/types/components/Dice.types';
 import { useAtom } from 'jotai';
-import { characterStatusAtom } from '@/jotai/CharacterStatAtom';
+import { characterStatusAtom, useUpdateItemListAtom } from '@/jotai/CharacterStatAtom';
 import axios from 'axios';
 
 const MultiPlayPage = () => {
@@ -33,6 +33,7 @@ const MultiPlayPage = () => {
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
+  const itemUpdateAtom = useUpdateItemListAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
   const gameCode = '8FeFnT';
   const playerCode = '8FeFnT-sEfKgh';
@@ -73,7 +74,6 @@ const MultiPlayPage = () => {
 
           if (body.dice1) {
             console.log(body);
-            console.log(event);
             setDice(body);
             setIsShowDice(true);
           }
@@ -87,26 +87,19 @@ const MultiPlayPage = () => {
         async (message) => {
           const body = JSON.parse(message.body);
 
-          if (body.content !== undefined && body.role !== playerCode) {
-            const prompt = body.content.split('\n').map((e: string) => {
-              return { msg: e, role: body.role };
-            })
+          console.log(body);
+
+          if (body.prompt !== undefined) {
+            // 원본 데이터와 프롬프트 구분
+            const prompt = body.prompt
+              .split('\n')
+              .map((e: string) => {
+                return { msg: e, role: 'assistant' };
+              });
 
             setPrompt(prompt);
             setIsPromptFetching(false);
           }
-
-          // if (body.promptList !== undefined) {
-          //   // 원본 데이터와 프롬프트 구분
-          //   const prompt = body.promptList
-          //     .content.split('\n')
-          //     .map((e: string) => {
-          //       return { msg: e, role: body.promptList.role };
-          //     });
-
-          //   setPrompt(prompt);
-          //   setIsPromptFetching(false);
-          // }
 
           if (body.gameOverYn === 'Y') {
             // 종료 API 호출
@@ -127,7 +120,36 @@ const MultiPlayPage = () => {
 
           if (body.itemYn === 'Y') {
             // Item 획득 로직
+            // 얻는다 버린다 두가지 선택지로 setEvent 해주기
+            setEvent({ acts: [
+              {
+                actCode: 'getItem_1',
+                actName: '얻는다.',
+                subtask: "NONE"
+              },
+              {
+                actCode: 'getItem_2',
+                actName: '버린다.',
+                subtask: "NONE"
+              }
+            ]})
             console.log('Item 획득');
+            const ChoiceFromDB = (await db.getAll())
+              .filter((v) => v.choice !== undefined)
+              .map((e) => e);
+
+            // 직전 선택지 인덱스 디비에 저장
+            if (ChoiceFromDB.length === 0) {
+              await db.add({ choice: body });
+            } else if (ChoiceFromDB.length <= 1) {
+              await db.update({ choice: body, id: ChoiceFromDB[0].id });
+            } else {
+              for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
+                await db.deleteRecord(ChoiceFromDB[i].id);
+              }
+            }
+
+            return;
           }
 
           const ChoiceFromDB = (await db.getAll())
@@ -177,28 +199,35 @@ const MultiPlayPage = () => {
         `/topic/fight/${gameCode}`,
         async (message) => {
           const body = JSON.parse(message.body);
+
           console.log(body);
 
-          if (body.content !== undefined && body.role !== playerCode) {
-            const prompt = body.content.split('\n').map((e: string) => {
-              return { msg: e, role: body.role };
-            })
+          if (body.prompt !== undefined) {
+            // 원본 데이터와 프롬프트 구분
+            const prompt = body.prompt
+              .split('\n')
+              .map((e: string) => {
+                return { msg: e, role: 'assistant' };
+              });
 
             setPrompt(prompt);
             setIsPromptFetching(false);
           }
 
-          // if (body.promptList !== undefined) {
-          //   // 원본 데이터와 프롬프트 구분
-          //   const prompt = body.promptList
-          //     .content.split('\n')
-          //     .map((e: string) => {
-          //       return { msg: e, role: body.promptList.role };
-          //     });
+          const ChoiceFromDB = (await db.getAll())
+              .filter((v) => v.choice !== undefined)
+              .map((e) => e);
 
-          //   setPrompt(prompt);
-          //   setIsPromptFetching(false);
-          // }
+            // 직전 선택지 인덱스 디비에 저장
+            if (ChoiceFromDB.length === 0) {
+              await db.add({ choice: body });
+            } else if (ChoiceFromDB.length <= 1) {
+              await db.update({ choice: body, id: ChoiceFromDB[0].id });
+            } else {
+              for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
+                await db.deleteRecord(ChoiceFromDB[i].id);
+              }
+            }
 
           if (body.endYn === 'Y') {
             // 종료 API 호출
@@ -227,6 +256,7 @@ const MultiPlayPage = () => {
         `/topic/prompt/${gameCode}`,
         async (message) => {
           const body = JSON.parse(message.body);
+
           console.log(body);
 
           if (body.content !== undefined && body.role !== playerCode) {
@@ -271,10 +301,29 @@ const MultiPlayPage = () => {
             }
           } else {
             setEvent(null);
+            const ChoiceFromDB = (await db.getAll())
+              .filter((v) => v.choice !== undefined)
+              .map((e) => e);
+
+            // 직전 선택지 인덱스 디비에 저장
+            if (ChoiceFromDB.length > 0) {
+              for (let i = 0; i < ChoiceFromDB.length; i++) {
+                await db.deleteRecord(ChoiceFromDB[i].id);
+              }
+            }
           }
         },
         {}
       );
+
+      client.current.subscribe(
+        `queue/${playerCode}/item`,
+        (message) => {
+          const body = JSON.parse(message.body);
+
+          itemUpdateAtom(body);
+        }
+      )
 
       // 채팅 구독
       client.current.subscribe(
@@ -302,6 +351,7 @@ const MultiPlayPage = () => {
             client.current.unsubscribe('sub-3');
             client.current.unsubscribe('sub-4');
             client.current.unsubscribe('sub-5');
+            client.current.unsubscribe('sub-6');
           }
         });
       } catch (err) {
@@ -414,13 +464,12 @@ const MultiPlayPage = () => {
         }
 
         // event 상태가 있다면 실행 없다면? 안됨
-        if (event) getSubtaskHandler(event.eventCode, choice.subtask);
+        if (event?.eventCode) getSubtaskHandler(event.eventCode, choice.subtask);
 
         return;
       }
 
       if (event && event.eventName == '전투') {
-        console.log(body.monster);
         client.current.send(
           `/fight/${gameCode}`,
           {},
@@ -439,6 +488,26 @@ const MultiPlayPage = () => {
         getDicesHandler();
         return;
       }
+
+      if (event && event.eventCode) {
+        const checkItemSub = event.eventCode.split("_");
+
+        if (checkItemSub[0] === 'getItem') {
+          if (checkItemSub[1] === '1') {
+            client.current.send(
+              `/item/`,
+              {},
+              JSON.stringify({
+                playerCode,
+                gameCode
+              })
+            )
+          } else {
+
+          }
+        }
+      }
+
 
       // 위에서 return에 안걸렸다면 일반 선택지 선택한 경우
       // select 채널에 send 해주기
@@ -504,7 +573,9 @@ const MultiPlayPage = () => {
         const res = await axios.get(
           `http://70.12.247.95:8080/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
         );
-        console.log(res);
+
+        console.log(res.data);
+        
         res.data.forEach((e: { role: string; content: string }) => {
           const arr = e.content.split('\n').map((v) => {
             return { msg: v, role: e.role };
@@ -519,7 +590,7 @@ const MultiPlayPage = () => {
     if (client.current === null) {
       connectHandler();
       console.log(promptAtom);
-      if (promptAtom.length > 1) initializeGame();
+      if (promptAtom.length < 1) initializeGame();
     }
 
     const initializeEvent = async () => {
