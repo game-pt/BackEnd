@@ -23,7 +23,7 @@ export const getImgCode = (
 
   let imgCode = raceType[raceCode] + '_';
   // console.log('종족추가', imgCode);
-  imgCode += gender === 0 ? 'm_' : 'w_';
+  imgCode += gender === GENDER.MALE ? 'm_' : 'w_';
   if (jobCode) {
     imgCode += jobType[jobCode];
   }
@@ -31,3 +31,8 @@ export const getImgCode = (
   imgCode += '.jpg';
   return imgCode;
 };
+
+export enum GENDER {
+  MALE,
+  FEMALE,
+}
