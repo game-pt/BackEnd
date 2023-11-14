@@ -25,11 +25,12 @@ import { initCharacterStatusAtom, initExtra } from '@/jotai/CharacterStatAtom';
 import { usePlayerCode } from '@/hooks/usePlayerCode';
 // import { useGetGameCode } from '@/jotai/MakeGameAtom';
 import { useGameCode } from '@/hooks/useGameCode';
+
 const CreateCharacterPage = () => {
   const [gameCode, _setGameCode] = useGameCode();
   const [_playerCode, setPlayerCode] = usePlayerCode();
   // const getGameCodeAtom = useGetGameCode();
-  console.log('fasdfasdfasdf', gameCode);
+
   const [characterStatus, setCharacterStatus] = useState<ICharacterStatus>({
     race: '',
     raceCode: '',
@@ -103,6 +104,8 @@ const CreateCharacterPage = () => {
       initCharacter(playerInfo);
       // API response에는 imgCode 없으니 따로 넣어줌
       initExtraData(characterStatus.imgCode, characterStatus.gender);
+
+      // setTimeout(() => navigate('/singlePlay'), 3000);
       navigate('/singlePlay');
     };
 
@@ -124,6 +127,7 @@ const CreateCharacterPage = () => {
       {
         onSuccess: (res) => {
           setPlayerCode(res.playerCode);
+
           handleNextStage(res.playerCode);
         },
         onError: (err) => {
