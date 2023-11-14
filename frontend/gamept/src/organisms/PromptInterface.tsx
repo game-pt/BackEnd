@@ -13,11 +13,10 @@ const PromptInterface = (props: IPromptInterface) => {
 
   const sendEvent = (e: IActsType) => {
     if (props.sendEventHandler) props.sendEventHandler(e);
-    setIsFetching(!isFetching);
+    console.log(e);
   }
 
   const sendPrompt = () => {
-    // Prompt 보내는 메서드
     if (props.sendPromptHandler) props.sendPromptHandler(text);
     setText('');
   }
@@ -40,7 +39,7 @@ const PromptInterface = (props: IPromptInterface) => {
       )}
       {/* 선택지 버튼 출력할 Area */}
       <div className="w-full h-[250px] flex justify-center self-center">
-        <ChoiceGroup data={props.event} gameType={props.gameType} onClickEvent={sendEvent} />
+        <ChoiceGroup data={props.event && props.event.acts} gameType={props.gameType} onClickEvent={sendEvent} />
       </div>
       {/* 프롬프트 입력할 인풋 */}
       <div className="absolute inset-x-0 bottom-0">

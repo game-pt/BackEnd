@@ -12,7 +12,7 @@ const usePrompt: () => [IPromptHistory[], (update: IPromptHistory[]) => void] = 
   useEffect(() => {
     const initializePrompt = async () => {
       // IndexedDB에서 데이터 가져오기
-      const dataFromDB = (await db.getAll()).map((e) => e.content);
+      const dataFromDB = (await db.getAll()).filter(v => v.content !== undefined).map((e) => e.content);
       if (dataFromDB.length === 0) {
         // 데이터가 없으면 초기화
         setAtom([]);

@@ -25,7 +25,6 @@ const StatText = (props: IStatText) => {
 };
 
 const MakeCharacterStatContainer = (props: IMakeCharacterStat) => {
-  console.log(props.baseStats, props.correctionStats, '왜안됨');
   return (
     <div className="bg-[url(./assets/MakeCharacterStatPanel.svg)] grid grid-cols-2 gap-y-1 w-[260px] h-[155px] p-5">
       {props.baseStats.map((stat, idx) => (

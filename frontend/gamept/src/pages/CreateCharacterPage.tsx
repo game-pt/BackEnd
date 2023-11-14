@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react';
 import { ICharacterStatus } from '@/types/components/MakeGameProcess.type';
 import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
-import { selectGameCodeAtom } from '@/jotai/MakeGameAtom';
+// import { selectGameCodeAtom } from '@/jotai/MakeGameAtom';
 import { useQuery } from 'react-query';
 import {
   fetchGetRaces,
@@ -22,7 +22,15 @@ import {
 import { IStatObject } from '@/types/components/CharacterCard.types';
 import { useMutation } from 'react-query';
 import { initCharacterStatusAtom, initExtra } from '@/jotai/CharacterStatAtom';
+import { usePlayerCode } from '@/hooks/usePlayerCode';
+// import { useGetGameCode } from '@/jotai/MakeGameAtom';
+import { useGameCode } from '@/hooks/useGameCode';
+
 const CreateCharacterPage = () => {
+  const [gameCode, _setGameCode] = useGameCode();
+  const [_playerCode, setPlayerCode] = usePlayerCode();
+  // const getGameCodeAtom = useGetGameCode();
+
   const [characterStatus, setCharacterStatus] = useState<ICharacterStatus>({
     race: '',
     raceCode: '',
@@ -37,7 +45,7 @@ const CreateCharacterPage = () => {
 
   const [processLevel, setProcessLevel] = useState(0);
   const navigate = useNavigate();
-  const [gameCode] = useAtom(selectGameCodeAtom);
+  // const [gameCode] = useAtom(selectGameCodeAtom);
   const [, initCharacter] = useAtom(initCharacterStatusAtom);
   const [, initExtraData] = useAtom(initExtra);
   const { data: races, isSuccess: isRaceSuccess } = useQuery({
@@ -96,6 +104,8 @@ const CreateCharacterPage = () => {
       initCharacter(playerInfo);
       // API response에는 imgCode 없으니 따로 넣어줌
       initExtraData(characterStatus.imgCode, characterStatus.gender);
+
+      // setTimeout(() => navigate('/singlePlay'), 3000);
       navigate('/singlePlay');
     };
 
@@ -116,6 +126,8 @@ const CreateCharacterPage = () => {
       },
       {
         onSuccess: (res) => {
+          setPlayerCode(res.playerCode);
+
           handleNextStage(res.playerCode);
         },
         onError: (err) => {
@@ -132,7 +144,7 @@ const CreateCharacterPage = () => {
       gender={characterStatus.gender}
       onSetCharacter={handleRaceSelect}
       onPreviosLevel={() => navigate('/createGame')}
-      data={races}
+      data={isRaceSuccess ? races : undefined}
       // 이전 페이지로 보내려면 결국 무슨 단계인지 알려주는 그 불리언 변수도 같이 넘겨줘야 한다.
     />,
     <SelectCharacter

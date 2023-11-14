@@ -30,6 +30,7 @@ const SelectCharacter = (props: ISelectCharacter) => {
             gender={props.gender}
             onNextLevel={props.onNextLevel}
             raceCode={props.raceCode}
+            key={character.code}
           />
         ))}
       </div>

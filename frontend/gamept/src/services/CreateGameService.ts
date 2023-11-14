@@ -17,10 +17,11 @@ export const fetchGetStories = async () => {
 export const fetchPostGame = async (storyCode: string) => {
   // 게임 생성하는 post 요청
   const url = api + '/game';
+  console.log('쏘토리코뜨', storyCode);
   try {
     const response = await axios.post(url, { storyCode });
     return response.data;
-  } catch {
-    console.log('방 생성 실패');
+  } catch (err) {
+    console.log(err, '방 생성 실패');
   }
 };

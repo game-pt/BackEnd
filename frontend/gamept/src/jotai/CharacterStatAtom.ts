@@ -7,7 +7,7 @@
  * imgCode : 캐릭터 코드 - 프로필 이미지 불러오는 용도
  * stat : 스탯 배열
  */
-
+import { GENDER } from '@/services/GetImgCode';
 import { atom, useSetAtom, useAtomValue } from 'jotai';
 import { IPlayerStatusResponse } from '@/types/components/MakeGameProcess.type';
 import { ICharacterStatusAtom } from '@/types/components/CharacterStatAtom.types';
@@ -27,11 +27,24 @@ export const characterStatusAtom = atom<ICharacterStatusAtom>({
   itemList: [],
 });
 
+const setLocal = (status: ICharacterStatusAtom) => {
+  localStorage.setItem('characterStatus', JSON.stringify(status));
+};
+
 // 캐릭터 생성 시 캐릭터 정보 atom 초기화
 export const initCharacterStatusAtom = atom(
-  (get) => get(characterStatusAtom),
+  (get) => {
+    let status = get(characterStatusAtom);
+    const localData = localStorage.getItem('characterStatus');
+    if (status.nickname === '' && localData) {
+      // 새로고침했을 경우 로컬에 저장된 값 불러오기
+      status = JSON.parse(localData);
+    }
+    return status;
+  },
   (_get, set, status: IPlayerStatusResponse) => {
-    set(characterStatusAtom, {
+    // 갱신한 객체
+    const nextStatus = {
       nickname: status.nickname,
       race: status.race.name,
       job: status.job.name,
@@ -57,19 +70,36 @@ export const initCharacterStatusAtom = atom(
         desc: string;
         weight: number;
       }>((element) => ({ ...element })),
-    });
+    };
+    // 로컬스토리지에 저장
+    setLocal(nextStatus);
+    // 아톰 갱신
+    set(characterStatusAtom, nextStatus);
   }
 );
+
+// export const useInitCharacterStatus = () => useAtomValue(initCharacterStatusAtom)
+// export const useSetCharacterStatus = () => useSetAtom(initCharacterStatusAtom)
 
 // 이미지코드 초기화
 export const initExtra = atom(
   null,
-  (_get, set, imgCode: string, gender: number) => {
-    set(characterStatusAtom, (prev) => ({
-      ...prev,
+  (get, set, imgCode: string, gender: number) => {
+    // 갱신된 객체
+    const nextStatus = {
+      ...get(characterStatusAtom),
       imgCode,
-      gender: gender === 0 ? '남성' : '여성',
-    }));
+      gender: gender === GENDER.MALE ? '남성' : '여성',
+    };
+    // 로컬스토리지에 저장
+    setLocal(nextStatus);
+    // 아톰 갱신
+    set(characterStatusAtom, nextStatus);
+    // set(characterStatusAtom, (prev) => ({
+    //   ...prev,
+    //   imgCode,
+    //   gender: gender === GENDER.MALE ? '남성' : '여성',
+    // }));
   }
 );
 
@@ -81,14 +111,19 @@ export const statControlAtom = atom(
     set,
     changedStat: Array<{ statName: string; statValue: number; statCode: string }>
   ) => {
-    set(characterStatusAtom, {
+    // 갱신할 객체
+    const nextStatus = {
       ...get(characterStatusAtom),
+
       statList: changedStat.map<{
         statName: string;
         statValue: number;
         statCode: string;
       }>((element) => ({ ...element })),
-    });
+    }
+    // 로컬에 갱신
+    setLocal(nextStatus);
+    set(characterStatusAtom, nextStatus);
   }
 );
 
@@ -108,10 +143,12 @@ export const profileInterfaceControlAtom = atom(
     };
   },
   (get, set, profileChanged: IProfileInterface) => {
-    set(characterStatusAtom, {
+    const nextStatus = {
       ...get(characterStatusAtom),
       ...profileChanged,
-    });
+    };
+    setLocal(nextStatus);
+    set(characterStatusAtom, nextStatus);
   }
 );
 
@@ -122,3 +159,53 @@ export const useUpdateProfileAtom = () =>
 // 스킬 가져오기 필요시 구현
 
 // 아이템 set 및 get은 추후 구현 (사용안할수도 있으니)
+const controlItemListAtom = atom(
+  (get) => get(characterStatusAtom).itemList,
+  (
+    get,
+    set,
+    changedItemList: Array<{
+      code: string;
+      name: string;
+      desc: string;
+      weight: number;
+    }>
+  ) => {
+    const nextStatus = {
+      ...get(characterStatusAtom),
+      itemList: changedItemList.map<{
+        code: string;
+        name: string;
+        desc: string;
+        weight: number;
+      }>((element) => ({
+        ...element,
+      })),
+    };
+    setLocal(nextStatus);
+    set(characterStatusAtom, nextStatus);
+  }
+);
+
+const deleteItem = atom(null, (get, set, usedItemCode: string) => {
+  const prev = get(characterStatusAtom);
+  const targetIdx = prev.itemList.findIndex(
+    (item) => item.code === usedItemCode
+  );
+  const itemList = prev.itemList.splice(targetIdx, 1);
+  const nextStatus = {
+    ...prev,
+    itemList: itemList.map<{
+      code: string;
+      name: string;
+      desc: string;
+      weight: number;
+    }>((item) => ({ ...item })),
+  };
+  setLocal(nextStatus);
+  set(characterStatusAtom, nextStatus);
+});
+
+export const useItemListAtom = () => useAtomValue(controlItemListAtom);
+export const useUpdateItemListAtom = () => useSetAtom(controlItemListAtom);
+export const useDeleteItemAtom = () => useSetAtom(deleteItem);
