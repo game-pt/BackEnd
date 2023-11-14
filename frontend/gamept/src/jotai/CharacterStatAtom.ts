@@ -42,11 +42,11 @@ export const initCharacterStatusAtom = atom(
       statList: status.statList.map<{
         statName: string;
         statValue: number;
-        code: string;
+        statCode: string;
       }>((element) => ({
         statName: element.name,
         statValue: element.value,
-        code: element.code,
+        statCode: element.code,
       })),
       skillList: status.job.skillList.map<{ name: string; desc: string }>(
         (element) => ({ ...element })
@@ -83,11 +83,16 @@ export const statControlAtom = atom(
   ) => {
     set(characterStatusAtom, {
       ...get(characterStatusAtom),
+
       statList: changedStat.map<{
         statName: string;
         statValue: number;
-        code: string;
-      }>((element) => ({ ...element })),
+        statCode: string;
+      }>((element) => ({
+        statName: element.statName,
+        statValue: element.statValue,
+        statCode: element.code,
+      })),
     });
   }
 );
@@ -122,3 +127,49 @@ export const useUpdateProfileAtom = () =>
 // 스킬 가져오기 필요시 구현
 
 // 아이템 set 및 get은 추후 구현 (사용안할수도 있으니)
+const controlItemListAtom = atom(
+  (get) => get(characterStatusAtom).itemList,
+  (
+    get,
+    set,
+    changedItemList: Array<{
+      code: string;
+      name: string;
+      desc: string;
+      weight: number;
+    }>
+  ) => {
+    set(characterStatusAtom, {
+      ...get(characterStatusAtom),
+      itemList: changedItemList.map<{
+        code: string;
+        name: string;
+        desc: string;
+        weight: number;
+      }>((element) => ({
+        ...element,
+      })),
+    });
+  }
+);
+
+const deleteItem = atom(null, (get, set, usedItemCode: string) => {
+  const prev = get(characterStatusAtom);
+  const targetIdx = prev.itemList.findIndex(
+    (item) => item.code === usedItemCode
+  );
+  const itemList = prev.itemList.splice(targetIdx, 1);
+  set(characterStatusAtom, {
+    ...prev,
+    itemList: itemList.map<{
+      code: string;
+      name: string;
+      desc: string;
+      weight: number;
+    }>((item) => ({ ...item })),
+  });
+});
+
+export const useItemListAtom = () => useAtomValue(controlItemListAtom);
+export const useUpdateItemListAtom = () => useSetAtom(controlItemListAtom);
+export const useDeleteItemAtom = () => useSetAtom(deleteItem);
