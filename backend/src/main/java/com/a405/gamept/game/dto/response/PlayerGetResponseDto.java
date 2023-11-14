@@ -34,6 +34,9 @@ public record PlayerGetResponseDto (
         @NotNull(message = "플레이어의 스탯이 존재하지 않습니다.")
         List<StatGetResponseDto> statList,
 
+        @NotNull(message = "플레이어의 스탯 포인트가 존재하지 않습니다.")
+        int statPoint,
+
         @Size(max = GameData.MAX_ITEM_SIZE, message = "플레이어의 아이템은 " + GameData.MAX_ITEM_SIZE + "개를 넘을 수 없습니다.")
         List<ItemGetResponseDto> itemList
 

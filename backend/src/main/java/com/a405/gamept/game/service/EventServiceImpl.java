@@ -147,7 +147,7 @@ public class EventServiceImpl implements EventService {
         for (Act act : occuredEvent.getActList()) {
             acts.add(ActCommandDto.from(act));
         }
-        EventCommandDto eventCommandDto = EventCommandDto.from(occuredEvent, acts);
+        EventCommandDto eventCommandDto = EventCommandDto.from(occuredEvent, acts, null);
 
         return PromptResultGetResponseDto.from(promptResultGetCommandDto, eventCommandDto);
     }
