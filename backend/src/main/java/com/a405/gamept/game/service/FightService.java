@@ -19,7 +19,8 @@ public interface FightService {
      */
     // int getRandomMonsterLevel(MonsterGetCommandDto monsterGetCommandDto) throws GameException;
     void setMonster(MonsterSetCommandDto monsterSetCommandDto) throws GameException;
-    MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameException;
+    MonsterGetResponseDto getMonster(MonsterSetCommandDto monsterSetCommandDto) throws GameException;
+    // MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameException;
 
     FightResultGetResponseDto getFightResult(FightResultGetCommandDto fightResultGetCommandDto);
 }
