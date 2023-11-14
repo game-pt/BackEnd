@@ -213,7 +213,7 @@ export default {
         },
       },
       animation: {
-        test: 'fadeIn 1s ease-in-out, slideUp 1s ease-in-out',
+        rise: 'fadeIn 1s ease-in-out, slideUp 1s ease-in-out',
         bounce: 'bounce 2s infinite',
       },
     },
