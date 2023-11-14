@@ -92,8 +92,8 @@ const MultiPlayPage = () => {
           if (body.promptList !== undefined) {
             // 원본 데이터와 프롬프트 구분
             const prompt = body.promptList
-              .filter((v: IPromptType) => v.role === 'assistant')[0].content
-              .split('\n')
+              .filter((v: IPromptType) => v.role === 'assistant')[0]
+              .content.split('\n')
               .map((e: string) => {
                 return { msg: e, role: 'assistant' };
               });
@@ -166,8 +166,8 @@ const MultiPlayPage = () => {
           if (body.promptList !== undefined) {
             // 원본 데이터와 프롬프트 구분
             const prompt = body.promptList
-              .filter((v: IPromptType) => v.role === 'assistant')[0].content
-              .split('\n')
+              .filter((v: IPromptType) => v.role === 'assistant')[0]
+              .content.split('\n')
               .map((e: string) => {
                 return { msg: e, role: 'assistant' };
               });
@@ -209,8 +209,8 @@ const MultiPlayPage = () => {
           if (body.promptList !== undefined) {
             // 원본 데이터와 프롬프트 구분
             const prompt = body.promptList
-              .filter((v: IPromptType) => v.role === 'assistant')[0].content
-              .split('\n')
+              .filter((v: IPromptType) => v.role === 'assistant')[0]
+              .content.split('\n')
               .map((e: string) => {
                 return { msg: e, role: 'assistant' };
               });
@@ -468,16 +468,20 @@ const MultiPlayPage = () => {
 
   useEffect(() => {
     const initializeGame = async () => {
-      const res = await axios.get(
-        `http://70.12.247.95:8080/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
-      );
-      console.log(res);
-      res.data.forEach((e: { role: string; content: string }) => {
-        const arr = e.content.split('\n').map((v) => {
-          return { msg: v, role: e.role };
+      try {
+        const res = await axios.get(
+          `http://70.12.247.95:8080/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
+        );
+
+        res.data.forEach((e: { role: string; content: string }) => {
+          const arr = e.content.split('\n').map((v) => {
+            return { msg: v, role: e.role };
+          });
+          setPrompt(arr);
         });
-        setPrompt(arr);
-      });
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     if (client.current === null) {
