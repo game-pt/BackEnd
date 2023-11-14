@@ -24,14 +24,14 @@ const Prompt = (props: IPropmpt) => {
           {props.data.map((e, i) => (
             <div
               key={`prompt_${i}`}
-              className={`my-4 ${e[0].mine && `flex`}`}
+              className={`my-4 ${e[0].role === props.playerCode  && `flex`}`}
               ref={
                 (props.data && props.data.length - 1 === i) && !props.isFetching
                   ? lastPromptRef
                   : null
               }
             >
-              {e[0].mine && (
+              {e[0].role === props.playerCode && (
                 <img
                   src="./src/assets/player_profile.png"
                   className="w-6 h-6 mt-2 mr-2"
@@ -39,7 +39,7 @@ const Prompt = (props: IPropmpt) => {
               )}
               {e.map((v, j) => (
                 <p
-                  className={v.mine ? `text-secondaryContainer` : ``}
+                  className={v.role === props.playerCode ? `text-secondaryContainer` : ``}
                   key={`promptMsg_${i}_${j}`}
                 >
                   {v.msg}

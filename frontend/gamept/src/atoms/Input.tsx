@@ -31,18 +31,20 @@ const Input = (props: IInput) => {
       style={inputStyle}
     >
       <input
+        disabled={props.disabled}
         value={props.value}
-        placeholder={props.placeholder}
+        placeholder={props.disabled ? `입력하실 수 없습니다.` : props.placeholder}
         className="w-full h-full mx-2 px-2 pr-7 bg-backgroud border-primary border-2 rounded-sm font-hol text-white text-18"
         onChange={(e) => props.setValue(e.target.value)}
         onKeyDown={onEnterkey}
       />
-      <img
+      {!props.disabled && <img
         className="absolute w-auto h-1/2 mr-5 hover:scale-110 duration-normal"
         src={inputButton}
         alt="Input_Button"
         onClick={onClickEvent}
-      />
+      />}
+      
     </div>
   );
 };

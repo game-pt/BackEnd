@@ -2,18 +2,21 @@
 export interface IPropmpt {
   type: string;
   data: IPromptHistory[][] | null;
+  playerCode?: string;
   isFetching: boolean;
 }
 
 export interface IPromptHistory {
   msg: string;
-  mine: boolean;
+  role: string;
 }
 
 export interface IPromptInterface {
   gameType: string;
   isFetching: boolean;
   event: IEventType | null;
+  block?: boolean;
+  playerCode?: string;
   sendEventHandler?: (e: IActsType) => void;
   sendPromptHandler?: (text: string) => void;
 }
@@ -30,11 +33,16 @@ export interface IMonsterType {
   monsterAttack: number;
 }
 
+export interface IPromptType {
+  role: string;
+  content: string;
+}
+
 export interface IGetPromptType {
   gameCode: string;
-  prompt: string;
+  promptList: IPromptType[];
   itemYn: string | null;
-  monster: string | null;
+  monster: IMonsterType | null;
   event: IEventType;
 }
 
