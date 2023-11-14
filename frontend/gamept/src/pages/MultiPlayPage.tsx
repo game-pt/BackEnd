@@ -16,7 +16,6 @@ import {
   IActsType,
   IGetPromptType,
   ISubtaskType,
-  IPromptType,
 } from '@/types/components/Prompt.types';
 import DiceModal from '@/organisms/DiceModal';
 import { IDice } from '@/types/components/Dice.types';
@@ -35,8 +34,8 @@ const MultiPlayPage = () => {
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
-  const gameCode = 'QE0d0H';
-  const playerCode = 'QE0d0H-bNuqBw';
+  const gameCode = '8FeFnT';
+  const playerCode = '8FeFnT-sEfKgh';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
@@ -87,23 +86,40 @@ const MultiPlayPage = () => {
         `/topic/select/${gameCode}`,
         async (message) => {
           const body = JSON.parse(message.body);
-          console.log(body);
 
-          if (body.promptList !== undefined) {
-            // 원본 데이터와 프롬프트 구분
-            const prompt = body.promptList
-              .filter((v: IPromptType) => v.role === 'assistant')[0]
-              .content.split('\n')
-              .map((e: string) => {
-                return { msg: e, role: 'assistant' };
-              });
+          if (body.content !== undefined && body.role !== playerCode) {
+            const prompt = body.content.split('\n').map((e: string) => {
+              return { msg: e, role: body.role };
+            })
 
             setPrompt(prompt);
             setIsPromptFetching(false);
           }
 
+          // if (body.promptList !== undefined) {
+          //   // 원본 데이터와 프롬프트 구분
+          //   const prompt = body.promptList
+          //     .content.split('\n')
+          //     .map((e: string) => {
+          //       return { msg: e, role: body.promptList.role };
+          //     });
+
+          //   setPrompt(prompt);
+          //   setIsPromptFetching(false);
+          // }
+
           if (body.gameOverYn === 'Y') {
-            // 게임 종료 API 호출
+            // 종료 API 호출
+            const ChoiceFromDB = (await db.getAll())
+              .filter((v) => v.choice !== undefined)
+              .map((e) => e);
+
+            // 직전 선택지 인덱스 디비에 저장
+            if (ChoiceFromDB.length > 0) {
+              for (let i = 0; i < ChoiceFromDB.length; i++) {
+                await db.deleteRecord(ChoiceFromDB[i].id);
+              }
+            }
             setEvent(null);
             navigate('/ending');
             return;
@@ -144,7 +160,7 @@ const MultiPlayPage = () => {
               subtask: `isSubTask_${e.code.split('-')[0]}`,
             };
           });
-          console.log(body);
+          
           // event 상태를 업데이트
           // acts 부분만 body로 변경
           setEvent((prevEvent) => {
@@ -163,18 +179,26 @@ const MultiPlayPage = () => {
           const body = JSON.parse(message.body);
           console.log(body);
 
-          if (body.promptList !== undefined) {
-            // 원본 데이터와 프롬프트 구분
-            const prompt = body.promptList
-              .filter((v: IPromptType) => v.role === 'assistant')[0]
-              .content.split('\n')
-              .map((e: string) => {
-                return { msg: e, role: 'assistant' };
-              });
+          if (body.content !== undefined && body.role !== playerCode) {
+            const prompt = body.content.split('\n').map((e: string) => {
+              return { msg: e, role: body.role };
+            })
 
             setPrompt(prompt);
             setIsPromptFetching(false);
           }
+
+          // if (body.promptList !== undefined) {
+          //   // 원본 데이터와 프롬프트 구분
+          //   const prompt = body.promptList
+          //     .content.split('\n')
+          //     .map((e: string) => {
+          //       return { msg: e, role: body.promptList.role };
+          //     });
+
+          //   setPrompt(prompt);
+          //   setIsPromptFetching(false);
+          // }
 
           if (body.endYn === 'Y') {
             // 종료 API 호출
@@ -205,19 +229,27 @@ const MultiPlayPage = () => {
           const body = JSON.parse(message.body);
           console.log(body);
 
-          // 프롬포트가 있다면
-          if (body.promptList !== undefined) {
-            // 원본 데이터와 프롬프트 구분
-            const prompt = body.promptList
-              .filter((v: IPromptType) => v.role === 'assistant')[0]
-              .content.split('\n')
-              .map((e: string) => {
-                return { msg: e, role: 'assistant' };
-              });
+          if (body.content !== undefined && body.role !== playerCode) {
+            const prompt = body.content.split('\n').map((e: string) => {
+              return { msg: e, role: body.role };
+            })
 
             setPrompt(prompt);
             setIsPromptFetching(false);
           }
+
+          // 프롬포트가 있다면
+          // if (body.promptList !== undefined) {
+          //   // 원본 데이터와 프롬프트 구분
+          //   const prompt = body.promptList
+          //     .content.split('\n')
+          //     .map((e: string) => {
+          //       return { msg: e, role: body.promptList.role };
+          //     });
+
+          //   setPrompt(prompt);
+          //   setIsPromptFetching(false);
+          // }
 
           // Event가 있다면
           if (body.event !== null) {
@@ -472,7 +504,7 @@ const MultiPlayPage = () => {
         const res = await axios.get(
           `http://70.12.247.95:8080/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
         );
-
+        console.log(res);
         res.data.forEach((e: { role: string; content: string }) => {
           const arr = e.content.split('\n').map((v) => {
             return { msg: v, role: e.role };
@@ -486,7 +518,8 @@ const MultiPlayPage = () => {
 
     if (client.current === null) {
       connectHandler();
-      if (promptAtom === null) initializeGame();
+      console.log(promptAtom);
+      if (promptAtom.length > 1) initializeGame();
     }
 
     const initializeEvent = async () => {
