@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
 import './SideInterface.css'; // Import your CSS file
-import { StatValuesType, SkillValuesType, TabContent } from '@/types/components/Tab.types';
+import { StatValuesType, SkillValuesType, TabContent, StatObjectType } from '@/types/components/Tab.types';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 
+import { useGameCode } from '@/hooks/useGameCode';
+import { usePlayerCode } from '@/hooks/usePlayerCode';
 import ChattingTab from '@/atoms/ChattingTab';
 import { ISideInterface } from '@/types/components/SideInterface.types';
 import { TbNavigation } from "react-icons/tb";
 import { GiCardDiscard } from "react-icons/gi";
-import { useStatAtom, useUpdateStatAtom } from '@/jotai/CharacterStatAtom';
+import { useStatAtom, useStatObjectAtom, useStatUpAtom, useUpdateStatAtom } from '@/jotai/CharacterStatAtom';
 import { useAtomValue } from 'jotai';
 import { characterStatusAtom } from '@/jotai/CharacterStatAtom';
+import { fetchGetPlayerInfo } from '@/services/CreateCharacterService';
 
 
 // import { useStatAtom, useUpdateProfileAtom } from '@/jotai/CharacterStatAtom';
@@ -41,27 +44,28 @@ type Props = {
 const StatTab: React.FC<Props> = ({ sendEventStat }) => {
   // 현재 스탯 정보 불러오기
   const statList: StatValuesType[] = useStatAtom();
+  const statObject: StatObjectType = useStatObjectAtom();
   // 스탯 업데이트 함수 불러오기
   const setStatList = useUpdateStatAtom();
-  const [statPoints, setStatPoints] = useState(3);
+  // const [statPoints, setStatPoints] = useState(3);
 
 
   // 스탯 증가 함수
-  const increaseStat = (statCode: string) => {
-    if (statPoints > 0) {
-      // 새로운 상태 배열을 생성
-      const newStats = statList.map(stat => {
-        if (stat.statCode === statCode) {
-          return { ...stat, statValue: stat.statValue + 1 };
-        }
-        return stat;
-      });
+  // const increaseStat = (statCode: string) => {
+  //   if (statPoints > 0) {
+  //     // 새로운 상태 배열을 생성
+  //     const newStats = statList.map(stat => {
+  //       if (stat.statCode === statCode) {
+  //         return { ...stat, statValue: stat.statValue + 1 };
+  //       }
+  //       return stat;
+  //     });
   
-      // setStatList에 새로운 배열을 직접 전달
-      setStatList(newStats);
-      setStatPoints(statPoints - 1);
-    }
-  };
+  //     // setStatList에 새로운 배열을 직접 전달
+  //     setStatList(newStats);
+  //     setStatPoints(statPoints - 1);
+  //   }
+  // };
 
   return (
     <div className="w-full h-full flex flex-col p-8 py-10 bg-transparent text-xl justify-between">
@@ -69,7 +73,7 @@ const StatTab: React.FC<Props> = ({ sendEventStat }) => {
         <div key={`stat_${i}`} className="w-full flex">
           <p className="basis-1/4 text-center">{stat.statName}</p>
           <p className="basis-3/4 text-center">{stat.statValue}</p>
-          {statPoints > 0 && (
+          {statObject.statPoint > 0 && (
             <button
               onClick={() => sendEventStat(stat.statCode)}
               className="bg-transparent px-0 py-0"
@@ -81,7 +85,7 @@ const StatTab: React.FC<Props> = ({ sendEventStat }) => {
       ))}
       <div className="text-base flex items-center justify-center">
         <p>스탯 포인트 :&nbsp;</p>
-        <div className="border-2 shadow-md border-primary px-2">{statPoints}</div>
+        <div className="border-2 shadow-md border-primary px-2">{statObject.statPoint}</div>
       </div>
     </div>
   );
@@ -190,12 +194,20 @@ const SideInterface = (props: ISideInterface) => {
   const client = useRef<CompatClient | null>(null);
   const [selectedTab, setSelectedTab] = useState('스탯'); // 초기 탭 설정
   const [selectedTabColor, setSelectedTabColor] = useState('#331812'); // 초기 탭 색상 설정
-  const gameCode = 'AHczIu';
-  const playerCode = 'AHczIu-kCZX8d';
-  const setStatList = useUpdateStatAtom();
+  // const gameCode = 'AHczIu';
+  // const playerCode = 'AHczIu-kCZX8d';
+  // 컴포넌트 함수 안에서 가져오기
+  const [getGameCode] = useGameCode(); // getGameCode -> 게임코드
+  const [getPlayerCode] = usePlayerCode(); // getPlayerCode -> 플레이어코드
+  const setStatList = useStatUpAtom();
 
   useEffect(() => {
     connectHandler();
+    fetchGetPlayerInfo(getGameCode, getPlayerCode)
+    .then((playerInfo) => {
+      console.log(playerInfo);
+      setStatList({ statPoint: playerInfo.statPoint, statList: playerInfo.statList });
+    });
     // sendEventHandler();
   }, []);
 
@@ -215,27 +227,26 @@ const SideInterface = (props: ISideInterface) => {
       // 멀티플레이 용
       // 유저 데이터 업데이트 시 정보 송수신용
       client.current.subscribe(
-        `/queue/${playerCode}/stat`,
+        `/queue/${getPlayerCode}/stat`,
         (message) => {
           const playerStat = JSON.parse(message.body);
           const statList = playerStat.statList;
           const statPoint = playerStat.statPoint;
 
-          const newStats = statList.map((stat: StatValuesType) => {
-            // if (stat.statCode === statCode) {
-            //   return { ...stat, statValue: stat.statValue + 1 };
-            // }
-            // return stat;
-            return {
-              statCode: stat.statCode,
-              statName: stat.statName,
-              statValue: stat.statValue
-            }
-          });
+          // const newStats = statList.map((stat: StatValuesType) => {
+          //   // if (stat.statCode === statCode) {
+          //   //   return { ...stat, statValue: stat.statValue + 1 };
+          //   // }
+          //   // return stat;
+          //   return {
+          //     statCode: stat.statCode,
+          //     statName: stat.statName,
+          //     statValue: stat.statValue
+          //   }
+          // });
       
           // setStatList에 새로운 배열을 직접 전달
-          setStatList(newStats);
-          setStatPoints(statPoint);
+          setStatList({ statPoint: statPoint, statList: statList });
       });
     });
   };
@@ -265,7 +276,7 @@ const SideInterface = (props: ISideInterface) => {
   const sendEventStat = (statCode: string) => {
     if (client.current)
       client.current.send(
-        `/stat-up/${gameCode}/${playerCode}/${statCode}`,
+        `/stat-up/${getGameCode}/${getPlayerCode}/${statCode}`,
         {}
       );
   };

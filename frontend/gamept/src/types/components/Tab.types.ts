@@ -9,6 +9,11 @@ export interface StatValuesType {
   statName: string;
   statValue: number;
 }
+
+export interface StatObjectType {
+  statList: StatValuesType[];
+  statPoint: number;
+}
 // SKill
 export interface SkillValuesType {
   name: string;
