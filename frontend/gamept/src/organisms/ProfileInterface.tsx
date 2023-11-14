@@ -10,8 +10,11 @@ import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import { IProfileInterface } from '@/types/components/ProfileInterface.type';
 import ProfileImage from '@/atoms/ProfileImage';
+import { usePlayerCode } from '@/hooks/usePlayerCode';
+
 const ProfileInterface = () => {
   const [getStatusAtom] = useAtom(initCharacterStatusAtom);
+  const [playerCode] = usePlayerCode();
   const client = useRef<CompatClient | null>(null);
   const setProfileStat = useUpdateProfileAtom();
   const connectHandler = () => {
@@ -29,7 +32,7 @@ const ProfileInterface = () => {
 
       // hp, exp, level 받아오는 채널
       client.current.subscribe(
-        `/topic/player-profile/${gameCode}`,
+        `/queue/${playerCode}/status`,
         (message) => {
           console.log(JSON.parse(message.body));
           // message.body를 통해 데이터 받아서
@@ -121,12 +124,11 @@ const GROW_FACTOR = 10;
 
 // 건강 스텟 가져와서 MaxHP 계산
 const getHealthStat = (
-  statList: Array<{ statName: string; statValue: number; code: string }>
+  statList: Array<{ statName: string; statValue: number; statCode: string }>
 ) => {
   return (
     statList.find((element) => element.statName === '건강')?.statValue ?? 0
   );
 };
 
-const gameCode = '8VFKOK';
 export default ProfileInterface;
