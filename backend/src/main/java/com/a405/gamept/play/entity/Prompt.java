@@ -2,12 +2,13 @@ package com.a405.gamept.play.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @RedisHash(value = "prompt")
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class Prompt {
 
     /**
