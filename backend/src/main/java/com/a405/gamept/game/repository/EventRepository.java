@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface EventRepository extends JpaRepository<Event, String> {
 
     Optional<List<Event>> findByStoryCode(String code);
+    Optional<List<Event>> findAllByStoryCode(String code);
 
 }
