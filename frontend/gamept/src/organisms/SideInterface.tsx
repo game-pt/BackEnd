@@ -10,7 +10,8 @@ import ChattingTab from '@/atoms/ChattingTab';
 import { ISideInterface } from '@/types/components/SideInterface.types';
 import { TbNavigation } from "react-icons/tb";
 import { GiCardDiscard } from "react-icons/gi";
-import { useStatAtom, useStatObjectAtom, useStatUpAtom, useUpdateStatAtom } from '@/jotai/CharacterStatAtom';
+import { useStatAtom, useStatObjectAtom, useStatUpAtom } from '@/jotai/CharacterStatAtom';
+// import { useUpdateStatAtom } from '@/jotai/CharacterStatAtom';
 import { useAtomValue } from 'jotai';
 import { characterStatusAtom } from '@/jotai/CharacterStatAtom';
 import { fetchGetPlayerInfo } from '@/services/CreateCharacterService';
@@ -46,7 +47,7 @@ const StatTab: React.FC<Props> = ({ sendEventStat }) => {
   const statList: StatValuesType[] = useStatAtom();
   const statObject: StatObjectType = useStatObjectAtom();
   // 스탯 업데이트 함수 불러오기
-  const setStatList = useUpdateStatAtom();
+  // const setStatList = useUpdateStatAtom();
   // const [statPoints, setStatPoints] = useState(3);
 
 

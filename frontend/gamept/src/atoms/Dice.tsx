@@ -71,38 +71,30 @@ const Dice = (props: IDice) => {
     const diceVal1 = props.dice1;
     const diceVal2 = props.dice2;
     const diceVal3 = props.dice3;
-    const diceVal = diceVal1 + diceVal2 + diceVal3;
+
     document.querySelectorAll('.dice').forEach((diceElement) => {
       diceElement.classList.remove('throw');
     });
     setVal1(diceVal1);
     setVal2(diceVal2);
     setVal3(diceVal3);
-    const diceValElement: HTMLElement | null =
-      document.getElementById('diceVal');
 
-    if (diceValElement !== null) {
-      diceValElement.innerHTML = '';
-      setTimeout(() => {
-        document.querySelectorAll('.dice1').forEach((diceElement) => {
-          diceElement.classList.add('throw');
-        });
-      }, 50);
-      setTimeout(() => {
-        document.querySelectorAll('.dice2').forEach((diceElement) => {
-          diceElement.classList.add('throw');
-        });
-      }, 125);
+    setTimeout(() => {
+      document.querySelectorAll('.dice1').forEach((diceElement) => {
+        diceElement.classList.add('throw');
+      });
+    }, 50);
+    setTimeout(() => {
+      document.querySelectorAll('.dice2').forEach((diceElement) => {
+        diceElement.classList.add('throw');
+      });
+    }, 125);
 
-      setTimeout(() => {
-        document.querySelectorAll('.dice3').forEach((diceElement) => {
-          diceElement.classList.add('throw');
-        });
-      }, 250);
-      setTimeout(() => {
-        diceValElement.innerHTML = `${diceVal}`;
-      }, 700);
-    }
+    setTimeout(() => {
+      document.querySelectorAll('.dice3').forEach((diceElement) => {
+        diceElement.classList.add('throw');
+      });
+    }, 250);
   }, [setDice, setVal1, setVal2, setVal3, props]);
 
   useEffect(() => {
@@ -120,7 +112,6 @@ const Dice = (props: IDice) => {
       {diceList.map((num, i) => (
         <DiceFace idx={num} key={`dice_${i}`} />
       ))}
-      <span id="diceVal"></span>
     </div>
   );
 };
