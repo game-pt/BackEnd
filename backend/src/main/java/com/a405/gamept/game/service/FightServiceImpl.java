@@ -108,14 +108,20 @@ public class FightServiceImpl implements FightService {
                 .orElseThrow(()->new GameException(GameErrorMessage.MONSTER_INVALID));
         log.info("등장 몬스터: { 레벨: " + monster.getLevel() + " 공격력 : "+ monster.getAttack()+" }");
 
-        /*FightingEnermy fightingEnemy = fightingEnermyRedisRepository.save(FightingEnermy.builder()
+        String code = "";
+        do {
+            code = ValidateUtil.getRandomUID();
+        } while (gameRedisRepository.findById(code).isPresent());
+
+        FightingEnermy fightingEnemy = fightingEnermyRedisRepository.save(FightingEnermy.builder()
                 .code(code)
                 .level(monster.getLevel())
                 .hp(monster.getHp())
                 .attack(monster.getAttack())
-                .build());*/
+                .build());
 
-        gameRedisRepository.save(game.toBuilder().fightingEnemyCode(monster.getCode()).build());
+        fightingEnermyRedisRepository.save(fightingEnemy);
+        gameRedisRepository.save(game.toBuilder().fightingEnemyCode(fightingEnemy.getCode()).build());
     }
 
     /*
