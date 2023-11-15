@@ -154,7 +154,7 @@ public class ChatGptClientUtil {
 
         // 이벤트 프롬프트 삽입
         sendList.set(sendList.size() - 1, sendList.get(sendList.size() - 1).toBuilder()
-                .content(eventPropmpt)
+                .content(sendList.get(sendList.size() - 1).getContent() + "\n" + eventPropmpt)
                 .build());
 
         Map<String, Object> map = new HashMap<>();
@@ -180,6 +180,7 @@ public class ChatGptClientUtil {
             // ChatGPT 응답 content 반환
             return jsonNode.get("choices").get(0).get("message").get("content").asText();
         } catch (RuntimeException | IOException | InterruptedException e) {
+            log.error(e.getMessage());
             throw new GameException(GameErrorMessage.PROMPT_INVALID);
         }
     }

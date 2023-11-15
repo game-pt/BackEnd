@@ -109,6 +109,10 @@ public class PromptServiceImpl implements PromptService {
                 .content(responsePrompt)
                 .build());  // ChatGPT 응답 Redis 추가
 
+        while(10 < promptList.size()) {
+            promptList.remove(0);
+        }
+
         Event selectedEvent = findEvent(game.getStoryCode(), responsePrompt);
         EventCommandDto eventCommandDto = null;
         if (selectedEvent == null) {  // 이벤트 발생하지 않았을 경우
@@ -150,45 +154,6 @@ public class PromptServiceImpl implements PromptService {
         ValidateUtil.validate(promptResultGetResponseDto);
         return promptResultGetResponseDto;
     }
-
-
-    // 이벤트 트리거 프롬프트 추가
-    // PromptResultGetCommandDto promptResultCommandDtoForEvent = eventService.pickAtRandomEvent(promptResultGetCommandDto, game);
-        /*
-        // ChatGPT에 프롬프트 전송
-        String promptOutput = chatGptClientUtil.enterPrompt(promptInput, game.getMemory(), game.getPromptList());
-
-        // 턴 횟수 증가
-        game = increaseTurn(game);
-        // 플레이어의 프롬프트 로그 저장
-        game = savePromptLog(game, "user", promptInput);
-        // ChatGPT의 프롬프트 로그 저장
-        game = savePromptLog(game, "assistant", promptOutput);
-        // 최종적으로 game 데이터를 Redis에 저장.
-        gameRedisRepository.save(game);
-
-        // 최종적으로 응답에 이벤트를 추가하여 클라이언트에게 반환할 형태로 ResponseDto를 구성
-        PromptResultGetCommandDto promptResultGetCommandDtoForCheck = PromptResultGetCommandDto.from(promptResultGetCommandDto, promptOutput);
-        PromptResultGetResponseDto promptResultGetResponseDto = eventService.checkEventInPrompt(promptResultGetCommandDtoForCheck, game);
-        // ValidateUtil.validate(promptResultGetResponseDto);
-
-        // 전투 로직 찾기 : 유영 추가
-        if(promptResultGetResponseDto.event() != null && promptResultGetResponseDto.event().eventCode().equals("EV-001")) {  // 이벤트가 전투일 경우
-            fightService.setMonster(MonsterSetCommandDto.builder()
-                    .gameCode(game.getCode())
-                    .playerCode(player.getCode())
-                    .build()
-            );   // 몬스터 생성
-
-            MonsterGetCommandDto monsterGetCommandDto = MonsterGetCommandDto.builder()
-                    .gameCode(game.getCode())
-                    .build();  // 적을 가져오는 데에 필요한 DTO 생성 
-            promptResultGetResponseDto = PromptResultGetResponseDto.of(promptResultGetResponseDto, fightService.getMonster(monsterGetCommandDto));
-        }
-        ValidateUtil.validate(promptResultGetResponseDto);
-        */
-
-    // return null;
 
     @Override
     public List<PromptGetResponseDto> getPromptList(PromptListGetCommandDto promptListGetCommandDto) {
@@ -293,7 +258,7 @@ public class PromptServiceImpl implements PromptService {
                 .orElseThrow(() -> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
 
         for (Event event : eventList) {
-            if (prompt.contains("[" + event.getName())) {
+            if (prompt.contains("[" + event.getName()) || prompt.contains(event.getName() + "]")) {
                 return event;
             }
         }
