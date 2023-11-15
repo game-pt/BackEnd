@@ -45,13 +45,22 @@ public class PromptServiceImpl implements PromptService {
         Player player = playerRedisRepository.findById(promptResultGetCommandDto.playerCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
+
         if (!ValidateUtil.validatePlayer(player.getCode(), game.getPlayerList())) {
             throw new GameException(GameErrorMessage.PLAYER_NOT_FOUND);
         }
 
         PromptGetResponseDto promptGetResponseDto = PromptGetResponseDto.builder()
                 .role(player.getCode())
-                .content(promptResultGetCommandDto.prompt())
+                .content(promptResultGetCommandDto.prompt()
+                        .replace("나는", player.getNickname() + "은(는)")
+                        .replace("난 ", player.getNickname() + "은(는) ")
+                        .replace("내가", player.getNickname() + "이(가)")
+                        .replace("나도", player.getNickname() + "도")
+                        .replace("나랑", player.getNickname() + "랑")
+                        .replace("나와", player.getNickname() + "와(과)")
+                        .replace("나만", player.getNickname() + "만")
+                )
                 .build();  // 클라이언트에 보낼 플레이어 입력 프롬프트
         ValidateUtil.validate(promptGetResponseDto);
 
@@ -64,11 +73,26 @@ public class PromptServiceImpl implements PromptService {
         log.info("getChatGPTPrompt 호출");
         Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+        Player player = playerRedisRepository.findById(promptResultGetCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
         /** 이벤트 프롬프트 자동 삽입 여부 확인 **/
         double eventRate = game.getEventRate();
         String promptInput = promptResultGetCommandDto.prompt()
-                + insertEventPrompt(game.getStoryCode(), eventRate);
+                .replace("나는", "플레이어인 '" + player.getNickname() + "'은(는)")
+                .replace("난 ", "플레이어인 '" + player.getNickname() + "'은(는) ")
+                .replace("내가", "플레이어인 '" + player.getNickname() + "'이(가)")
+                .replace("나도", "플레이어인 '" + player.getNickname() + "'도")
+                .replace("나랑", "플레이어인 '" + player.getNickname() + "'랑")
+                .replace("나와", "플레이어인 '" + player.getNickname() + "'와(과)")
+                .replace("나만", "플레이어인 '" + player.getNickname() + "'만");
+        if(30 <= game.getTurn()) {
+            promptInput +=  eventRepository.findById("EV-007")
+                    .orElseThrow(() -> new GameException(GameErrorMessage.EVENT_NOT_FOUND)).getPrompt();
+        } else {
+            promptInput +=  insertEventPrompt(game.getStoryCode(), eventRate);
+        }
+        log.info("최종 유저 프롬프트: " + promptInput);
 
         /** ChatGPT에 프롬프트 전송 **/
         List<Prompt> promptList = game.getPromptList();
@@ -126,6 +150,7 @@ public class PromptServiceImpl implements PromptService {
         if (selectedEvent == null) {  // 이벤트 발생하지 않았을 경우
             eventRate += 0.05;  // 이벤트 발생 확률 5% 상승
         } else {
+            log.info(selectedEvent.toString() + " 이벤트 발생");
             eventRate = 0.00;  // 이벤트 발생 확률 0%로 초기화
             eventCnt += 1;  // 이벤트 발생 횟수 + 1
 
@@ -136,6 +161,12 @@ public class PromptServiceImpl implements PromptService {
 
             MonsterGetResponseDto monsterGetResponseDto = null;
             if (selectedEvent.getCode().equals("EV-001")) {  // 이벤트가 전투일 경우
+                monsterGetResponseDto = fightService.getMonster(MonsterSetCommandDto.builder()
+                        .gameCode(game.getCode())
+                        .playerCode(player.getCode())
+                        .build()
+                );   // 몬스터 생성
+            } else if(selectedEvent.getCode().equals("EV-007")) {  // 이벤트가 마왕 처치일 경우
                 monsterGetResponseDto = fightService.getMonster(MonsterSetCommandDto.builder()
                         .gameCode(game.getCode())
                         .playerCode(player.getCode())
@@ -246,6 +277,7 @@ public class PromptServiceImpl implements PromptService {
     }
 
     private String insertEventPrompt(String storyCode, double eventRate) throws GameException {
+
         if (Math.random() <= eventRate) {  // 이벤트 발생해야할 경우
             List<Event> eventList = eventRepository.findAllByStoryCode(storyCode)
                     .orElseThrow(() -> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
