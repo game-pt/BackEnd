@@ -25,22 +25,7 @@ const SelectGameStory = (props: ISelectGameStory) => {
   const navigate = useNavigate();
   const { mutate, data, isLoading, isSuccess } = useMutation(fetchPostGame);
   const handleSelectStory = (storyCode: string) => {
-<<<<<<< HEAD
-    const setGameCodeFromAPI = async () => {
-      const gameCode = (await fetchPostGame(storyCode)).code;
-      setGameCode(gameCode);
-      setGCode(gameCode);
-      navigate('/createCharacter');
-    };
-    setGameCodeFromAPI();
-=======
     mutate(storyCode, {
-      onSuccess: (res) => {
-        console.log('게임코드뭐임', res);
-        // setGameCode(res);
-        // setGCode(res);
-        // navigate('/createCharacter');
-      },
       onError: (err) => console.log('에러', err),
     });
     // const setGameCodeFromAPI = async () => {
@@ -48,7 +33,6 @@ const SelectGameStory = (props: ISelectGameStory) => {
 
     // };
     // setGameCodeFromAPI();
->>>>>>> ef6149acde62651566ade1013ba1b6f9bcd5a9dd
   };
 
   useEffect(() => {
