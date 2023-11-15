@@ -331,7 +331,9 @@ public class GameServiceImpl implements GameService {
         // ChatGPT에 프롬프트 전송
         StringBuilder promptResult = new StringBuilder();
         promptResult.append(prompt).append("\n");
-        promptResult.append(chatGptClientUtil.enterPrompt(promptResult.toString(), game.getMemory(), game.getPromptList()));
+        String gptPrompt = chatGptClientUtil.getChatGPTResult(game.getMemory(), game.getPromptList(), promptResult.toString());
+        log.info(gptPrompt);
+        promptResult.append(gptPrompt);
 
         // 스탯 변화 진행
         String tmp = statChane(player, game, act, bonusPoint);
