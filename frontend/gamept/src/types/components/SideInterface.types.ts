@@ -1,5 +1,6 @@
 export interface ISideInterface {
   sendChat?: (text: string) => void;
+  deleteItem: (itemCode: string) => void;
   chat?: string[] | null;
 }
 

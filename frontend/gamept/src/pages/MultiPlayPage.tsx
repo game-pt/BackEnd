@@ -32,14 +32,18 @@ const MultiPlayPage = () => {
   const [blockInput, setBlockInput] = useState<boolean>(false);
   const [isPromptFetching, setIsPromptFetching] = useState<boolean>(false);
   const [isShowDice, setIsShowDice] = useState<boolean>(false);
-  const [dice, setDice] = useState<IDice | null>(null);
+  const [dice, setDice] = useState<IDice>({
+    dice1: 0,
+    dice2: 0,
+    dice3: 0,
+  });
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
   const itemUpdateAtom = useUpdateItemListAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
-  const gameCode = 'SkDAer';
-  const playerCode = 'SkDAer-r0PeqV';
+  const gameCode = 'mwAOIT';
+  const playerCode = 'mwAOIT-0lu9wx';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
@@ -104,6 +108,7 @@ const MultiPlayPage = () => {
           }
 
           if (body.gameOverYn === 'Y') {
+            console.log("Game Over ==== Y");
             // 종료 API 호출
             const ChoiceFromDB = (await db.getAll())
               .filter((v) => v.choice !== undefined)
@@ -249,7 +254,23 @@ const MultiPlayPage = () => {
 
           // setHP
           // HP 상태 값 변화
-          // body.playerHp
+          if (body.playerHp <= 0) {
+            console.log("Game Over ==== Y");
+            // 종료 API 호출
+            const ChoiceFromDB = (await db.getAll())
+              .filter((v) => v.choice !== undefined)
+              .map((e) => e);
+
+            // 직전 선택지 인덱스 디비에 저장
+            if (ChoiceFromDB.length > 0) {
+              for (let i = 0; i < ChoiceFromDB.length; i++) {
+                await db.deleteRecord(ChoiceFromDB[i].id);
+              }
+            }
+            setEvent(null);
+            navigate('/ending');
+            return;
+          }
         },
         {}
       );
@@ -270,19 +291,6 @@ const MultiPlayPage = () => {
             setPrompt(prompt);
             setIsPromptFetching(false);
           }
-
-          // 프롬포트가 있다면
-          // if (body.promptList !== undefined) {
-          //   // 원본 데이터와 프롬프트 구분
-          //   const prompt = body.promptList
-          //     .content.split('\n')
-          //     .map((e: string) => {
-          //       return { msg: e, role: body.promptList.role };
-          //     });
-
-          //   setPrompt(prompt);
-          //   setIsPromptFetching(false);
-          // }
 
           // Event가 있다면
           if (body.event !== null) {
@@ -321,7 +329,7 @@ const MultiPlayPage = () => {
 
       client.current.subscribe(`/queue/${playerCode}/item`, async (message) => {
         const body = JSON.parse(message.body);
-
+        console.log(body);
         itemUpdateAtom(body);
         setEvent(null);
         const ChoiceFromDB = (await db.getAll())
@@ -382,6 +390,12 @@ const MultiPlayPage = () => {
         })
       );
     }
+
+    setTimeout(() => {
+      console.log('주사위 값 전송 딜레이');
+    }, 1000);
+
+    return;
   };
 
   const sendPromptHandler = (text: string) => {
@@ -501,34 +515,20 @@ const MultiPlayPage = () => {
         return;
       }
 
-      if (event && event.eventCode) {
-        const checkItemSub = event.eventCode.split('_');
-
-        if (checkItemSub[0] === 'getItem') {
-          // 획득 전송
-          if (checkItemSub[1] === '1') {
-            client.current.send(
-              `/item`,
-              {},
-              JSON.stringify({
-                playerCode,
-                gameCode,
-              })
-            );
-            // 버린다 전송
-          } else {
-            client.current.send(
-              `/item/${checkItemSub[2]}`,
-              {},
-              JSON.stringify({
-                playerCode,
-                gameCode,
-              })
-            );
-          }
-
-          return;
+      const checkItemSub = choice.actCode.split('_');
+      if (checkItemSub[0] === 'getItem') {
+        // 획득 전송
+        if (checkItemSub[1] === '1') {
+          client.current.send(
+            `/item`,
+            {},
+            JSON.stringify({
+              playerCode,
+              gameCode,
+            })
+          );
         }
+        return;
       }
 
       // 위에서 return에 안걸렸다면 일반 선택지 선택한 경우
@@ -589,20 +589,27 @@ const MultiPlayPage = () => {
     });
   };
 
+  const deleteItem = (itemCode: string) => {
+    if (client.current) {
+      client.current.send(
+        `/item/${itemCode}`,
+        {},
+        JSON.stringify({
+          playerCode,
+          gameCode,
+        })
+      );
+    }
+  }
+
   useEffect(() => {
     const initializeGame = async () => {
-      console.log('initializeGame');
       try {
-        // const res = await axios.get(
-        //   `http://70.12.247.95:8080/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
-        // );
         const res = await axios.get(
           `${
             import.meta.env.VITE_SERVER_URL
           }/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
         );
-
-        console.log(res.data);
 
         res.data.forEach((e: { role: string; content: string }) => {
           const arr = e.content.split('\n').map((v) => {
@@ -617,11 +624,16 @@ const MultiPlayPage = () => {
 
     if (client.current === null) {
       connectHandler();
+      const itemList = localStorage.getItem('characterStatus');
+
+      if (itemList) {
+        itemUpdateAtom(JSON.parse(itemList).itemList);
+      }
       console.log(promptAtom);
       if (promptAtom.length <= 1) {
         db.getAll().then((value) => {
           if (value.length === 0) initializeGame();
-        })
+        });
       }
     }
 
@@ -649,7 +661,7 @@ const MultiPlayPage = () => {
       <div className="w-400 h-full flex flex-col justify-between items-start">
         <img src={Logo} alt="로고" className="w-[300px]" />
         <div className="w-full h-[400px] flex justify-center">
-          <SideInterface sendChat={sendChatHandler} chat={chat} />
+          <SideInterface sendChat={sendChatHandler} chat={chat} deleteItem={deleteItem} />
         </div>
         <ProfileInterface />
       </div>
@@ -667,7 +679,7 @@ const MultiPlayPage = () => {
           sendPromptHandler={sendPromptHandler}
         />
       </div>
-      {dice && isShowDice && (
+      {isShowDice && (
         <DiceModal
           dice1={dice.dice1}
           dice2={dice.dice2}
