@@ -135,26 +135,6 @@ const ItemTab = () => {
     }
   })
 
-  // const [itemList, setItemList] = useState<{
-  //   [key: string]: { img: string; desc: string };
-  // }>({
-  //   '세계수의 이파리': {
-  //     img: '세계수의 이파리.png',
-  //     desc: '마시면 체력+10.',
-  //   },
-  //   '암기빵': {
-  //     img: '암기빵.png',
-  //     desc: '가지고 있으면 공격력+10.',
-  //   },
-  //   '세계수의 선물': {
-  //     img: '세계수의 선물.png',
-  //     desc: '가지고 있으면 공격력+1.',
-  //   },
-  //   '포츈 붐바': {
-  //     img: '포츈 붐바.png',
-  //     desc: '멀리보기 가능.',
-  //   },
-  // });
   const [itemList, setItemList] = useState<{
     [key: string]: { code: string; img: string; desc: string };
   }>(initList);
@@ -173,6 +153,7 @@ const ItemTab = () => {
     const updatedItemList = { ...itemList };
     const code = itemList[itemName].code;
     delete updatedItemList[itemName];
+    
     deleteItem(code);
     setItemList(updatedItemList);
   };

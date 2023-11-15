@@ -189,12 +189,27 @@ const controlItemListAtom = atom(
   }
 );
 
+// const deleteItem = atom(null, (get, set, usedItemCode: string) => {
+//   const prev = get(characterStatusAtom);
+//   const targetIdx = prev.itemList.findIndex(
+//     (item) => item.code === usedItemCode
+//   );
+//   const itemList = prev.itemList.splice(targetIdx, 1);
+//   const nextStatus = {
+//     ...prev,
+//     itemList: itemList.map<{
+//       code: string;
+//       name: string;
+//       desc: string;
+//       weight: number;
+//     }>((item) => ({ ...item })),
+//   };
+//   setLocal(nextStatus);
+//   set(characterStatusAtom, nextStatus);
+// });
 const deleteItem = atom(null, (get, set, usedItemCode: string) => {
   const prev = get(characterStatusAtom);
-  const targetIdx = prev.itemList.findIndex(
-    (item) => item.code === usedItemCode
-  );
-  const itemList = prev.itemList.splice(targetIdx, 1);
+  const itemList = prev.itemList.filter(e => e.code !== usedItemCode);
   const nextStatus = {
     ...prev,
     itemList: itemList.map<{
@@ -204,6 +219,7 @@ const deleteItem = atom(null, (get, set, usedItemCode: string) => {
       weight: number;
     }>((item) => ({ ...item })),
   };
+  console.log(itemList);
   setLocal(nextStatus);
   set(characterStatusAtom, nextStatus);
 });
