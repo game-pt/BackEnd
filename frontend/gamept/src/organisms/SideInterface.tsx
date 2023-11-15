@@ -1,14 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
-import axios from 'axios';
 import './SideInterface.css'; // Import your CSS file
-import { SkillValuesType, TabContent } from '@/types/components/Tab.types';
+import { StatValuesType, SkillValuesType, TabContent, StatObjectType } from '@/types/components/Tab.types';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 
+import { useGameCode } from '@/hooks/useGameCode';
+import { usePlayerCode } from '@/hooks/usePlayerCode';
 import ChattingTab from '@/atoms/ChattingTab';
 import { ISideInterface } from '@/types/components/SideInterface.types';
 import { TbNavigation } from "react-icons/tb";
 import { GiCardDiscard } from "react-icons/gi";
+import { useStatAtom, useStatObjectAtom, useStatUpAtom } from '@/jotai/CharacterStatAtom';
+// import { useUpdateStatAtom } from '@/jotai/CharacterStatAtom';
+import { useAtomValue } from 'jotai';
+import { characterStatusAtom } from '@/jotai/CharacterStatAtom';
+import { fetchGetPlayerInfo } from '@/services/CreateCharacterService';
+
+
 // import { useStatAtom, useUpdateProfileAtom } from '@/jotai/CharacterStatAtom';
 
 // const setProfileStat = useUpdateProfileAtom();
@@ -29,86 +37,46 @@ const fetchInitialStats = async () => {
 */
 /////////////////////////////////////////////////////////////////////////
 
-const StatTab = () => {
-  const [statList, setStatList] = useState<Record<string, number>>({
-    // 힘: 10,
-    // 건강: 10,
-    // 지능: 10,
-    // 민첩: 10,
-    // 매략: 10,
-    // 행운: 10
-  });
+type Props = {
+  sendEventStat: (statCode: string) => void;
+}
 
-  // useEffect(() => {
-  //   // WebSocket 연결 설정
-  //   const socket = new SockJS(import.meta.env.VITE_SOCKET_URL); // 서버 주소와 WebSocket 엔드포인트를 설정합니다.
+// const StatTab = () => {
+const StatTab: React.FC<Props> = ({ sendEventStat }) => {
+  // 현재 스탯 정보 불러오기
+  const statList: StatValuesType[] = useStatAtom();
+  const statObject: StatObjectType = useStatObjectAtom();
+  // 스탯 업데이트 함수 불러오기
+  // const setStatList = useUpdateStatAtom();
+  // const [statPoints, setStatPoints] = useState(3);
 
-  //   // 초기 스탯을 백엔드에서 가져와 설정
-  //   socket.onopen = () => {
-  //     socket.send('fetchInitialStats'); // 서버로 초기 스탯을 가져오라는 메시지를 보냅니다.
-  //   };
 
-  //   // 서버로부터 스탯 데이터를 수신하면 업데이트합니다.
-  //   socket.onmessage = (event) => {
-  //     const receivedData = JSON.parse(event.data);
-  //     if (receivedData.type === 'initialStats') {
-  //       setStatList(receivedData.stats);
-  //     }
-  //   };
-
-  //   // 에러 처리
-  //   socket.onerror = (error) => {
-  //     console.error('WebSocket error:', error);
-  //   };
-
-  //   // 연결 종료 시
-  //   socket.onclose = () => {
-  //     console.log('WebSocket connection closed.');
-  //   };
-
-  //   // 컴포넌트 언마운트 시 WebSocket 연결 종료
-  //   return () => {
-  //     socket.close();
-  //   };
-  // }, []);
-
-  const [statPoints, setStatPoints] = useState(20);
-
-  const increaseStat = (statName: string) => {
-    if (statPoints > 0) {
-      // 서버로 스탯 업데이트 메시지를 보냄
-      const socket = new SockJS(import.meta.env.VITE_SOCKET_URL);
-      socket.send(JSON.stringify({ type: 'updateStat', statName }));
-
-      // 클라이언트에서 먼저 업데이트한 후 서버로 메시지를 보냅니다.
-      setStatList((prevState) => ({
-        ...prevState,
-        [statName]: prevState[statName] + 1,
-      }));
-      setStatPoints(statPoints - 1);
-    }
-  };
-
-  // const levelUp = async () => {
-  //   try {
-  //     const response = await axios.post('/api/level-up'); // 레벨업을 백엔드에 맞게 수정
-  //     if (response.status === 200) {
-  //       setStatPoints(statPoints + 1);
-  //     }
-  //   } catch (error) {
-  //     console.error('Failed to level up:', error);
+  // 스탯 증가 함수
+  // const increaseStat = (statCode: string) => {
+  //   if (statPoints > 0) {
+  //     // 새로운 상태 배열을 생성
+  //     const newStats = statList.map(stat => {
+  //       if (stat.statCode === statCode) {
+  //         return { ...stat, statValue: stat.statValue + 1 };
+  //       }
+  //       return stat;
+  //     });
+  
+  //     // setStatList에 새로운 배열을 직접 전달
+  //     setStatList(newStats);
+  //     setStatPoints(statPoints - 1);
   //   }
   // };
 
   return (
     <div className="w-full h-full flex flex-col p-8 py-10 bg-transparent text-xl justify-between">
-      {Object.keys(statList).map((statName, i) => (
+      {statList.map((stat, i) => (
         <div key={`stat_${i}`} className="w-full flex">
-          <p className="basis-1/4 text-center">{statName}</p>
-          <p className="basis-3/4 text-center">{statList[statName]}</p>
-          {statPoints > 0 && (
+          <p className="basis-1/4 text-center">{stat.statName}</p>
+          <p className="basis-3/4 text-center">{stat.statValue}</p>
+          {statObject.statPoint > 0 && (
             <button
-              onClick={() => increaseStat(statName)}
+              onClick={() => sendEventStat(stat.statCode)}
               className="bg-transparent px-0 py-0"
             >
               <TbNavigation />
@@ -118,80 +86,40 @@ const StatTab = () => {
       ))}
       <div className="text-base flex items-center justify-center">
         <p>스탯 포인트 :&nbsp;</p>
-        <div className="border-2 shadow-md border-primary px-2">
-          {statPoints}
-        </div>
+        <div className="border-2 shadow-md border-primary px-2">{statObject.statPoint}</div>
       </div>
     </div>
   );
 };
 
 const SkillTab = () => {
-  const [skillList, setSkillList] = useState<SkillValuesType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const characterStatus = useAtomValue(characterStatusAtom);
+  const skillList: SkillValuesType[] = characterStatus.skillList; // 타입 명시 추가
 
   useEffect(() => {
     // 서버에서 스킬 목록을 가져오는 함수
-    const fetchSkills = async () => {
-      try {
-        // API 엔드포인트에 맞게 수정
-        const response = await axios.get(
-          import.meta.env.VITE_SERVER_URL + '/player',
-          {
-            // 요청에 필요한 데이터가 있다면 여기에 추가
-            params: {
-              gameCode: 'MmwNxr',
-              playerCode: 'MmwNxr-kX3zr1',
-            },
-          }
-        );
-
-        // "job" 객체에서 "skillList"를 추출
-        const jobSkillList = response.data.job.skillList;
-
-        // jobSkillList를 객체로 변환하여 상태에 저장
-        const updatedSkillList = jobSkillList.map((skill: { name: string; desc: string }) => ({
-          name: skill.name,
-          img: `/${skill.name}.png`, // 이미지 경로에 대한 로직은 필요에 따라 수정
-          desc: skill.desc,
-        }));
-
-
-        setSkillList(updatedSkillList); // 서버에서 받아온 스킬 목록을 상태에 저장
-        setLoading(false); // 로딩 상태를 해제
-      } catch (error) {
-        console.error('스킬 목록을 불러오는 중 오류가 발생했습니다.', error);
-        setLoading(false); // 오류 발생 시에도 로딩 상태를 해제
-      }
-    };
-
-    fetchSkills();
+    // (생략 - 현재는 characterStatusAtom에서 이미 받아오고 있기 때문에 필요 없음)
   }, []);
 
   return (
     <div className="w-full h-full flex flex-col p-6 bg-transparent text-16 overflow-y-auto">
-      {loading ? (
-        <div>스킬을 불러오는 중입니다...</div>
-      ) : (
-        skillList.map((skill, i) => (
-          <div key={`skill_${i}`} className="w-full flex my-2 items-center">
-            <div className="border border-[#5C5C5C] rounded">
+      {skillList.map((skill, i) => (
+        <div key={`skill_${i}`} className="w-full flex my-2 items-center">
+          <div className="border border-[#5C5C5C] rounded">
             <img
               className="w-[64px] rounded"
-              src={`./src/assets/skill/${skill.img}`}
+              src={`./src/assets/skill/${skill.img || `${skill.name}.png`}`}
               alt={`${i}_skill`}
             />
-            </div>
-            <p className="basis-3/4 text-left pl-4 text-white">
-              {skill.name}: {skill.desc}
-            </p>
           </div>
-        ))
-      )}
+          <p className="basis-3/4 text-left pl-4 text-white">
+            {skill.name}: {skill.desc}
+          </p>
+        </div>
+      ))}
     </div>
   );
 };
-
 const ItemTab = () => {
   const [itemList, setItemList] = useState<{
     [key: string]: { img: string; desc: string };
@@ -267,11 +195,20 @@ const SideInterface = (props: ISideInterface) => {
   const client = useRef<CompatClient | null>(null);
   const [selectedTab, setSelectedTab] = useState('스탯'); // 초기 탭 설정
   const [selectedTabColor, setSelectedTabColor] = useState('#331812'); // 초기 탭 색상 설정
-  const gameCode = 'MmwNxr';
-  const playerCode = 'MmwNxr-kX3zr1';
+  // const gameCode = 'AHczIu';
+  // const playerCode = 'AHczIu-kCZX8d';
+  // 컴포넌트 함수 안에서 가져오기
+  const [getGameCode] = useGameCode(); // getGameCode -> 게임코드
+  const [getPlayerCode] = usePlayerCode(); // getPlayerCode -> 플레이어코드
+  const setStatList = useStatUpAtom();
 
   useEffect(() => {
     connectHandler();
+    fetchGetPlayerInfo(getGameCode, getPlayerCode)
+    .then((playerInfo) => {
+      console.log(playerInfo);
+      setStatList({ statPoint: playerInfo.statPoint, statList: playerInfo.statList });
+    });
     // sendEventHandler();
   }, []);
 
@@ -291,18 +228,26 @@ const SideInterface = (props: ISideInterface) => {
       // 멀티플레이 용
       // 유저 데이터 업데이트 시 정보 송수신용
       client.current.subscribe(
-        `/topic/player/${gameCode}`,
+        `/queue/${getPlayerCode}/stat`,
         (message) => {
-          console.log(JSON.parse(message.body));
-          // message.body를 통해 데이터 받아서
-          // 프로필 업데이트 로직 수행
-          // 해당 방 구독하는 모든 플레이어들 데이터 저장하는 객체에다가 업데이트
-        },
-        {}
-      );
+          const playerStat = JSON.parse(message.body);
+          const statList = playerStat.statList;
+          const statPoint = playerStat.statPoint;
 
-      client.current.subscribe(`/topic/player`, (message) => {
-        console.log(JSON.parse(message.body));
+          // const newStats = statList.map((stat: StatValuesType) => {
+          //   // if (stat.statCode === statCode) {
+          //   //   return { ...stat, statValue: stat.statValue + 1 };
+          //   // }
+          //   // return stat;
+          //   return {
+          //     statCode: stat.statCode,
+          //     statName: stat.statName,
+          //     statValue: stat.statValue
+          //   }
+          // });
+      
+          // setStatList에 새로운 배열을 직접 전달
+          setStatList({ statPoint: statPoint, statList: statList });
       });
     });
   };
@@ -329,22 +274,18 @@ const SideInterface = (props: ISideInterface) => {
   */
   //////////////////////////////////////////////////////////////////////////
 
-  const sendEventHandler = () => {
+  const sendEventStat = (statCode: string) => {
     if (client.current)
       client.current.send(
-        `/player`,
-        {},
-        JSON.stringify({
-          gameCode: gameCode,
-          nickName: playerCode,
-        })
+        `/stat-up/${getGameCode}/${getPlayerCode}/${statCode}`,
+        {}
       );
   };
 
   const tabContents: Record<string, TabContent> = props.sendChat
     ? {
         스탯: {
-          content: <StatTab />,
+          content: <StatTab sendEventStat={sendEventStat} />,
           color: '#290E08',
         },
         스킬: {
@@ -362,7 +303,7 @@ const SideInterface = (props: ISideInterface) => {
       }
     : {
         스탯: {
-          content: <StatTab />,
+          content: <StatTab sendEventStat={sendEventStat} />,
           color: '#331812',
         },
         스킬: {
@@ -380,7 +321,7 @@ const SideInterface = (props: ISideInterface) => {
   };
 
   return (
-    <div className="w-[350px] text-lg" onClick={sendEventHandler}>
+    <div className="w-[350px] text-lg">
       <div className="tab-header w-full flex">
         {Object.keys(tabContents).map((e, i) => (
           <button

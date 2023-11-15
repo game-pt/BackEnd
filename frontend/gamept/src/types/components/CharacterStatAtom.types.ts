@@ -7,6 +7,7 @@ export interface ICharacterStatusAtom {
   gender?: string;
   hp: number;
   exp: number;
+  statPoint: number;
   statList: Array<{ statName: string; statValue: number; statCode: string }>;
   skillList: Array<{ name: string; desc: string }>;
   itemList: Array<{ code: string; name: string; desc: string; weight: number }>;

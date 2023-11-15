@@ -35,7 +35,7 @@ const PromptInterface = (props: IPromptInterface) => {
           <LoadingSpinner1 />
         </div>
       ) : (
-        <Prompt isFetching={props.isFetching} type="in-game" data={prompt} />
+        <Prompt playerCode={props.playerCode} isFetching={props.isFetching} type="in-game" data={prompt} />
       )}
       {/* 선택지 버튼 출력할 Area */}
       <div className="w-full h-[250px] flex justify-center self-center">
@@ -44,6 +44,7 @@ const PromptInterface = (props: IPromptInterface) => {
       {/* 프롬프트 입력할 인풋 */}
       <div className="absolute inset-x-0 bottom-0">
         <Input
+          disabled={props.block}
           width="full"
           height="45px"
           placeholder="프롬프트를 입력해주세요."
