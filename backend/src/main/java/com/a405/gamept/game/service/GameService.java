@@ -3,6 +3,8 @@ package com.a405.gamept.game.service;
 
 import com.a405.gamept.game.dto.command.*;
 import com.a405.gamept.game.dto.response.*;
+import com.a405.gamept.game.util.exception.GameException;
+
 import java.util.List;
 
 public interface GameService {
@@ -88,4 +90,10 @@ public interface GameService {
      * @return : 게임 코드와 prompt
      */
     ActResultGetResponseDto playAct(ActResultGetCommandDto actResultGetCommandDto);
+    /**
+     * 현재까지 이야기를 요약한다.
+     * @param endingCommandDto : 게임 코드, 플레이어 코드
+     * @return : 요약본
+     */
+    PromptGetResponseDto setEnding(EndingCommandDto endingCommandDto) throws GameException;
 }
