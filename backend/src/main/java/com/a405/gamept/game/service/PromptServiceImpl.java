@@ -241,53 +241,14 @@ public class PromptServiceImpl implements PromptService {
      */
     @Override
     @Transactional
-    public SseEmitter subscribeEmitter(String gameCode) throws JsonProcessingException {
-//        ObjectMapper mapper = new ObjectMapper();
-//
-//        Game game = gameRedisRepository.findById(gameCode)
-//                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
-//        if (game.getMappedEmitter() == null) {
-//            SseEmitter emitter = createEmitter(gameCode);
-//            String mappedEmitter = mapper.writeValueAsString(emitter);
-//            game = game.toBuilder()
-//                    .mappedEmitter(mappedEmitter)
-//                    .build();
-//            gameRedisRepository.save(game);
-//        }
-//
-//        sendToClient(gameCode, "EventStream Created. [gameCode=" + gameCode + "]");
-//        SseEmitter emitter = mapper.readValue(game.getMappedEmitter(), SseEmitter.class);
-//        System.out.println("emitter.hashCode(): " + emitter.hashCode());
-//
-//        try {
-//            emitter.send("data");
-//            emitter.complete();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return emitter;
-
+    public SseEmitter subscribeEmitter(String gameCode) {
         SseEmitter emitter = createEmitter(gameCode);
 
         sendToClient(gameCode, "EventStream Created. [gameCode=" + gameCode + "]");
         return emitter;
     }
 
-    private void sendToClient(String gameCode, Object data) throws JsonProcessingException {
-//        ObjectMapper mapper = new ObjectMapper();
-//
-//        Game game = gameRedisRepository.findById(gameCode)
-//                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
-//        SseEmitter emitter = mapper.readValue(game.getMappedEmitter(), SseEmitter.class);
-//        if (emitter != null) {
-//            try {
-////                emitter.send(SseEmitter.event().id(gameCode).name("sse").data(data));
-//                emitter.send(SseEmitter.event().data(data));
-//            } catch (IOException exception) {
-//                log.error(exception.getMessage());
-//            }
-//        }
-
+    private void sendToClient(String gameCode, Object data) {
         SseEmitter emitter = emitterRepository.get(gameCode);
         if (emitter != null) {
             try {
@@ -300,27 +261,16 @@ public class PromptServiceImpl implements PromptService {
     }
 
     @Override
-    public void sendPrompt(String gameCode, Object data) throws JsonProcessingException {
-        sendToClient(gameCode, data);
+    public void sendPrompt(String gameCode, String prompt) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        Game game = gameRedisRepository.findById(gameCode)
+                        .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+        SseEmitter emitter = emitterRepository.get(gameCode);
+        String Output = chatGptClientUtil.enterPromptForSse(emitter, prompt, game.getMemory(), game.getPromptList());
     }
 
     private SseEmitter createEmitter(String gameCode) {
-//        ObjectMapper mapper = new ObjectMapper();
-//
-//        Game game = gameRedisRepository.findById(gameCode)
-//                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
-//
-//        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-//
-//        emitter.onCompletion(() -> gameRedisRepository.save(game.toBuilder()
-//                .mappedEmitter(null)
-//                .build()));
-//        emitter.onTimeout(() -> gameRedisRepository.save(game.toBuilder()
-//                .mappedEmitter(null)
-//                .build()));
-//
-//        return emitter;
-
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
         emitterRepository.save(gameCode, emitter);
 

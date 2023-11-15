@@ -15,6 +15,6 @@ public interface PromptService {
     PromptGetResponseDto getChatGPTPrompt(PromptResultGetCommandDto promptResultGetCommandDto) throws GameException;
     PromptResultGetResponseDto getPrmoptResult(PromptResultGetCommandDto promptResultGetCommandDto, String responsePrompt) throws GameException;
     List<PromptGetResponseDto> getPromptList(PromptListGetCommandDto promptListGetCommandDto) throws GameException;
-    SseEmitter subscribeEmitter(String gameCode) throws JsonProcessingException;
-    void sendPrompt(String gameCode, Object data) throws JsonProcessingException;
+    SseEmitter subscribeEmitter(String gameCode);
+    void sendPrompt(String gameCode, String prompt) throws JsonProcessingException;
 }

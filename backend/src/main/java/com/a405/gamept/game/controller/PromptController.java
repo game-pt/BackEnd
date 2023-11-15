@@ -60,12 +60,10 @@ public class PromptController {
     }
 
     @PostMapping("/send/{gameCode}")
-    public void sendPrompt(@Valid @PathVariable String gameCode) throws JsonProcessingException {
+    public void sendPrompt(@Valid @PathVariable String gameCode, @Valid @RequestBody PromptResultGetRequestDto promptResultGetRequestDto) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        promptService.sendPrompt(gameCode, mapper.writeValueAsString(PromptGetResponseDto.builder()
-                .role("user")
-                .content("게임 시작!")
-                .build()));
+
+        promptService.sendPrompt(gameCode, promptResultGetRequestDto.prompt());
     }
 
 }
