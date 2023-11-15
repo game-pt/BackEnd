@@ -77,7 +77,7 @@ public class GameController {
         webSocket.convertAndSendToUser(fightResultGetRequestDto.playerCode(), "/status", playerStatusGetResponseDto);
     }
 
-    @MessageMapping("/ending")
+    @MessageMapping("/endin/{gameCode}")
     public void ending(@DestinationVariable String gameCode, @Valid @Payload EndingRequestDto endingRequestDto) throws GameException {
         webSocket.convertAndSend("/topic/ending/" + gameCode, gameService.setEnding(EndingCommandDto.from(endingRequestDto, gameCode)));
     }
