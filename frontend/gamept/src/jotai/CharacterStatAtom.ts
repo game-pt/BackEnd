@@ -59,9 +59,9 @@ export const initCharacterStatusAtom = atom(
         statValue: number;
         statCode: string;
       }>((element) => ({
-        statName: element.name,
-        statValue: element.value,
-        statCode: element.code,
+        statName: element.statName,
+        statValue: element.statValue,
+        statCode: element.statCode,
       })),
       skillList: status.job.skillList.map<{ name: string; desc: string }>(
         (element) => ({ ...element })

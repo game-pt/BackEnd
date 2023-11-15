@@ -15,9 +15,8 @@ import { gameModeAtom } from '@/jotai/MakeGameAtom';
 import { useAtom } from 'jotai';
 const SelectGameMode = (props: ISelectGameMode) => {
   const [isShowModal, setIsShowModal] = useState(false);
-  const [getSelectMode, setSelectMode] = useAtom(gameModeAtom);
+  const [, setSelectMode] = useAtom(gameModeAtom);
 
-  console.log('상태확인', getSelectMode);
   return (
     <div className="pt-[100px] w-full h-full">
       <div className="text-primary text-32 text-center font-hol mb-[30px] caret-transparent ">
@@ -35,6 +34,7 @@ const SelectGameMode = (props: ISelectGameMode) => {
                   }
                 : undefined
             }
+            key={idx}
           >
             <GameModeCard
               imgUrl={card.imgUrl}

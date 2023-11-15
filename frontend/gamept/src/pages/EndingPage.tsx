@@ -12,6 +12,13 @@ import SelectButton from '@/atoms/SelectButton';
 import { useNavigate } from 'react-router-dom';
 
 const EndingPage = () => {
+  const handleFinishGame = () => {
+    localStorage.removeItem('gameCode');
+    localStorage.removeItem('playerCode');
+    // 인덱스db 초기화
+
+    navigate('/createGame');
+  };
   const navigate = useNavigate();
   return (
     <div className="font-hol relative w-screen h-screen mx-auto bg-backgroundDeep">
@@ -20,9 +27,7 @@ const EndingPage = () => {
         <Prompt data={null} type="ending" isFetching={false} />
         <SelectButton
           height="70px"
-          onClickEvent={() => {
-            navigate('/createGame');
-          }}
+          onClickEvent={handleFinishGame}
           text="메인으로"
           width="305px"
           isShadow

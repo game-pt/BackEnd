@@ -16,7 +16,7 @@ export const selectGameModeAtom = atom(
   (get) => get(gameModeAtom),
   (_get, set, selectedMode: number) => {
     set(gameModeAtom, () => selectedMode);
-    console.log('게임모드 값 ', selectedMode);
+    // console.log('게임모드 값 ', selectedMode);
   }
 );
 
@@ -24,7 +24,7 @@ export const selectGameCodeAtom = atom(
   (get) => get(gameCodeAtom),
   (_get, set, gameCode: string) => {
     set(gameCodeAtom, () => gameCode);
-    console.log('게임코드값', gameCode);
+    // console.log('게임코드값', gameCode);
   }
 );
 
