@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FightingEnermyRedisRepository extends CrudRepository<FightingEnemy, String> {
+public interface FightingEnemyRedisRepository extends CrudRepository<FightingEnemy, String> {
     // Optional<FightingEnermy> findByGameCode(String gameCode);
 }

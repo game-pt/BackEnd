@@ -13,15 +13,21 @@ public record GameStateCommandDto(
         String prompt,
         @NotBlank(message = "전투 종료 여부는 필수입니다.")
         String endYn,
-        PlayerStateCommandDto playerState,
-        FightingEnemyStateCommandDto fightingEnemyState
+        int playerHp,
+        int playerLevel,
+        int statPoint,
+        int playerExp,
+        int fightEnemyHp
 ) {
-    public static GameStateCommandDto of(String prompt, String endYn, PlayerStateCommandDto playerStateCommandDto, FightingEnemyStateCommandDto fightingEnemyStateCommandDto) {
+    public static GameStateCommandDto of(String prompt, String endYn, int playerHp, int playerLevel, int statPoint, int playerExp, int fightEnemyHp) {
         return GameStateCommandDto.builder()
                 .prompt(prompt)
                 .endYn(endYn)
-                .playerState(playerStateCommandDto)
-                .fightingEnemyState(fightingEnemyStateCommandDto)
+                .playerHp(playerHp)
+                .playerLevel(playerLevel)
+                .playerExp(playerExp)
+                .statPoint(statPoint)
+                .fightEnemyHp(fightEnemyHp)
                 .build();
     }
 }

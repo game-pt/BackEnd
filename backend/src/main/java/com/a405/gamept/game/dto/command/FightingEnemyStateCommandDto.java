@@ -11,9 +11,10 @@ import jakarta.validation.constraints.NotBlank;
 
 public record FightingEnemyStateCommandDto(
         int fightingEnemyHp,
-        int fightingEnemyExp
+        int fightingEnemyExp,
+        String prompt
 ) {
-        public FightingEnemyStateCommandDto of(int fightingEnemyHp, int fightingEnemyExp){
-                return new FightingEnemyStateCommandDto(fightingEnemyHp, fightingEnemyExp);
+        public FightingEnemyStateCommandDto of(int fightingEnemyHp, int fightingEnemyExp, String prompt){
+                return new FightingEnemyStateCommandDto(fightingEnemyHp, fightingEnemyExp, prompt);
         }
 }

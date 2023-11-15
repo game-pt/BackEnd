@@ -2,11 +2,13 @@ package com.a405.gamept.game.dto.command;
 
 import com.a405.gamept.play.entity.Player;
 
-public record TmpPlayerCommandDto(
-        Player player,
+public record ExpGetCommandDto(
+        int playerExp,
+        int playerLevel,
+        int statPoint,
         String prompt
 ) {
-    public TmpPlayerCommandDto of(Player player, String prompt){
-        return new TmpPlayerCommandDto(player, prompt);
+    public ExpGetCommandDto of(int playerExp, int playerLevel, int statPoint, String prompt){
+        return new ExpGetCommandDto(playerExp, playerLevel, statPoint, prompt);
     }
 }
