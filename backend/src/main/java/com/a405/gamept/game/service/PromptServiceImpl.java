@@ -65,6 +65,7 @@ public class PromptServiceImpl implements PromptService {
                         .replace("나는", player.getNickname() + "은(는)")
                         .replace("난 ", player.getNickname() + "은(는) ")
                         .replace("내가", player.getNickname() + "이(가)")
+                        .replace("나의", player.getNickname() + "의")
                         .replace("나도", player.getNickname() + "도")
                         .replace("나랑", player.getNickname() + "랑")
                         .replace("나와", player.getNickname() + "와(과)")

@@ -305,7 +305,7 @@ public class GameServiceImpl implements GameService {
         StringBuilder prompt = new StringBuilder();
         //String eventName = act.getEvent().getName();
 
-        prompt.append(player.getNickname()).append("은 ");
+        prompt.append(player.getNickname()).append("은(는) ");
         // 극적 성공, 실패 여부 확인
         boolean flag = false;
         int bonusPoint = 0;
@@ -329,7 +329,7 @@ public class GameServiceImpl implements GameService {
         // ChatGPT에 프롬프트 전송
         StringBuilder promptResult = new StringBuilder();
         promptResult.append(prompt).append("\n");
-        String gptPrompt = chatGptClientUtil.getChatGPTResult(game.getMemory(), game.getPromptList(), promptResult.toString());
+        String gptPrompt = chatGptClientUtil.getChatGPTResult(game.getMemory(), game.getPromptList(), "플레이어인 " + promptResult.toString());
         log.info(gptPrompt);
         promptResult.append(gptPrompt);
 
@@ -438,5 +438,58 @@ public class GameServiceImpl implements GameService {
         result.append("< ").append(newItem.getName()).append(" > ").append("이/가 나타났다.");
 
         return ItemRandomGetCommandDto.of(newItem.getCode(), result.toString());
+    }
+
+    @Override
+    @Transactional
+    public PromptGetResponseDto setEnding(EndingCommandDto endingCommandDto) throws GameException {
+        ValidateUtil.validate(endingCommandDto);
+
+        Game game = gameRedisRepository.findById(endingCommandDto.gameCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+
+        Player player = playerRedisRepository.findById(endingCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+
+        if(!ValidateUtil.validatePlayer(player.getCode(), game.getPlayerList())) {
+            throw new GameException(GameErrorMessage.PLAYER_NOT_FOUND);
+        }
+
+        // 엔딩 출력
+        List<Prompt> promptList = game.getPromptList();
+        if(promptList == null) {
+            throw new GameException(GameErrorMessage.PROMPT_INVALID);
+        }
+
+        StringBuilder endingPrompt = new StringBuilder();
+        for(Prompt prompt : promptList) {
+            String name = "";
+            if(!prompt.getRole().equals("assistant")) {
+                name = playerRedisRepository.findById(prompt.getRole())
+                        .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND)).getNickname();
+                name += ": ";
+            }
+            endingPrompt.append(name).append(prompt.getContent()).append("\n");
+        }
+
+        String endingMemory = "당신은 아래에서 제시하는 대화 형식을 이야기로 풀어나가야 합니다. \n" +
+                "당신은 아래에서 제시하는 대화를 기반으로 미래의 결말을 예측해서 이야기해야 합니다.\n" +
+                "당신은 이야기를 끝마쳐야 합니다. 당신은 질문을 할 수 없습니다.\n";
+
+        String ending = chatGptClientUtil.getChatGPTResult(endingMemory, new ArrayList<>(), "### 대화 내용\n" + endingPrompt.toString());
+        
+        // 플레이어 및 게임 삭제
+        for(String playerCode : game.getPlayerList()) {
+            playerRedisRepository.delete(playerRedisRepository.findById(playerCode)
+                    .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND)));
+        }
+        gameRedisRepository.delete(game);
+
+        PromptGetResponseDto promptGetResponseDto = PromptGetResponseDto.builder()
+                .role("assistant")
+                .content(ending)
+                .build();
+        ValidateUtil.validate(promptGetResponseDto);
+        return promptGetResponseDto;
     }
 }

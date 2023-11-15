@@ -192,7 +192,7 @@ public class FightServiceImpl implements FightService {
 
 
         if(deathCheckCommandDto.playerHp() == 0){
-            gameRedisRepository.deleteById(game.getCode());
+            // gameRedisRepository.deleteById(game.getCode());
         }else{
             game = game.toBuilder()
                     .diceValue(0)
@@ -204,7 +204,7 @@ public class FightServiceImpl implements FightService {
         player = deathCheckCommandDto.player();
         if(deathCheckCommandDto.endYn().equals("Y")){
             if (player.getHp() == 0){
-                playerRedisRepository.delete(player);
+                // playerRedisRepository.delete(player);
             }else{
                 clearStat(player);
             }
