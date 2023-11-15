@@ -17,8 +17,48 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-validation:3.1.2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	compileOnly 'org.projectlombok:lombok'
+
+	// Security
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+
+	// Jackson (JSON)
+	implementation 'com.google.code.gson:gson:2.10.1'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.16.0-rc1'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.0-rc1'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.16.0-rc1'
+
+	//DB
+	//runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	//Lombok & Mapstruct
+	implementation 'org.projectlombok:lombok'
+	implementation 'org.mapstruct:mapstruct:1.5.1.Final'
+	implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+	//WebSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.webjars:sockjs-client:1.5.1'
+	implementation 'org.webjars:stomp-websocket:2.3.4'
+
+	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.1.Final'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	//Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// korean-summarizer
+	implementation 'com.github.tuguri8:korean-summarizer:0.1.2'
 }
 
 tasks.named('test') {
