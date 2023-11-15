@@ -20,7 +20,10 @@ import {
 import DiceModal from '@/organisms/DiceModal';
 import { IDice } from '@/types/components/Dice.types';
 import { useAtom } from 'jotai';
-import { characterStatusAtom, useUpdateItemListAtom } from '@/jotai/CharacterStatAtom';
+import {
+  characterStatusAtom,
+  useUpdateItemListAtom,
+} from '@/jotai/CharacterStatAtom';
 import axios from 'axios';
 
 const MultiPlayPage = () => {
@@ -35,13 +38,14 @@ const MultiPlayPage = () => {
   const promptAtom = usePromptAtom();
   const itemUpdateAtom = useUpdateItemListAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
-  const gameCode = 'ejTyxw';
-  const playerCode = 'ejTyxw-Fd55de';
+  const gameCode = 'SkDAer';
+  const playerCode = 'SkDAer-r0PeqV';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
   useEffect(() => {
     if (event) setBlockInput(true);
+    else setBlockInput(false);
     if (promptAtom[promptAtom.length - 1][0].role === playerCode)
       setIsPromptFetching(true);
   }, [promptAtom, event]);
@@ -91,11 +95,9 @@ const MultiPlayPage = () => {
 
           if (body.prompt !== undefined) {
             // 원본 데이터와 프롬프트 구분
-            const prompt = body.prompt
-              .split('\n')
-              .map((e: string) => {
-                return { msg: e, role: 'assistant' };
-              });
+            const prompt = body.prompt.split('\n').map((e: string) => {
+              return { msg: e, role: 'assistant' };
+            });
 
             setPrompt(prompt);
             setIsPromptFetching(false);
@@ -121,18 +123,21 @@ const MultiPlayPage = () => {
           if (body.itemYn === 'Y') {
             // Item 획득 로직
             // 얻는다 버린다 두가지 선택지로 setEvent 해주기
-            setEvent({ acts: [
-              {
-                actCode: `getItem_1_${body.itemCode}`,
-                actName: '얻는다.',
-                subtask: "NONE"
-              },
-              {
-                actCode: `getItem_2_${body.itemCode}`,
-                actName: '버린다.',
-                subtask: "NONE"
-              }
-            ]})
+            setEvent({
+              acts: [
+                {
+                  actCode: `getItem_1_${body.itemCode}`,
+                  actName: '얻는다.',
+                  subtask: 'NONE',
+                },
+                {
+                  actCode: `getItem_2_${body.itemCode}`,
+                  actName: '버린다.',
+                  subtask: 'NONE',
+                },
+              ],
+            });
+
             console.log('Item 획득');
             const ChoiceFromDB = (await db.getAll())
               .filter((v) => v.choice !== undefined)
@@ -182,7 +187,7 @@ const MultiPlayPage = () => {
               subtask: `isSubTask_${e.code.split('-')[0]}`,
             };
           });
-          
+
           // event 상태를 업데이트
           // acts 부분만 body로 변경
           setEvent((prevEvent) => {
@@ -204,30 +209,28 @@ const MultiPlayPage = () => {
 
           if (body.prompt !== undefined) {
             // 원본 데이터와 프롬프트 구분
-            const prompt = body.prompt
-              .split('\n')
-              .map((e: string) => {
-                return { msg: e, role: 'assistant' };
-              });
+            const prompt = body.prompt.split('\n').map((e: string) => {
+              return { msg: e, role: 'assistant' };
+            });
 
             setPrompt(prompt);
             setIsPromptFetching(false);
           }
 
           const ChoiceFromDB = (await db.getAll())
-              .filter((v) => v.choice !== undefined)
-              .map((e) => e);
+            .filter((v) => v.choice !== undefined)
+            .map((e) => e);
 
-            // 직전 선택지 인덱스 디비에 저장
-            if (ChoiceFromDB.length === 0) {
-              await db.add({ choice: body });
-            } else if (ChoiceFromDB.length <= 1) {
-              await db.update({ choice: body, id: ChoiceFromDB[0].id });
-            } else {
-              for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
-                await db.deleteRecord(ChoiceFromDB[i].id);
-              }
+          // 직전 선택지 인덱스 디비에 저장
+          if (ChoiceFromDB.length === 0) {
+            await db.add({ choice: body });
+          } else if (ChoiceFromDB.length <= 1) {
+            await db.update({ choice: body, id: ChoiceFromDB[0].id });
+          } else {
+            for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
+              await db.deleteRecord(ChoiceFromDB[i].id);
             }
+          }
 
           if (body.endYn === 'Y') {
             // 종료 API 호출
@@ -262,7 +265,7 @@ const MultiPlayPage = () => {
           if (body.content !== undefined && body.role !== playerCode) {
             const prompt = body.content.split('\n').map((e: string) => {
               return { msg: e, role: body.role };
-            })
+            });
 
             setPrompt(prompt);
             setIsPromptFetching(false);
@@ -316,14 +319,22 @@ const MultiPlayPage = () => {
         {}
       );
 
-      client.current.subscribe(
-        `queue/${playerCode}/item`,
-        (message) => {
-          const body = JSON.parse(message.body);
+      client.current.subscribe(`/queue/${playerCode}/item`, async (message) => {
+        const body = JSON.parse(message.body);
 
-          itemUpdateAtom(body);
+        itemUpdateAtom(body);
+        setEvent(null);
+        const ChoiceFromDB = (await db.getAll())
+          .filter((v) => v.choice !== undefined)
+          .map((e) => e);
+
+        // 직전 선택지 인덱스 디비에 저장
+        if (ChoiceFromDB.length > 0) {
+          for (let i = 0; i < ChoiceFromDB.length; i++) {
+            await db.deleteRecord(ChoiceFromDB[i].id);
+          }
         }
-      )
+      });
 
       // 채팅 구독
       client.current.subscribe(
@@ -420,6 +431,8 @@ const MultiPlayPage = () => {
       if (checkSub.length > 1 && checkSub[0] === 'isSubTask') {
         // 현재 subtask는 전투 이벤트에만 존재
         // 전투 이벤트 send
+        // 주사위 값 받아와서 모달 보여주기
+        getDicesHandler();
         client.current.send(
           `/fight/${gameCode}`,
           {},
@@ -430,8 +443,6 @@ const MultiPlayPage = () => {
             fightingEnermyCode: body.monster ? body.monster.code : null,
           })
         );
-        // 주사위 값 받아와서 모달 보여주기
-        getDicesHandler();
         setIsPromptFetching(true);
         setPrompt([
           { msg: `[${choice.actName}]을 선택하겠습니다.`, role: playerCode },
@@ -464,12 +475,14 @@ const MultiPlayPage = () => {
         }
 
         // event 상태가 있다면 실행 없다면? 안됨
-        if (event?.eventCode) getSubtaskHandler(event.eventCode, choice.subtask);
+        if (event?.eventCode)
+          getSubtaskHandler(event.eventCode, choice.subtask);
 
         return;
       }
 
       if (event && event.eventName == '전투') {
+        getDicesHandler();
         client.current.send(
           `/fight/${gameCode}`,
           {},
@@ -485,41 +498,42 @@ const MultiPlayPage = () => {
         setPrompt([
           { msg: `[${choice.actName}]을 선택하겠습니다.`, role: playerCode },
         ]);
-        getDicesHandler();
         return;
       }
 
       if (event && event.eventCode) {
-        const checkItemSub = event.eventCode.split("_");
+        const checkItemSub = event.eventCode.split('_');
 
         if (checkItemSub[0] === 'getItem') {
           // 획득 전송
           if (checkItemSub[1] === '1') {
             client.current.send(
-              `/item/`,
+              `/item`,
               {},
               JSON.stringify({
                 playerCode,
-                gameCode
+                gameCode,
               })
-            )
-          // 버린다 전송
+            );
+            // 버린다 전송
           } else {
             client.current.send(
               `/item/${checkItemSub[2]}`,
               {},
               JSON.stringify({
                 playerCode,
-                gameCode
+                gameCode,
               })
-            )
+            );
           }
+
+          return;
         }
       }
 
-
       // 위에서 return에 안걸렸다면 일반 선택지 선택한 경우
       // select 채널에 send 해주기
+      getDicesHandler();
       client.current.send(
         `/select/${gameCode}`,
         {},
@@ -532,7 +546,6 @@ const MultiPlayPage = () => {
       setPrompt([
         { msg: `[${choice.actName}]을 선택하겠습니다.`, role: playerCode },
       ]);
-      getDicesHandler();
     }
   };
 
@@ -578,13 +591,19 @@ const MultiPlayPage = () => {
 
   useEffect(() => {
     const initializeGame = async () => {
+      console.log('initializeGame');
       try {
+        // const res = await axios.get(
+        //   `http://70.12.247.95:8080/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
+        // );
         const res = await axios.get(
-          `http://70.12.247.95:8080/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
+          `${
+            import.meta.env.VITE_SERVER_URL
+          }/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
         );
 
         console.log(res.data);
-        
+
         res.data.forEach((e: { role: string; content: string }) => {
           const arr = e.content.split('\n').map((v) => {
             return { msg: v, role: e.role };
@@ -599,7 +618,11 @@ const MultiPlayPage = () => {
     if (client.current === null) {
       connectHandler();
       console.log(promptAtom);
-      if (promptAtom.length < 1) initializeGame();
+      if (promptAtom.length <= 1) {
+        db.getAll().then((value) => {
+          if (value.length === 0) initializeGame();
+        })
+      }
     }
 
     const initializeEvent = async () => {
