@@ -3,7 +3,7 @@ import { atom, useAtomValue, useSetAtom } from 'jotai';
 
 const initValue: IPromptHistory = {
   msg: '',
-  mine: false,
+  role: '',
 }
 
 const promptAtom = atom([[initValue]]);
