@@ -113,7 +113,15 @@ public class PromptServiceImpl implements PromptService {
             promptList.remove(0);
         }
 
-        Event selectedEvent = findEvent(game.getStoryCode(), responsePrompt);
+
+        Event selectedEvent = null;
+        if(game.getEventCnt() < 10 && game.getTurn() < 30) {  // 대화 30턴 미만, 이벤트 발생 횟수 10번 미만일 경우
+            selectedEvent = findEvent(game.getStoryCode(), responsePrompt);  // 이벤트 찾기
+        } else if(30 <= game.getTurn()) {  // 대화가 30턴을 넘었을 경우
+            selectedEvent = eventRepository.findById("EV-007")  // 마왕 발생
+                    .orElseThrow(() -> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
+        }
+
         EventCommandDto eventCommandDto = null;
         if (selectedEvent == null) {  // 이벤트 발생하지 않았을 경우
             eventRate += 0.05;  // 이벤트 발생 확률 5% 상승
