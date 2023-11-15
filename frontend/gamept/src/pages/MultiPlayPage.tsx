@@ -506,12 +506,9 @@ const MultiPlayPage = () => {
       }
 
       const checkItemSub = choice.actCode.split('_');
-      console.log(checkItemSub);
       if (checkItemSub[0] === 'getItem') {
-        console.log("getItem, ", checkItemSub);
         // 획득 전송
         if (checkItemSub[1] === '1') {
-          console.log("얻는다, ", checkItemSub);
           client.current.send(
             `/item`,
             {},
@@ -520,21 +517,9 @@ const MultiPlayPage = () => {
               gameCode,
             })
           );
-          // 버린다 전송
-        } else {
-          console.log("버린다, ", checkItemSub);
-          client.current.send(
-            `/item/${checkItemSub[2]}`,
-            {},
-            JSON.stringify({
-              playerCode,
-              gameCode,
-            })
-          );
         }
-
-          return;
-        }
+        return;
+      }
 
       // 위에서 return에 안걸렸다면 일반 선택지 선택한 경우
       // select 채널에 send 해주기
@@ -594,20 +579,27 @@ const MultiPlayPage = () => {
     });
   };
 
+  const deleteItem = (itemCode: string) => {
+    if (client.current) {
+      client.current.send(
+        `/item/${itemCode}`,
+        {},
+        JSON.stringify({
+          playerCode,
+          gameCode,
+        })
+      );
+    }
+  }
+
   useEffect(() => {
     const initializeGame = async () => {
-      console.log('initializeGame');
       try {
-        // const res = await axios.get(
-        //   `http://70.12.247.95:8080/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
-        // );
         const res = await axios.get(
           `${
             import.meta.env.VITE_SERVER_URL
           }/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
         );
-
-        console.log(res.data);
 
         res.data.forEach((e: { role: string; content: string }) => {
           const arr = e.content.split('\n').map((v) => {
@@ -622,8 +614,8 @@ const MultiPlayPage = () => {
 
     if (client.current === null) {
       connectHandler();
-      const itemList = localStorage.getItem("characterStatus");
-      console.log(itemList && JSON.parse(itemList));
+      const itemList = localStorage.getItem('characterStatus');
+
       if (itemList) {
         itemUpdateAtom(JSON.parse(itemList).itemList);
       }
@@ -631,7 +623,7 @@ const MultiPlayPage = () => {
       if (promptAtom.length <= 1) {
         db.getAll().then((value) => {
           if (value.length === 0) initializeGame();
-        })
+        });
       }
     }
 
@@ -659,7 +651,7 @@ const MultiPlayPage = () => {
       <div className="w-400 h-full flex flex-col justify-between items-start">
         <img src={Logo} alt="로고" className="w-[300px]" />
         <div className="w-full h-[400px] flex justify-center">
-          <SideInterface sendChat={sendChatHandler} chat={chat} />
+          <SideInterface sendChat={sendChatHandler} chat={chat} deleteItem={deleteItem} />
         </div>
         <ProfileInterface />
       </div>

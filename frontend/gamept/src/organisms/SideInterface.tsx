@@ -120,9 +120,9 @@ const SkillTab = () => {
     </div>
   );
 };
-const ItemTab = () => {
+const ItemTab = (props: { deleteItem: (itemCode:string) => void }) => {
   const itemListAtom = useItemListAtom();
-  const deleteItem = useDeleteItemAtom();
+  const deleteItemAtom = useDeleteItemAtom();
   const initList: {
     [key: string]: { img: string; desc: string; code: string; };
   } = {};
@@ -153,8 +153,8 @@ const ItemTab = () => {
     const updatedItemList = { ...itemList };
     const code = itemList[itemName].code;
     delete updatedItemList[itemName];
-    
-    deleteItem(code);
+    props.deleteItem(code);
+    deleteItemAtom(code);
     setItemList(updatedItemList);
   };
 
@@ -293,7 +293,7 @@ const SideInterface = (props: ISideInterface) => {
           color: '#2E130D',
         },
         아이템: {
-          content: <ItemTab />,
+          content: <ItemTab deleteItem={props.deleteItem} />,
           color: '#331812',
         },
         채팅: {
@@ -311,7 +311,7 @@ const SideInterface = (props: ISideInterface) => {
           color: '#381D17',
         },
         아이템: {
-          content: <ItemTab />,
+          content: <ItemTab deleteItem={props.deleteItem} />,
           color: '#3D221C',
         },
       };
