@@ -1,7 +1,6 @@
 package com.a405.gamept.game.dto.response;
 
-import com.a405.gamept.game.dto.command.DeathCheckCommandDto;
-import com.a405.gamept.game.entity.*;
+import com.a405.gamept.game.dto.command.PlayerStateCommandDto;
 import jakarta.validation.constraints.NotBlank;
 
 /**
@@ -17,7 +16,7 @@ public record FightResultGetResponseDto(
         String endYn,
         int playerHp
 ) {
-        public static FightResultGetResponseDto from(DeathCheckCommandDto deathCheckCommandDto){
-                return new FightResultGetResponseDto(deathCheckCommandDto.prompt(), deathCheckCommandDto.endYn(), deathCheckCommandDto.playerHp());
+        public static FightResultGetResponseDto from(PlayerStateCommandDto playerStateCommandDto){
+                return new FightResultGetResponseDto(playerStateCommandDto.prompt(), playerStateCommandDto.endYn(), playerStateCommandDto.playerHp());
         }
 }

@@ -15,11 +15,8 @@ import com.a405.gamept.play.repository.GameRedisRepository;
 import com.a405.gamept.play.repository.FightingEnermyRedisRepository;
 import com.a405.gamept.play.repository.PlayerRedisRepository;
 import com.a405.gamept.util.ValidateUtil;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -173,32 +170,33 @@ public class FightServiceImpl implements FightService {
         // 데미지를 주면 얼마나 데미지를 줬는지 몬스터의 피는 얼마나 남았는지
         // 공격 받았으면 얼마나 데미지를 받았고 피는 얼마나 남았는지
         int diceValue = game.getDiceValue();
-        DeathCheckCommandDto deathCheckCommandDto = new DeathCheckCommandDto("","",0, player);
+        PlayerStateCommandDto playerStateCommandDto = new PlayerStateCommandDto("", "", 0, 0);
+
         if(subtask.equals(Subtask.NONE)){
             if(actCode.equals("ACT-001")){
                 //기본공격
-                deathCheckCommandDto = deathCheckCommandDto.from(basicAttack(player, fightingEnermy,diceValue));
+                //playerStateCommandDto = playerStateCommandDto.from(basicAttack(player, fightingEnermy,diceValue));
             }else if(actCode.equals("ACT-004")){
                 //도망가기
-                deathCheckCommandDto = deathCheckCommandDto.from(runaway(player, fightingEnermy, actCode, diceValue));
+                //playerStateCommandDto = playerStateCommandDto.from(runaway(player, fightingEnermy, actCode, diceValue));
             }
         }else if(subtask.equals(Subtask.SKILL)){
-            String skillCode = fightResultGetCommandDto.actCode();
-            if(skillCode.equals("SKILL-004") || skillCode.equals("SKILL-008") || skillCode.equals("SKILL-012") || skillCode.equals("SKILL-016")){
-                //방어 스킬
-                deathCheckCommandDto = deathCheckCommandDto.from(defence(player, fightingEnermy, skillCode, diceValue));
-            }else{
-                //공격 스킬
-                deathCheckCommandDto = deathCheckCommandDto.from(skillAttack(player, fightingEnermy, skillCode, diceValue));
-            }
+//            String skillCode = fightResultGetCommandDto.actCode();
+//            if(skillCode.equals("SKILL-004") || skillCode.equals("SKILL-008") || skillCode.equals("SKILL-012") || skillCode.equals("SKILL-016")){
+//                //방어 스킬
+//                playerStateCommandDto = playerStateCommandDto.from(defence(player, fightingEnermy, skillCode, diceValue));
+//            }else{
+//                //공격 스킬
+//                playerStateCommandDto = playerStateCommandDto.from(skillAttack(player, fightingEnermy, skillCode, diceValue));
+//            }
         }else if(subtask.equals(Subtask.ITEM)){
             // 아이템 사용
-            String itemCode = fightResultGetCommandDto.actCode();
-            deathCheckCommandDto = deathCheckCommandDto.from(itemUse(player, fightingEnermy, itemCode));
+//            String itemCode = fightResultGetCommandDto.actCode();
+//            playerStateCommandDto = playerStateCommandDto.from(itemUse(player, fightingEnermy, itemCode));
         }
 
 
-        if(deathCheckCommandDto.playerHp() == 0){
+        if(playerStateCommandDto.playerHp() == 0){
             gameRedisRepository.deleteById(game.getCode());
         }else{
             game = game.toBuilder()
@@ -208,8 +206,8 @@ public class FightServiceImpl implements FightService {
             gameRedisRepository.save(game);
         }
 
-        player = deathCheckCommandDto.player();
-        if(deathCheckCommandDto.endYn().equals("Y")){
+        player = playerStateCommandDto.player();
+        if(playerStateCommandDto.endYn().equals("Y")){
             if (player.getHp() == 0){
                 playerRedisRepository.delete(player);
             }else{
@@ -219,7 +217,7 @@ public class FightServiceImpl implements FightService {
             playerRedisRepository.save(player);
         }
 
-        return FightResultGetResponseDto.from(deathCheckCommandDto);
+        return FightResultGetResponseDto.from(playerStateCommandDto);
     }
 
     public void clearStat(Player player){
@@ -241,7 +239,7 @@ public class FightServiceImpl implements FightService {
         playerRedisRepository.save(player);
     }
     //기본공격
-    public DeathCheckCommandDto basicAttack(Player player, FightingEnermy fightingEnermy, int diceValue){
+    public GameStateCommandDto basicAttack(Player player, FightingEnermy fightingEnermy, int diceValue){
         //log.info("기본 공격 시작");
         // 플레이어의 직업의 주 스탯에 따라 주사위 값과 합산한 값을 몬스터에 준다
         Job job = jobRepository.findById(player.getJobCode())
@@ -265,17 +263,17 @@ public class FightServiceImpl implements FightService {
 
         int playerHp = player.getHp();
 
-        DeathCheckCommandDto deathCheckCommandDto = gameOverCheck(player, fightingEnermy, playerHp, fightingEnermyHp);
-        result.append(deathCheckCommandDto.prompt());
-        playerHp = deathCheckCommandDto.playerHp();
-        endYn = deathCheckCommandDto.endYn();
-        player = deathCheckCommandDto.player();
+        PlayerStateCommandDto playerStateCommandDto = gameOverCheck(player, fightingEnermy, playerHp, fightingEnermyHp);
+        result.append(playerStateCommandDto.prompt());
+        playerHp = playerStateCommandDto.playerHp();
+        endYn = playerStateCommandDto.endYn();
+        player = playerStateCommandDto.player();
         log.info("공격 완료 후 경험치 양 : "+player.getExp());
-        return deathCheckCommandDto.of(result.toString(), endYn, playerHp,player);
+        return playerStateCommandDto.of(result.toString(), endYn, playerHp,player);
     }
 
     //도망가기
-    public DeathCheckCommandDto runaway(Player player, FightingEnermy fightingEnermy, String actCode, int diceValue){
+    public PlayerStateCommandDto runaway(Player player, FightingEnermy fightingEnermy, String actCode, int diceValue){
         //플레이어의 민첩 스텟에 따라 성공여부 확인
         //log.info("도망 시작");
         // 민첩에 영향을 받아 성공 여부 파악 후 진행
@@ -288,27 +286,27 @@ public class FightServiceImpl implements FightService {
         int bonusPoint = plusPoint(playerStat);
         int successStd = act.getSuccessStd();
 
-        DeathCheckCommandDto deathCheckCommandDto = null;
+        PlayerStateCommandDto playerStateCommandDto = null;
         if(successStd > diceValue+bonusPoint) {
             //실패
             result.append("나중에 보자!!!\n");
             result.append("적 : 그냥 지금 보자!!\n");
             result.append(player.getNickname()).append(" 은 적에게서 도망치려고 했지만 붙잡혀버렸다....\n");
-            deathCheckCommandDto = gameOverCheck(player, fightingEnermy, player.getHp(), fightingEnermy.getHp());
-            result.append(deathCheckCommandDto.prompt());
-            player = deathCheckCommandDto.player();
-            deathCheckCommandDto = deathCheckCommandDto.of(result.toString(), deathCheckCommandDto.endYn(), deathCheckCommandDto.playerHp(),player);
+            playerStateCommandDto = gameOverCheck(player, fightingEnermy, player.getHp(), fightingEnermy.getHp());
+            result.append(playerStateCommandDto.prompt());
+            player = playerStateCommandDto.player();
+            playerStateCommandDto = playerStateCommandDto.of(result.toString(), playerStateCommandDto.endYn(), playerStateCommandDto.playerHp(),player);
         }else {
             //성공
             result.append("두고 보자!!!\n");
             result.append(player.getNickname()).append(" 은 적에게서 성공적으로 도망쳤다!!!!");
-            deathCheckCommandDto = new DeathCheckCommandDto(result.toString(), "Y", player.getHp(), player);
+            playerStateCommandDto = new PlayerStateCommandDto(result.toString(), "Y", player.getHp(), player);
         }
 
-        return deathCheckCommandDto;
+        return playerStateCommandDto;
     }
     //스킬
-    public DeathCheckCommandDto skillAttack(Player player, FightingEnermy fightingEnermy, String skillCode, int diceValue){
+    public PlayerStateCommandDto skillAttack(Player player, FightingEnermy fightingEnermy, String skillCode, int diceValue){
         //log.info("공격 스킬 사용 시작");
         // 플레이어의 스탯과 주사위 값에 따라 스킬 성공여부 파악
         Skill skill = skillRepository.findById(skillCode)
@@ -372,16 +370,16 @@ public class FightServiceImpl implements FightService {
         //log.info("플레이어 HP 저장 후: "+player.getHp());
         fightingEnermy = savefightingEnermyHp(fightingEnermy, fightingEnermyHp);
 
-        DeathCheckCommandDto deathCheckCommandDto = gameOverCheck(player, fightingEnermy, playerHp, fightingEnermyHp);
-        result.append(deathCheckCommandDto.prompt());
-        playerHp = deathCheckCommandDto.playerHp();
-        String endYn = deathCheckCommandDto.endYn();
-        player = deathCheckCommandDto.player();
+        PlayerStateCommandDto playerStateCommandDto = gameOverCheck(player, fightingEnermy, playerHp, fightingEnermyHp);
+        result.append(playerStateCommandDto.prompt());
+        playerHp = playerStateCommandDto.playerHp();
+        String endYn = playerStateCommandDto.endYn();
+        player = playerStateCommandDto.player();
 
-        return new DeathCheckCommandDto(result.toString(), endYn, playerHp, player);
+        return new PlayerStateCommandDto(result.toString(), endYn, playerHp, player);
     }
 
-    public DeathCheckCommandDto defence(Player player, FightingEnermy fightingEnermy, String skillCode, int diceValue){
+    public PlayerStateCommandDto defence(Player player, FightingEnermy fightingEnermy, String skillCode, int diceValue){
         //log.info("방어 스킬 사용 시작");
         // 플레이어의 스탯과 주사위 값에 따라 스킬 성공여부 파악
         Skill skill = skillRepository.findById(skillCode)
@@ -475,7 +473,7 @@ public class FightServiceImpl implements FightService {
             deleteMonster(fightingEnermy);
         }
 
-        return new DeathCheckCommandDto(result.toString(), endYn, playerHp, player);
+        return new PlayerStateCommandDto(result.toString(), endYn, playerHp, player);
     }
 
     public SkillSuccessCommandDto skillSuccessCheck(Skill skill, Player player, int diceValue){
@@ -500,7 +498,7 @@ public class FightServiceImpl implements FightService {
         return new SkillSuccessCommandDto(extremeFlag, successFlag);
     }
 
-    public DeathCheckCommandDto gameOverCheck(Player player, FightingEnermy fightingEnermy, int playerHp, int fightingEnermyHp){
+    public PlayerStateCommandDto gameOverCheck(Player player, FightingEnermy fightingEnermy, int playerHp, int fightingEnermyHp){
         //log.info("공격, 공격 받은 후 데미지 계산하기 - 게임 오버 체크");
         StringBuilder result = new StringBuilder();
         String endYn = "N";
@@ -524,14 +522,14 @@ public class FightServiceImpl implements FightService {
         }else {
             // 공격 받아야함
             //log.info("공격 받기 전 : "+player.getHp());
-            DeathCheckCommandDto deathCheckCommandDto = attacked(player, fightingEnermy);
-            result.append(deathCheckCommandDto.prompt());
-            playerHp = deathCheckCommandDto.playerHp();
-            endYn = deathCheckCommandDto.endYn();
-            player = deathCheckCommandDto.player();
+            PlayerStateCommandDto playerStateCommandDto = attacked(player, fightingEnermy);
+            result.append(playerStateCommandDto.prompt());
+            playerHp = playerStateCommandDto.playerHp();
+            endYn = playerStateCommandDto.endYn();
+            player = playerStateCommandDto.player();
         }
 
-        return new DeathCheckCommandDto(result.toString(), endYn, playerHp, player);
+        return new PlayerStateCommandDto(result.toString(), endYn, playerHp, player);
     }
 
     public int plusPoint(int playerMainStat){
@@ -551,7 +549,7 @@ public class FightServiceImpl implements FightService {
     }
 
     //몬스터 공격
-    public DeathCheckCommandDto attacked(Player player, FightingEnermy fightingEnermy){
+    public PlayerStateCommandDto attacked(Player player, FightingEnermy fightingEnermy){
         //log.info("몬스터의 공격을 받기 시작했다.");
         StringBuilder result = new StringBuilder();
 
@@ -571,7 +569,7 @@ public class FightServiceImpl implements FightService {
             deleteMonster(fightingEnermy);
         }
 
-        return new DeathCheckCommandDto(result.toString(), endYn, playerHp, player);
+        return new PlayerStateCommandDto(result.toString(), endYn, playerHp, player);
     }
     public Player savePlayerHp(Player player, int playerHp){
         player = player.toBuilder().hp(playerHp).build();
@@ -585,7 +583,7 @@ public class FightServiceImpl implements FightService {
     }
 
     //아이템 사용
-    public DeathCheckCommandDto itemUse(Player player, FightingEnermy fightingEnermy, String itemCode){
+    public PlayerStateCommandDto itemUse(Player player, FightingEnermy fightingEnermy, String itemCode){
         // 플레이어가 가진 아이템 목록에서 아이템을 사용
         log.info("아이템 사용 시작");
         StringBuilder result = new StringBuilder();
@@ -613,7 +611,7 @@ public class FightServiceImpl implements FightService {
 
         int playerHp = player.getHp();
         String endYn = "Y";
-        DeathCheckCommandDto deathCheckCommandDto = new DeathCheckCommandDto("", endYn, playerHp, player);
+        PlayerStateCommandDto playerStateCommandDto = new PlayerStateCommandDto("", endYn, playerHp, player);
 
         //아이템 종류 별 발동
         if(itemCase.equals(ItemCase.STAT)){
@@ -644,7 +642,7 @@ public class FightServiceImpl implements FightService {
             playerRedisRepository.save(player);
 
             result.append("전투가 종료까지 효과가 지속됩니다...");
-            deathCheckCommandDto = gameOverCheck(player, fightingEnermy, player.getHp(), fightingEnermy.getHp());
+            playerStateCommandDto = gameOverCheck(player, fightingEnermy, player.getHp(), fightingEnermy.getHp());
         } else if(itemCase.equals(ItemCase.DAMAGE)){
             log.info("데미지 주는 아이템");
             int damage = itemEffectValue;
@@ -668,7 +666,7 @@ public class FightServiceImpl implements FightService {
             result.append(player.getNickname()).append(" 은/는 적에게 ").append(damage).append("의 피해를 입혔다!\n");
             result.append("적의 체력 : ").append(fightingEnermyHp);
 
-            deathCheckCommandDto = gameOverCheck(player, fightingEnermy, player.getHp(), fightingEnermyHp);
+            playerStateCommandDto = gameOverCheck(player, fightingEnermy, player.getHp(), fightingEnermyHp);
         } else if(itemCase.equals(ItemCase.HEAL)){
             int playerMaxHp = player.getStat().get("STAT-001") * 10;
             playerHp = Math.min(playerMaxHp, player.getHp() + itemEffectValue);
@@ -681,7 +679,7 @@ public class FightServiceImpl implements FightService {
             }
             result.append("현재 체력 : ").append(playerHp).append("\n");
             player = savePlayerHp(player, playerHp);
-            deathCheckCommandDto = gameOverCheck(player, fightingEnermy, player.getHp(), fightingEnermy.getHp());
+            playerStateCommandDto = gameOverCheck(player, fightingEnermy, player.getHp(), fightingEnermy.getHp());
         } else if (itemCase.equals(ItemCase.ESCAPE)) {
             result.append("연막탄 사용!!!\n");
             result.append(player.getNickname()).append(" 은/는 ").append(itemName).append("을/를 사용했다!\n");
@@ -689,9 +687,9 @@ public class FightServiceImpl implements FightService {
             endYn = "Y";
         }
 
-        result.append(deathCheckCommandDto.prompt());
-        playerHp = deathCheckCommandDto.playerHp();
-        endYn = deathCheckCommandDto.endYn();
+        result.append(playerStateCommandDto.prompt());
+        playerHp = playerStateCommandDto.playerHp();
+        endYn = playerStateCommandDto.endYn();
 
         player = player.toBuilder()
                 .itemCodeList(itemCodeList)
@@ -699,7 +697,7 @@ public class FightServiceImpl implements FightService {
                 .build();
         playerRedisRepository.save(player);
 
-        return deathCheckCommandDto.of(result.toString(), endYn, playerHp, player);
+        return playerStateCommandDto.of(result.toString(), endYn, playerHp, player);
     }
 
     //경험치 획득 처리
