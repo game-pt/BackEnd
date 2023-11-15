@@ -25,7 +25,6 @@ const SelectGameStory = (props: ISelectGameStory) => {
   const handleSelectStory = (storyCode: string) => {
     const setGameCodeFromAPI = async () => {
       const gameCode = (await fetchPostGame(storyCode)).code;
-      console.log('게임코드뭐임', gameCode);
       setGameCode(gameCode);
       setGCode(gameCode);
       navigate('/createCharacter');

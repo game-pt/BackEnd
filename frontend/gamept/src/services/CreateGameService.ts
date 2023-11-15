@@ -7,7 +7,6 @@ export const fetchGetStories = async () => {
   const url = api + '/game/story';
   try {
     const response = await axios.get(url);
-    console.log('스토리', response);
     return response.data;
   } catch (err) {
     console.log(err, '스토리 요청 실패');
@@ -17,7 +16,6 @@ export const fetchGetStories = async () => {
 export const fetchPostGame = async (storyCode: string) => {
   // 게임 생성하는 post 요청
   const url = api + '/game';
-  console.log('쏘토리코뜨', storyCode);
   try {
     const response = await axios.post(url, { storyCode });
     return response.data;
