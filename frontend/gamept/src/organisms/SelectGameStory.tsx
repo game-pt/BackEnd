@@ -26,12 +26,6 @@ const SelectGameStory = (props: ISelectGameStory) => {
   const { mutate, data, isLoading, isSuccess } = useMutation(fetchPostGame);
   const handleSelectStory = (storyCode: string) => {
     mutate(storyCode, {
-      onSuccess: (res) => {
-        console.log('게임코드뭐임', res);
-        // setGameCode(res);
-        // setGCode(res);
-        // navigate('/createCharacter');
-      },
       onError: (err) => console.log('에러', err),
     });
     // const setGameCodeFromAPI = async () => {

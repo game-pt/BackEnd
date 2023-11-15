@@ -19,7 +19,7 @@ export const getImgCode = (
   raceCode: string,
   jobCode?: string
 ) => {
-  console.log('코드확인', gender, raceCode, jobCode);
+  // console.log('코드확인', gender, raceCode, jobCode);
 
   let imgCode = raceType[raceCode] + '_';
   // console.log('종족추가', imgCode);
