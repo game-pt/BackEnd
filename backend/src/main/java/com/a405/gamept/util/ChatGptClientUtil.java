@@ -154,7 +154,7 @@ public class ChatGptClientUtil {
 
         // 이벤트 프롬프트 삽입
         sendList.set(sendList.size() - 1, sendList.get(sendList.size() - 1).toBuilder()
-                .content(eventPrompt)
+                .content(sendList.get(sendList.size() - 1).getContent() + "\n" + eventPrompt)
                 .build());
 
         Map<String, Object> map = new HashMap<>();
