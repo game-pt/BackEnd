@@ -135,7 +135,7 @@ public class ChatGptClientUtil {
         return null;
     }
 
-    public String getChatGPTResult(String memory, List<Prompt> promptList, String eventPropmpt) {
+    public String getChatGPTResult(String memory, List<Prompt> promptList, String eventPrompt) {
         List<Prompt> sendList = new ArrayList<>();
 
         // 메모리 프롬프트 삽입
@@ -154,7 +154,7 @@ public class ChatGptClientUtil {
 
         // 이벤트 프롬프트 삽입
         sendList.set(sendList.size() - 1, sendList.get(sendList.size() - 1).toBuilder()
-                .content(eventPropmpt)
+                .content(eventPrompt)
                 .build());
 
         Map<String, Object> map = new HashMap<>();
