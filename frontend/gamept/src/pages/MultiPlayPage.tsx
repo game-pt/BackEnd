@@ -622,6 +622,11 @@ const MultiPlayPage = () => {
 
     if (client.current === null) {
       connectHandler();
+      const itemList = localStorage.getItem("characterStatus");
+      console.log(itemList && JSON.parse(itemList));
+      if (itemList) {
+        itemUpdateAtom(JSON.parse(itemList).itemList);
+      }
       console.log(promptAtom);
       if (promptAtom.length <= 1) {
         db.getAll().then((value) => {

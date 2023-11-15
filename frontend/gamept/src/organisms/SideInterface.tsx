@@ -10,7 +10,7 @@ import ChattingTab from '@/atoms/ChattingTab';
 import { ISideInterface } from '@/types/components/SideInterface.types';
 import { TbNavigation } from "react-icons/tb";
 import { GiCardDiscard } from "react-icons/gi";
-import { useStatAtom, useStatObjectAtom, useStatUpAtom } from '@/jotai/CharacterStatAtom';
+import { useDeleteItemAtom, useItemListAtom, useStatAtom, useStatObjectAtom, useStatUpAtom } from '@/jotai/CharacterStatAtom';
 // import { useUpdateStatAtom } from '@/jotai/CharacterStatAtom';
 import { useAtomValue } from 'jotai';
 import { characterStatusAtom } from '@/jotai/CharacterStatAtom';
@@ -121,26 +121,43 @@ const SkillTab = () => {
   );
 };
 const ItemTab = () => {
+  const itemListAtom = useItemListAtom();
+  const deleteItem = useDeleteItemAtom();
+  const initList: {
+    [key: string]: { img: string; desc: string; code: string; };
+  } = {};
+
+  itemListAtom.forEach(e => {
+    initList[e.name] = {
+      img: `${e.name}.png`,
+      desc: e.desc,
+      code: e.code
+    }
+  })
+
+  // const [itemList, setItemList] = useState<{
+  //   [key: string]: { img: string; desc: string };
+  // }>({
+  //   '세계수의 이파리': {
+  //     img: '세계수의 이파리.png',
+  //     desc: '마시면 체력+10.',
+  //   },
+  //   '암기빵': {
+  //     img: '암기빵.png',
+  //     desc: '가지고 있으면 공격력+10.',
+  //   },
+  //   '세계수의 선물': {
+  //     img: '세계수의 선물.png',
+  //     desc: '가지고 있으면 공격력+1.',
+  //   },
+  //   '포츈 붐바': {
+  //     img: '포츈 붐바.png',
+  //     desc: '멀리보기 가능.',
+  //   },
+  // });
   const [itemList, setItemList] = useState<{
-    [key: string]: { img: string; desc: string };
-  }>({
-    '세계수의 이파리': {
-      img: '세계수의 이파리.png',
-      desc: '마시면 체력+10.',
-    },
-    '암기빵': {
-      img: '암기빵.png',
-      desc: '가지고 있으면 공격력+10.',
-    },
-    '세계수의 선물': {
-      img: '세계수의 선물.png',
-      desc: '가지고 있으면 공격력+1.',
-    },
-    '포츈 붐바': {
-      img: '포츈 붐바.png',
-      desc: '멀리보기 가능.',
-    },
-  });
+    [key: string]: { code: string; img: string; desc: string };
+  }>(initList);
 
   const [hoveredItem, setHoveredItem] = useState('');
 
@@ -154,7 +171,9 @@ const ItemTab = () => {
 
   const handleItemDelete = (itemName: string) => {
     const updatedItemList = { ...itemList };
+    const code = itemList[itemName].code;
     delete updatedItemList[itemName];
+    deleteItem(code);
     setItemList(updatedItemList);
   };
 
