@@ -19,6 +19,7 @@ export const characterStatusAtom = atom<ICharacterStatusAtom>({
   job: '',
   gender: '',
   imgCode: '',
+  statPoint: 0,
   level: 0,
   hp: 0,
   exp: 0,
@@ -49,6 +50,7 @@ export const initCharacterStatusAtom = atom(
       race: status.race.name,
       job: status.job.name,
       imgCode: '',
+      statPoint: 3, // 테스트용
       hp: status.hp,
       level: status.level,
       exp: status.exp,
@@ -109,7 +111,7 @@ export const statControlAtom = atom(
   (
     get,
     set,
-    changedStat: Array<{ statName: string; statValue: number; code: string }>
+    changedStat: Array<{ statName: string; statValue: number; statCode: string }>
   ) => {
     // 갱신할 객체
     const nextStatus = {
@@ -119,12 +121,8 @@ export const statControlAtom = atom(
         statName: string;
         statValue: number;
         statCode: string;
-      }>((element) => ({
-        statName: element.statName,
-        statValue: element.statValue,
-        statCode: element.code,
-      })),
-    };
+      }>((element) => ({ ...element })),
+    }
     // 로컬에 갱신
     setLocal(nextStatus);
     set(characterStatusAtom, nextStatus);
@@ -213,3 +211,38 @@ const deleteItem = atom(null, (get, set, usedItemCode: string) => {
 export const useItemListAtom = () => useAtomValue(controlItemListAtom);
 export const useUpdateItemListAtom = () => useSetAtom(controlItemListAtom);
 export const useDeleteItemAtom = () => useSetAtom(deleteItem);
+
+
+
+export const statObjectAtom = atom(
+  (get) => { 
+    return {
+      statList: get(characterStatusAtom).statList,
+      statPoint: get(characterStatusAtom).statPoint
+    }
+  },
+  (
+    get,
+    set,
+    changedStat: {statPoint:number;
+      statList:
+      Array<{ statName: string; statValue: number; statCode: string }>}
+  ) => {
+    // 갱신할 객체
+    const nextStatus = {
+      ...get(characterStatusAtom),
+      statPoint: changedStat.statPoint,
+      statList: changedStat.statList.map<{
+        statName: string;
+        statValue: number;
+        statCode: string;
+      }>((element) => ({ ...element })),
+    }
+    // 로컬에 갱신
+    setLocal(nextStatus);
+    set(characterStatusAtom, nextStatus);
+  }
+);
+
+export const useStatObjectAtom = () => useAtomValue(statObjectAtom);
+export const useStatUpAtom = () => useSetAtom(statObjectAtom);
