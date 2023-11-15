@@ -285,10 +285,7 @@ public class GameServiceImpl implements GameService {
 
         // 다이스 값 가져오기
         int diceValue = game.getDiceValue();
-        game = game.toBuilder()
-                .diceValue(0)
-                .build();
-        gameRedisRepository.save(game);
+        log.info("주사위 값 : "+diceValue);
 
         //보너스 스탯
         String statCode = act.getStat().getCode();
@@ -307,6 +304,8 @@ public class GameServiceImpl implements GameService {
         int successStd = act.getSuccessStd();
         int playerStd = (diceValue + plusPoint);
 
+        log.info("성공 기준치 : "+successStd);
+        log.info("극적 기준치 : "+extremePoint);
         //성공, 실패에 따른 진행
         StringBuilder prompt = new StringBuilder();
         //String eventName = act.getEvent().getName();
@@ -342,6 +341,7 @@ public class GameServiceImpl implements GameService {
         // 아이템 획득
         String itemYn = "N";
         String gameOverYn = "N";
+        String itemCode = "";
         if (tmp == null) {
             //죽음
             playerRedisRepository.delete(player);
@@ -352,17 +352,20 @@ public class GameServiceImpl implements GameService {
             dead.append("눈앞이 깜깜해진다.....\n");
             gameOverYn = "Y";
         } else {
-            System.out.println("act:______________" + act);
             Event event = act.getEvent();
-            System.out.println("EVENT:______________" + event);
             if ((event.getItemYn() == 'Y' && flag) || event.getCode().equals("EV-005")) {
                 itemYn = "Y";
-                promptResult.append("\n").append(getItem(game.getStoryCode(), player));
+                ItemRandomGetCommandDto itemRandomGetCommandDto = getItem(game.getStoryCode(), player);
+                promptResult.append("\n").append(itemRandomGetCommandDto.prompt());
+                itemCode = itemRandomGetCommandDto.itemCode();
             }
             promptResult.append("\n").append(tmp);
         }
-
-        return ActResultGetResponseDto.of(actResultGetCommandDto.gameCode(), promptResult.toString(), itemYn, gameOverYn);
+        game = game.toBuilder()
+                .diceValue(0)
+                .build();
+        gameRedisRepository.save(game);
+        return ActResultGetResponseDto.of(actResultGetCommandDto.gameCode(), promptResult.toString(), itemYn, itemCode, gameOverYn);
     }
 
     public String statChane(Player player, Game game, Act act, int bonusPoint) {
@@ -420,7 +423,7 @@ public class GameServiceImpl implements GameService {
         return result.toString();
     }
 
-    public String getItem(String storyCode, Player player) {
+    public ItemRandomGetCommandDto getItem(String storyCode, Player player) {
         //랜덤 아이템 뽑기
         List<Item> itemList = itemRepository.findAllByStoryCode(storyCode)
                 .orElse(null);
@@ -437,6 +440,6 @@ public class GameServiceImpl implements GameService {
         playerRedisRepository.save(player);
         result.append("< ").append(newItem.getName()).append(" > ").append("이/가 나타났다.");
 
-        return result.toString();
+        return ItemRandomGetCommandDto.of(newItem.getCode(), result.toString());
     }
 }
