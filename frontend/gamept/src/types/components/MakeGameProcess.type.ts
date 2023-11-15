@@ -74,9 +74,9 @@ export interface IPlayerStatusResponse {
   hp: 70;
   exp: 0;
   statList: Array<{
-    code: string;
-    name: string;
-    value: number;
+    statCode: string;
+    statName: string;
+    statValue: number;
   }>;
   itemList: Array<{
     code: string;
