@@ -5,8 +5,18 @@ import PromptInterface from '@/organisms/PromptInterface';
 import TextButton from '@/atoms/TextButton';
 import ProfileInterface from '@/organisms/ProfileInterface';
 // import './SinglePlay.css'; // CSS 파일 가져오기
-
+import { useGameCode } from '@/hooks/useGameCode';
+import { usePlayerCode } from '@/hooks/usePlayerCode';
 const SinglePlayPage = () => {
+  const [gameCode] = useGameCode();
+  const [playerCode] = usePlayerCode();
+
+  /////////////////////////////////////////////////////////////////////////////
+  // 코드 이식 후 아래 빌드 에러 방지용 코드 제거
+  gameCode;
+  playerCode;
+  ///////////////////////////////////////////////////////////////////////////////
+
   return (
     <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary">
       <div className="w-400 h-full flex flex-col justify-between items-start">
@@ -23,7 +33,7 @@ const SinglePlayPage = () => {
             onClickEvent={() => console.log('진짜 나가요?')}
           />
         </div>
-        <PromptInterface gameType='single' isFetching={false} event={null} />
+        <PromptInterface gameType="single" isFetching={false} event={null} />
       </div>
     </div>
   );
