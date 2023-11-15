@@ -57,7 +57,7 @@ const EndingPage = () => {
             const prompt = body.content.split('\n').map((e: string) => {
               return { msg: e, role: body.role };
             });
-            
+
             setPromptData([prompt]);
             setIsFetching(false);
           }
@@ -80,11 +80,10 @@ const EndingPage = () => {
       connectHandler();
     } else {
       client.current.send(
-        `/ending`,
+        `/ending/${gameCode}`,
         {},
         JSON.stringify({
           playerCode,
-          gameCode
         })
       )
     }
