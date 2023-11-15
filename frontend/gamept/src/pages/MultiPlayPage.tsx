@@ -42,8 +42,8 @@ const MultiPlayPage = () => {
   const promptAtom = usePromptAtom();
   const itemUpdateAtom = useUpdateItemListAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
-  const gameCode = 'xMpyIX';
-  const playerCode = 'xMpyIX-U1q55L';
+  const gameCode = 'mwAOIT';
+  const playerCode = 'mwAOIT-0lu9wx';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
@@ -108,6 +108,7 @@ const MultiPlayPage = () => {
           }
 
           if (body.gameOverYn === 'Y') {
+            console.log("Game Over ==== Y");
             // 종료 API 호출
             const ChoiceFromDB = (await db.getAll())
               .filter((v) => v.choice !== undefined)
@@ -253,7 +254,23 @@ const MultiPlayPage = () => {
 
           // setHP
           // HP 상태 값 변화
-          // body.playerHp
+          if (body.playerHp <= 0) {
+            console.log("Game Over ==== Y");
+            // 종료 API 호출
+            const ChoiceFromDB = (await db.getAll())
+              .filter((v) => v.choice !== undefined)
+              .map((e) => e);
+
+            // 직전 선택지 인덱스 디비에 저장
+            if (ChoiceFromDB.length > 0) {
+              for (let i = 0; i < ChoiceFromDB.length; i++) {
+                await db.deleteRecord(ChoiceFromDB[i].id);
+              }
+            }
+            setEvent(null);
+            navigate('/ending');
+            return;
+          }
         },
         {}
       );
@@ -274,19 +291,6 @@ const MultiPlayPage = () => {
             setPrompt(prompt);
             setIsPromptFetching(false);
           }
-
-          // 프롬포트가 있다면
-          // if (body.promptList !== undefined) {
-          //   // 원본 데이터와 프롬프트 구분
-          //   const prompt = body.promptList
-          //     .content.split('\n')
-          //     .map((e: string) => {
-          //       return { msg: e, role: body.promptList.role };
-          //     });
-
-          //   setPrompt(prompt);
-          //   setIsPromptFetching(false);
-          // }
 
           // Event가 있다면
           if (body.event !== null) {
@@ -386,6 +390,12 @@ const MultiPlayPage = () => {
         })
       );
     }
+
+    setTimeout(() => {
+      console.log('주사위 값 전송 딜레이');
+    }, 1000);
+
+    return;
   };
 
   const sendPromptHandler = (text: string) => {

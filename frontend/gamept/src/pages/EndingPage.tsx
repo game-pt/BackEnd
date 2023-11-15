@@ -10,21 +10,91 @@ import Prompt from '@/atoms/Prompt';
 import Logo from '@/atoms/Logo';
 import SelectButton from '@/atoms/SelectButton';
 import { useNavigate } from 'react-router-dom';
+import { useIndexedDB } from 'react-indexed-db-hook';
+import { useEffect, useRef, useState } from 'react';
+import { CompatClient, Stomp } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import { useGameCode } from '@/hooks/useGameCode';
+import { usePlayerCode } from '@/hooks/usePlayerCode';
+import { IPromptHistory } from '@/types/components/Prompt.types';
 
 const EndingPage = () => {
+  const db = useIndexedDB('prompt');
+  const client = useRef<CompatClient | null>(null);
+  const navigate = useNavigate();
+  const [gameCode] = useGameCode();
+  const [playerCode] = usePlayerCode();
+  const [promptData, setPromptData] = useState<IPromptHistory[][] | null>(null);
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+
+  // 웹소캣 객체 생성
+  const connectHandler = () => {
+    const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
+    // const sock = new SockJS(`http://70.12.247.95:8080/ws`);
+    client.current = Stomp.over(() => sock);
+
+    // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
+    // client.current.debug = () => null;
+
+    client.current.connect({}, () => {
+      if (client.current == null) {
+        console.log('Error');
+        return;
+      }
+
+      client.current.onStompError = function (frame) {
+        console.log('Broker reported error: ' + frame.headers['message']);
+        console.log('Additional details: ' + frame.body);
+      };
+
+      // 엔딩 프롬프트 구독
+      client.current.subscribe(
+        `/topic/ending/${gameCode}`,
+        async (message) => {
+          const body = JSON.parse(message.body);
+
+          if (body.content !== undefined && body.role !== undefined) {
+            const prompt = body.content.split('\n').map((e: string) => {
+              return { msg: e, role: body.role };
+            });
+            
+            setPromptData([prompt]);
+            setIsFetching(false);
+          }
+        },
+        {}
+      );
+    });
+  };
+
   const handleFinishGame = () => {
     localStorage.removeItem('gameCode');
     localStorage.removeItem('playerCode');
     // 인덱스db 초기화
-
+    db.clear();
     navigate('/createGame');
   };
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (client.current === null) {
+      connectHandler();
+    } else {
+      client.current.send(
+        `/ending`,
+        {},
+        JSON.stringify({
+          playerCode,
+          gameCode
+        })
+      )
+    }
+  }, []);
+
   return (
     <div className="font-hol relative w-screen h-screen mx-auto bg-backgroundDeep">
       <div className="text-primary flex flex-col items-center w-full h-full gap-10 pt-10">
         <Logo className="relative mx-auto" />
-        <Prompt data={null} type="ending" isFetching={false} />
+        <Prompt data={promptData} type="ending" isFetching={isFetching} />
         <SelectButton
           height="70px"
           onClickEvent={handleFinishGame}
