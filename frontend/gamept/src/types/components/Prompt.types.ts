@@ -42,6 +42,7 @@ export interface IGetPromptType {
   gameCode: string;
   // promptList: IPromptType;
   itemYn: string | null;
+  itemCode: string | null;
   monster: IMonsterType | null;
   event: IEventType;
 }

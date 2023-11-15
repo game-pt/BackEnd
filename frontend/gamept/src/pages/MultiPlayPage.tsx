@@ -35,8 +35,8 @@ const MultiPlayPage = () => {
   const promptAtom = usePromptAtom();
   const itemUpdateAtom = useUpdateItemListAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
-  const gameCode = '8FeFnT';
-  const playerCode = '8FeFnT-sEfKgh';
+  const gameCode = 'ejTyxw';
+  const playerCode = 'ejTyxw-Fd55de';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
@@ -48,8 +48,8 @@ const MultiPlayPage = () => {
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
-    // const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
-    const sock = new SockJS(`http://70.12.247.95:8080/ws`);
+    const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
+    // const sock = new SockJS(`http://70.12.247.95:8080/ws`);
     client.current = Stomp.over(() => sock);
 
     // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
@@ -123,12 +123,12 @@ const MultiPlayPage = () => {
             // 얻는다 버린다 두가지 선택지로 setEvent 해주기
             setEvent({ acts: [
               {
-                actCode: 'getItem_1',
+                actCode: `getItem_1_${body.itemCode}`,
                 actName: '얻는다.',
                 subtask: "NONE"
               },
               {
-                actCode: 'getItem_2',
+                actCode: `getItem_2_${body.itemCode}`,
                 actName: '버린다.',
                 subtask: "NONE"
               }
@@ -493,6 +493,7 @@ const MultiPlayPage = () => {
         const checkItemSub = event.eventCode.split("_");
 
         if (checkItemSub[0] === 'getItem') {
+          // 획득 전송
           if (checkItemSub[1] === '1') {
             client.current.send(
               `/item/`,
@@ -502,8 +503,16 @@ const MultiPlayPage = () => {
                 gameCode
               })
             )
+          // 버린다 전송
           } else {
-
+            client.current.send(
+              `/item/${checkItemSub[2]}`,
+              {},
+              JSON.stringify({
+                playerCode,
+                gameCode
+              })
+            )
           }
         }
       }
