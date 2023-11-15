@@ -50,7 +50,7 @@ const MultiplayModal = (props: IMultiPlayModal) => {
           />
         </div>
         <div>
-          <div className="text-primary text-28 my-10 caret-transparent ">
+          <div className="text-primary text-28 my-10 caret-transparent text-center">
             멀티 플레이 참여
           </div>
           <Input
