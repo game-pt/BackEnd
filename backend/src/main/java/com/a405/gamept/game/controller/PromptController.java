@@ -61,7 +61,8 @@ public class PromptController {
 
     @PostMapping("/send/{gameCode}")
     public void sendPrompt(@Valid @PathVariable String gameCode, @Valid @RequestBody PromptResultGetRequestDto promptResultGetRequestDto) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
+        PromptResultGetCommandDto promptResultGetCommandDto = PromptResultGetCommandDto.from(promptResultGetRequestDto, gameCode);
+        PromptGetResponseDto promptGetResponseDto = promptService.setUserPrompt(promptResultGetCommandDto);
 
         promptService.sendPrompt(gameCode, promptResultGetRequestDto.prompt());
     }

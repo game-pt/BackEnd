@@ -61,16 +61,17 @@ public class PromptServiceImpl implements PromptService {
 
         PromptGetResponseDto promptGetResponseDto = PromptGetResponseDto.builder()
                 .role(player.getCode())
-                .content(promptResultGetCommandDto.prompt()
-                        .replace("나는", player.getNickname() + "은(는)")
-                        .replace("난 ", player.getNickname() + "은(는) ")
-                        .replace("내가", player.getNickname() + "이(가)")
-                        .replace("나의", player.getNickname() + "의")
-                        .replace("나도", player.getNickname() + "도")
-                        .replace("나랑", player.getNickname() + "랑")
-                        .replace("나와", player.getNickname() + "와(과)")
-                        .replace("나만", player.getNickname() + "만")
-                )
+                .content(player.getNickname() + ": " + promptResultGetCommandDto.prompt())
+//                .content(promptResultGetCommandDto.prompt()
+//                        .replace("나는", player.getNickname() + "은(는)")
+//                        .replace("난 ", player.getNickname() + "은(는) ")
+//                        .replace("내가", player.getNickname() + "이(가)")
+//                        .replace("나의", player.getNickname() + "의")
+//                        .replace("나도", player.getNickname() + "도")
+//                        .replace("나랑", player.getNickname() + "랑")
+//                        .replace("나와", player.getNickname() + "와(과)")
+//                        .replace("나만", player.getNickname() + "만")
+//                )
                 .build();  // 클라이언트에 보낼 플레이어 입력 프롬프트
         ValidateUtil.validate(promptGetResponseDto);
 
@@ -261,13 +262,13 @@ public class PromptServiceImpl implements PromptService {
     }
 
     @Override
-    public void sendPrompt(String gameCode, String prompt) throws JsonProcessingException {
+    public void sendPrompt(String gameCode, String inputPrompt) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
         Game game = gameRedisRepository.findById(gameCode)
                         .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
         SseEmitter emitter = emitterRepository.get(gameCode);
-        String Output = chatGptClientUtil.enterPromptForSse(emitter, prompt, game.getMemory(), game.getPromptList());
+        String outputPrompt = chatGptClientUtil.enterPromptForSse(emitter, inputPrompt, game.getMemory(), game.getPromptList());
     }
 
     private SseEmitter createEmitter(String gameCode) {
