@@ -285,10 +285,7 @@ public class GameServiceImpl implements GameService {
 
         // 다이스 값 가져오기
         int diceValue = game.getDiceValue();
-        game = game.toBuilder()
-                .diceValue(0)
-                .build();
-        gameRedisRepository.save(game);
+        log.info("주사위 값 : "+diceValue);
 
         //보너스 스탯
         String statCode = act.getStat().getCode();
@@ -307,6 +304,8 @@ public class GameServiceImpl implements GameService {
         int successStd = act.getSuccessStd();
         int playerStd = (diceValue + plusPoint);
 
+        log.info("성공 기준치 : "+successStd);
+        log.info("극적 기준치 : "+extremePoint);
         //성공, 실패에 따른 진행
         StringBuilder prompt = new StringBuilder();
         //String eventName = act.getEvent().getName();
@@ -362,7 +361,10 @@ public class GameServiceImpl implements GameService {
             }
             promptResult.append("\n").append(tmp);
         }
-
+        game = game.toBuilder()
+                .diceValue(0)
+                .build();
+        gameRedisRepository.save(game);
         return ActResultGetResponseDto.of(actResultGetCommandDto.gameCode(), promptResult.toString(), itemYn, itemCode, gameOverYn);
     }
 
