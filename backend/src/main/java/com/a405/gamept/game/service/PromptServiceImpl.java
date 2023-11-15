@@ -6,6 +6,7 @@ import com.a405.gamept.game.dto.response.PromptGetResponseDto;
 import com.a405.gamept.game.dto.response.PromptResultGetResponseDto;
 import com.a405.gamept.game.entity.Act;
 import com.a405.gamept.game.entity.Event;
+import com.a405.gamept.game.repository.EmitterRepository;
 import com.a405.gamept.game.repository.EventRepository;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.game.util.exception.GameException;
@@ -17,13 +18,19 @@ import com.a405.gamept.play.repository.PlayerRedisRepository;
 import com.a405.gamept.util.ChatGptClientUtil;
 import com.a405.gamept.util.KoreanSummarizerUtil;
 import com.a405.gamept.util.ValidateUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static io.lettuce.core.RedisURI.DEFAULT_TIMEOUT;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +40,10 @@ public class PromptServiceImpl implements PromptService {
     private final GameRedisRepository gameRedisRepository;
     private final EventRepository eventRepository;
     private final PlayerRedisRepository playerRedisRepository;
+    private final EmitterRepository emitterRepository;
     private final ChatGptClientUtil chatGptClientUtil;
     private final int MAX_PREV_PROMPT_NUMBER = 6;
+    private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000;
 
     @Override
     @Transactional(readOnly = true)
@@ -217,6 +226,103 @@ public class PromptServiceImpl implements PromptService {
         }
 
         return promptGetResponseDtoList;
+    }
+
+    /**
+     * 클라이언트가 구독을 위해 호출하는 메서드
+     *
+     * @param gameCode
+     * @return
+     */
+    @Override
+    @Transactional
+    public SseEmitter subscribeEmitter(String gameCode) throws JsonProcessingException {
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        Game game = gameRedisRepository.findById(gameCode)
+//                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+//        if (game.getMappedEmitter() == null) {
+//            SseEmitter emitter = createEmitter(gameCode);
+//            String mappedEmitter = mapper.writeValueAsString(emitter);
+//            game = game.toBuilder()
+//                    .mappedEmitter(mappedEmitter)
+//                    .build();
+//            gameRedisRepository.save(game);
+//        }
+//
+//        sendToClient(gameCode, "EventStream Created. [gameCode=" + gameCode + "]");
+//        SseEmitter emitter = mapper.readValue(game.getMappedEmitter(), SseEmitter.class);
+//        System.out.println("emitter.hashCode(): " + emitter.hashCode());
+//
+//        try {
+//            emitter.send("data");
+//            emitter.complete();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return emitter;
+
+        SseEmitter emitter = createEmitter(gameCode);
+
+        sendToClient(gameCode, "EventStream Created. [gameCode=" + gameCode + "]");
+        return emitter;
+    }
+
+    private void sendToClient(String gameCode, Object data) throws JsonProcessingException {
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        Game game = gameRedisRepository.findById(gameCode)
+//                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+//        SseEmitter emitter = mapper.readValue(game.getMappedEmitter(), SseEmitter.class);
+//        if (emitter != null) {
+//            try {
+////                emitter.send(SseEmitter.event().id(gameCode).name("sse").data(data));
+//                emitter.send(SseEmitter.event().data(data));
+//            } catch (IOException exception) {
+//                log.error(exception.getMessage());
+//            }
+//        }
+
+        SseEmitter emitter = emitterRepository.get(gameCode);
+        if (emitter != null) {
+            try {
+                emitter.send(SseEmitter.event().id(gameCode).name("sse").data(data));
+            } catch (IOException exception) {
+                emitterRepository.deleteById(gameCode);
+                emitter.completeWithError(exception);
+            }
+        }
+    }
+
+    @Override
+    public void sendPrompt(String gameCode, Object data) throws JsonProcessingException {
+        sendToClient(gameCode, data);
+    }
+
+    private SseEmitter createEmitter(String gameCode) {
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        Game game = gameRedisRepository.findById(gameCode)
+//                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+//
+//        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
+//
+//        emitter.onCompletion(() -> gameRedisRepository.save(game.toBuilder()
+//                .mappedEmitter(null)
+//                .build()));
+//        emitter.onTimeout(() -> gameRedisRepository.save(game.toBuilder()
+//                .mappedEmitter(null)
+//                .build()));
+//
+//        return emitter;
+
+        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
+        emitterRepository.save(gameCode, emitter);
+
+        emitter.onCompletion(() -> emitterRepository.deleteById(gameCode));
+        emitter.onTimeout(() -> emitterRepository.deleteById(gameCode));
+
+        return emitter;
     }
 
     /**
