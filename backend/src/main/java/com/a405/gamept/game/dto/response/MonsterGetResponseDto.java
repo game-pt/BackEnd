@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public record MonsterGetResponseDto(
         @NotBlank(message = "몬스터가 존재하지 않습니다.")
-        @Pattern(regexp = RegexPatterns.MONSTER, message = "몬스터가 올바르지 않습니다.")
+        @Pattern(regexp = RegexPatterns.FIGHTING_ENEMY, message = "몬스터가 올바르지 않습니다.")
         String code,
         @JsonProperty("level")
         @Positive(message = "몬스터 레벨은 양수여야 합니다.")
@@ -27,29 +27,12 @@ public record MonsterGetResponseDto(
         int monsterAttack
 
 ) {
-        public static MonsterGetResponseDto from(FightingEnermy fightingEnermy) {
-                return MonsterGetResponseDto.builder()
-                        .code(fightingEnermy.getCode())
-                        .monsterLevel(fightingEnermy.getLevel())
-                        .hp(fightingEnermy.getHp())
-                        .monsterAttack(fightingEnermy.getAttack())
-                        .build();
-        }
-        public static MonsterGetResponseDto from(Monster monster) {
-                return MonsterGetResponseDto.builder()
-                        .code(monster.getCode())
-                        .monsterLevel(monster.getLevel())
-                        .hp(monster.getHp())
-                        .monsterAttack(monster.getAttack())
-                        .build();
-        }
-    /*
-    public static MonsterGetResponseDto from(Monster monster, String gmonsterCode) {
+    public static MonsterGetResponseDto from(FightingEnermy fightingEnermy) {
         return MonsterGetResponseDto.builder()
-                .gmonsterCode(gmonsterCode)
-                .monsterLevel(monster.getLevel())
-                .monsterAttack(monster.getAttack())
+                .code(fightingEnermy.getCode())
+                .monsterLevel(fightingEnermy.getLevel())
+                .hp(fightingEnermy.getHp())
+                .monsterAttack(fightingEnermy.getAttack())
                 .build();
     }
-    */
 }
