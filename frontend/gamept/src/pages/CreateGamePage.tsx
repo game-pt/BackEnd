@@ -15,7 +15,7 @@ import { fetchGetStories } from '@/services/CreateGameService';
 const CreateGamePage = () => {
   const [isSelectStory, setIsSelectStory] = useState(false);
 
-  const { data } = useQuery({
+  const { data, isSuccess } = useQuery({
     queryKey: ['getStories'],
     queryFn: () => fetchGetStories(),
   });
@@ -24,9 +24,9 @@ const CreateGamePage = () => {
     setIsSelectStory(true);
   };
 
-  // if (isSuccess) {
-  //   console.log(data);
-  // }
+  if (isSuccess) {
+    console.log(data);
+  }
 
   return (
     <div className="w-screen h-screen bg-backgroundDeep">
