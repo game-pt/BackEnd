@@ -32,14 +32,18 @@ const MultiPlayPage = () => {
   const [blockInput, setBlockInput] = useState<boolean>(false);
   const [isPromptFetching, setIsPromptFetching] = useState<boolean>(false);
   const [isShowDice, setIsShowDice] = useState<boolean>(false);
-  const [dice, setDice] = useState<IDice | null>(null);
+  const [dice, setDice] = useState<IDice>({
+    dice1: 0,
+    dice2: 0,
+    dice3: 0,
+  });
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
   const itemUpdateAtom = useUpdateItemListAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
-  const gameCode = 'SkDAer';
-  const playerCode = 'SkDAer-r0PeqV';
+  const gameCode = 'xMpyIX';
+  const playerCode = 'xMpyIX-U1q55L';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
@@ -321,7 +325,7 @@ const MultiPlayPage = () => {
 
       client.current.subscribe(`/queue/${playerCode}/item`, async (message) => {
         const body = JSON.parse(message.body);
-
+        console.log(body);
         itemUpdateAtom(body);
         setEvent(null);
         const ChoiceFromDB = (await db.getAll())
@@ -501,35 +505,36 @@ const MultiPlayPage = () => {
         return;
       }
 
-      if (event && event.eventCode) {
-        const checkItemSub = event.eventCode.split('_');
-
-        if (checkItemSub[0] === 'getItem') {
-          // 획득 전송
-          if (checkItemSub[1] === '1') {
-            client.current.send(
-              `/item`,
-              {},
-              JSON.stringify({
-                playerCode,
-                gameCode,
-              })
-            );
-            // 버린다 전송
-          } else {
-            client.current.send(
-              `/item/${checkItemSub[2]}`,
-              {},
-              JSON.stringify({
-                playerCode,
-                gameCode,
-              })
-            );
-          }
+      const checkItemSub = choice.actCode.split('_');
+      console.log(checkItemSub);
+      if (checkItemSub[0] === 'getItem') {
+        console.log("getItem, ", checkItemSub);
+        // 획득 전송
+        if (checkItemSub[1] === '1') {
+          console.log("얻는다, ", checkItemSub);
+          client.current.send(
+            `/item`,
+            {},
+            JSON.stringify({
+              playerCode,
+              gameCode,
+            })
+          );
+          // 버린다 전송
+        } else {
+          console.log("버린다, ", checkItemSub);
+          client.current.send(
+            `/item/${checkItemSub[2]}`,
+            {},
+            JSON.stringify({
+              playerCode,
+              gameCode,
+            })
+          );
+        }
 
           return;
         }
-      }
 
       // 위에서 return에 안걸렸다면 일반 선택지 선택한 경우
       // select 채널에 send 해주기
@@ -667,7 +672,7 @@ const MultiPlayPage = () => {
           sendPromptHandler={sendPromptHandler}
         />
       </div>
-      {dice && isShowDice && (
+      {isShowDice && (
         <DiceModal
           dice1={dice.dice1}
           dice2={dice.dice2}
