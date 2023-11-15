@@ -11,16 +11,18 @@ public interface FightService {
 
     /**
      * 플레이어의 레벨에 맞는 몬스터 레벨을 조회한다.
-     * @param  : 게임 정보
-     *                             storyCode    : 현재 진행중인 스토리
-     *                             level        : 현재 플레이어의 레벨
+     *
+     * @param : 게임 정보
+     *          storyCode    : 현재 진행중인 스토리
+     *          level        : 현재 플레이어의 레벨
      * @return : 랜덤으로 뽑아져나온 몬스터의 값
      * @author : 유영
      */
     // int getRandomMonsterLevel(MonsterGetCommandDto monsterGetCommandDto) throws GameException;
-    void setMonster(MonsterSetCommandDto monsterSetCommandDto) throws GameException;
     MonsterGetResponseDto getMonster(MonsterSetCommandDto monsterSetCommandDto) throws GameException;
-    // MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameException;
+
+    // void setMonster(MonsterSetCommandDto monsterSetCommandDto) throws GameException;
+    //  MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameException;
 
     FightResultGetResponseDto getFightResult(FightResultGetCommandDto fightResultGetCommandDto);
 }
