@@ -96,28 +96,25 @@ public class GameServiceImpl implements GameService {
 
         // 이벤트 지정
         List<String> eventStrList = new ArrayList<>();
+        String eventMemory = "";
         for(Event event : story.getEventList()) {
-            eventStrList.add("[" + event.getName() + "]");
+            eventStrList.add("TRPG 게임은 반드시 " + event.getName() + " 상황이 시작될 때," +
+                    "[" + event.getName() + "]라고 출력해주어야 합니다. ");
+            eventStrList.add(event.getName() + " 상황이란," +
+                    "" + event.getPrompt().replace(".", "") + "는 경우를 말합니다.");
         }
 
+
         String memory =
-                "[TRPG 기본 설정]\n" +
-                        "당신은 TRPG의 게임 마스터가 되어 나의 채팅에 맞춰 스토리를 진행시켜야 합니다. " +
-                        "나는 판타지 세계의 모험가가 되어 게임을 플레이합니다. " +
-                        "TRPG 게임은 중세시대를 배경으로 합니다. " +
-                        "몬스터로 고블린, 오크, 코볼트, 슬라임, 놀, 드래곤, 악마 등이 등장할 수 있습니다. " +
-                        "TPRG 게임에서 몬스터를 처치하려면 내가 몬스터를 강하게 공격했다는 것이 드러나는 채팅을 입력해야 합니다. " +
-                        "TRPG 게임에서 몬스터를 쓰러뜨리면 전리품을 얻을 수도 있습니다. " +
-                        "TRPG 게임은 길드에서 퀘스트를 수주할 수 있습니다. " +
-                        "TRPG 게임은 퀘스트를 완수하면 길드에서 보상을 받을 수 있습니다. " +
-                        "TPRG 게임은 주로 대화 형식으로 게임이 이루어집니다. " +
-                        "나의 대답을 당신이 말할 수 없습니다. " +
-                        "내가 대답할 수 있는 여지를 주어야 합니다. " +
-                        "TRPG 게임은 반드시 플레이어의 전투 상황이 시작될 때, [전투] 라고 출력해주어야 합니다. " +
-                        "전투 상황이란, 플레이어가 몬스터나 플레이어에게 적대적인 NPC를 맞닥뜨렸을 때의 상황을 말합니다. " +
-                        "TRPG 게임은 반드시 플레이어가 함정에 빠졌을 때, [함정] 이라고 출력해주어야 합니다. " +
-                        "함정이란, 갑작스럽게 바닥 혹은 천장이 무너지거나, 눈에 띄지 않는 발판을 밟으면, 플레이어를 향하여 화살이나 마법이 날라와 플레이어를 공격하는 경우를 말합니다. " +
-                        "첫 시작은 당신이 길드 마스터의 입장이 되어 내가 길드에 입장한 것을 반겨줍니다.\n" +
+                        "당신은 TRPG의 게임 마스터가 되어 나의 대화에 맞춰 이야기를 이어나가야 합니다.\n " +
+                        "나는 판타지 세계의 모험가가 되어 게임을 플레이합니다. \n" +
+                        "TPRG 게임은 주로 대화 형식으로 게임이 이루어집니다. \n" +
+                        "아래에 제시하는 주제, 이벤트, 글자수에 맞춰 이야기를 이어나가 주세요. \n" +
+                        "나의 대답을 당신이 말할 수 없습니다. \n" +
+                        "내가 대답할 수 있는 여지를 주어야 합니다. \n" +
+                        "당신은 선택지를 줄 수 없습니다. \n" +
+                        String.join("\n", eventStrList) + "\n" +
+                        "첫 시작은 당신이 안내자의 입장이 되어 나와 만난 것을 반겨줍니다.\n" +
                         "\n주제: " + story.getDesc() + "\n 글자 수 : 최대 100자";
 
         Game game = Game.builder()
@@ -285,10 +282,7 @@ public class GameServiceImpl implements GameService {
 
         // 다이스 값 가져오기
         int diceValue = game.getDiceValue();
-        game = game.toBuilder()
-                .diceValue(0)
-                .build();
-        gameRedisRepository.save(game);
+        log.info("주사위 값 : "+diceValue);
 
         //보너스 스탯
         String statCode = act.getStat().getCode();
@@ -307,11 +301,13 @@ public class GameServiceImpl implements GameService {
         int successStd = act.getSuccessStd();
         int playerStd = (diceValue + plusPoint);
 
+        log.info("성공 기준치 : "+successStd);
+        log.info("극적 기준치 : "+extremePoint);
         //성공, 실패에 따른 진행
         StringBuilder prompt = new StringBuilder();
         //String eventName = act.getEvent().getName();
 
-        prompt.append(player.getNickname()).append("은 ");
+        prompt.append(player.getNickname()).append("은(는) ");
         // 극적 성공, 실패 여부 확인
         boolean flag = false;
         int bonusPoint = 0;
@@ -335,7 +331,7 @@ public class GameServiceImpl implements GameService {
         // ChatGPT에 프롬프트 전송
         StringBuilder promptResult = new StringBuilder();
         promptResult.append(prompt).append("\n");
-        String gptPrompt = chatGptClientUtil.getChatGPTResult(game.getMemory(), game.getPromptList(), promptResult.toString());
+        String gptPrompt = chatGptClientUtil.getChatGPTResult(game.getMemory(), game.getPromptList(), "플레이어인 " + promptResult.toString());
         log.info(gptPrompt);
         promptResult.append(gptPrompt);
 
@@ -364,7 +360,10 @@ public class GameServiceImpl implements GameService {
             }
             promptResult.append("\n").append(tmp);
         }
-
+        game = game.toBuilder()
+                .diceValue(0)
+                .build();
+        gameRedisRepository.save(game);
         return ActResultGetResponseDto.of(actResultGetCommandDto.gameCode(), promptResult.toString(), itemYn, itemCode, gameOverYn);
     }
 
@@ -441,5 +440,58 @@ public class GameServiceImpl implements GameService {
         result.append("< ").append(newItem.getName()).append(" > ").append("이/가 나타났다.");
 
         return ItemRandomGetCommandDto.of(newItem.getCode(), result.toString());
+    }
+
+    @Override
+    @Transactional
+    public PromptGetResponseDto setEnding(EndingCommandDto endingCommandDto) throws GameException {
+        ValidateUtil.validate(endingCommandDto);
+
+        Game game = gameRedisRepository.findById(endingCommandDto.gameCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
+
+        Player player = playerRedisRepository.findById(endingCommandDto.playerCode())
+                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+
+        if(!ValidateUtil.validatePlayer(player.getCode(), game.getPlayerList())) {
+            throw new GameException(GameErrorMessage.PLAYER_NOT_FOUND);
+        }
+
+        // 엔딩 출력
+        List<Prompt> promptList = game.getPromptList();
+        if(promptList == null) {
+            throw new GameException(GameErrorMessage.PROMPT_INVALID);
+        }
+
+        StringBuilder endingPrompt = new StringBuilder();
+        for(Prompt prompt : promptList) {
+            String name = "";
+            if(!prompt.getRole().equals("assistant")) {
+                name = playerRedisRepository.findById(prompt.getRole())
+                        .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND)).getNickname();
+                name += ": ";
+            }
+            endingPrompt.append(name).append(prompt.getContent()).append("\n");
+        }
+
+        String endingMemory = "당신은 아래에서 제시하는 대화 형식을 이야기로 풀어나가야 합니다. \n" +
+                "당신은 아래에서 제시하는 대화를 기반으로 미래의 결말을 예측해서 이야기해야 합니다.\n" +
+                "당신은 이야기를 끝마쳐야 합니다. 당신은 질문을 할 수 없습니다.\n";
+
+        String ending = chatGptClientUtil.getChatGPTResult(endingMemory, new ArrayList<>(), "### 대화 내용\n" + endingPrompt.toString());
+        
+        // 플레이어 및 게임 삭제
+        for(String playerCode : game.getPlayerList()) {
+            playerRedisRepository.delete(playerRedisRepository.findById(playerCode)
+                    .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND)));
+        }
+        gameRedisRepository.delete(game);
+
+        PromptGetResponseDto promptGetResponseDto = PromptGetResponseDto.builder()
+                .role("assistant")
+                .content(ending)
+                .build();
+        ValidateUtil.validate(promptGetResponseDto);
+        return promptGetResponseDto;
     }
 }

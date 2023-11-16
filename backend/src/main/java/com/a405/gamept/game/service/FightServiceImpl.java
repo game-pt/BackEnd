@@ -43,7 +43,7 @@ public class FightServiceImpl implements FightService {
         Story story = storyRepository.findById(storyCode)
                 .orElseThrow(() -> new GameException(GameErrorMessage.STORY_NOT_FOUND));
         int monsterLevel = playerLevel;
-        
+
         int randNum = (int) Math.floor(Math.random() * GameData.MAX_PERCENTAGE);  // 몬스터 레벨 정비 확률
         int sumPercentage = 0; // GameData.MAX_PERCENTAGE을 0으로 초기화
 
@@ -68,69 +68,62 @@ public class FightServiceImpl implements FightService {
 
         Game game = gameRedisRepository.findById(monsterSetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
-        Player player = playerRedisRepository.findById(monsterSetCommandDto.playerCode())
-                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
-        Monster monster = monsterRepository.findById(game.getFightingEnemyCode()).orElse(null);
-        if(monster == null) {
-            int monsterLevel = getRandomMonsterLevel(game.getStoryCode(), player.getLevel());
-
-            monster = monsterRepository.findByStoryCodeAndLevel(game.getStoryCode(), monsterLevel)
-                    .orElseThrow(()->new GameException(GameErrorMessage.MONSTER_INVALID));
-            log.info("등장 몬스터: { 레벨: " + monster.getLevel() + " 공격력 : "+ monster.getAttack()+" }");
+        FightingEnemy fightingEnemy = null;
+        if(game.getFightingEnemyCode() == null || game.getFightingEnemyCode().trim().equals("")) {
+            fightingEnemy = setMonster(monsterSetCommandDto);
+        } else {
+            fightingEnemy = fightingEnemyRedisRepository.findById(game.getFightingEnemyCode())
+                    .orElseThrow(() -> new GameException(GameErrorMessage.FIGHTING_ENEMY_INVALID));
         }
 
-        MonsterGetResponseDto monsterGetResponseDto = MonsterGetResponseDto.from(monster);
+        MonsterGetResponseDto monsterGetResponseDto = MonsterGetResponseDto.from(fightingEnemy);
         ValidateUtil.validate(monsterGetResponseDto);
 
         return monsterGetResponseDto;
     }
 
-    @Override
-    @Transactional
-    public void setMonster(MonsterSetCommandDto monsterSetCommandDto) {
+    private FightingEnemy setMonster(MonsterSetCommandDto monsterSetCommandDto) {
         Game game = gameRedisRepository.findById(monsterSetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
-        if(game.getFightingEnemyCode() != null) {
+        if(game.getFightingEnemyCode() != null && !game.getFightingEnemyCode().trim().equals("")) {
             throw new GameException(GameErrorMessage.FIGHTING_ENEMY_FULL);
         }
 
-        Player player = playerRedisRepository.findById(monsterSetCommandDto.playerCode())
-                .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
+        Monster monster = null;
+        if(game.getTurn() < 30) {
+            Player player = playerRedisRepository.findById(monsterSetCommandDto.playerCode())
+                    .orElseThrow(() -> new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
 
-        int monsterLevel = getRandomMonsterLevel(game.getStoryCode(), player.getLevel());
+            int monsterLevel = getRandomMonsterLevel(game.getStoryCode(), player.getLevel());
 
-        Monster monster = monsterRepository.findByStoryCodeAndLevel(game.getStoryCode(), monsterLevel)
-                .orElseThrow(()->new GameException(GameErrorMessage.MONSTER_INVALID));
-        log.info("등장 몬스터: { 레벨: " + monster.getLevel() + " 공격력 : "+ monster.getAttack()+" }");
+            monster = monsterRepository.findByStoryCodeAndLevel(game.getStoryCode(), monsterLevel)
+                    .orElseThrow(() -> new GameException(GameErrorMessage.MONSTER_INVALID));
+            //log.info("등장 몬스터: { 레벨: " + monster.getLevel() + " 공격력 : " + monster.getAttack() + " }");
+        } else {
+            monster = monsterRepository.findById("MON-011")
+                    .orElseThrow(() -> new GameException(GameErrorMessage.MONSTER_INVALID));
+            //log.info("마왕 등장: { 레벨: " + monster.getLevel() + " 공격력 : " + monster.getAttack() + " }");
+        }
 
-        /*FightingEnermy fightingEnemy = fightingEnermyRedisRepository.save(FightingEnermy.builder()
+        String code = "";
+        do {
+            code = ValidateUtil.getRandomUID();
+        } while (gameRedisRepository.findById(code).isPresent());
+
+        FightingEnemy fightingEnemy = fightingEnemyRedisRepository.save(FightingEnemy.builder()
                 .code(code)
                 .level(monster.getLevel())
                 .hp(monster.getHp())
                 .attack(monster.getAttack())
-                .build());*/
+                .build());
 
-        gameRedisRepository.save(game.toBuilder().fightingEnemyCode(monster.getCode()).build());
+        fightingEnemyRedisRepository.save(fightingEnemy);
+        gameRedisRepository.save(game.toBuilder().fightingEnemyCode(fightingEnemy.getCode()).build());
+
+        return fightingEnemy;
     }
-
-    /*
-    @Override
-    public MonsterGetResponseDto getMonster(MonsterGetCommandDto monsterGetCommandDto) throws GameException {
-        ValidateUtil.validate(monsterGetCommandDto);
-
-        Game game = gameRedisRepository.findById(monsterGetCommandDto.gameCode())
-                .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
-
-        MonsterGetResponseDto monsterGetResponseDto = MonsterGetResponseDto.from(fightingEnermyRedisRepository.findById(game.getFightingEnemyCode())
-                .orElseThrow(() -> new GameException(GameErrorMessage.FIGHTING_ENEMY_INVALID)));
-        ValidateUtil.validate(monsterGetResponseDto);
-
-        return monsterGetResponseDto;
-    }
-     */
-
 
     /*
     public String setMonster(Monster monster) {
@@ -138,18 +131,18 @@ public class FightServiceImpl implements FightService {
         String code = "";
         do {
             code = ValidateUtil.getRandomUID();
-        } while(fightingEnermyRedisRepository.findById(code).isPresent());
+        } while(fightingEnemyRedisRepository.findById(code).isPresent());
 
         getMonster();
 
-        FightingEnermy fightingEnermy = FightingEnermy.builder()
+        FightingEnemy fightingEnemy = FightingEnemy.builder()
                 .code(code)
                 .level(monster.getLevel())
                 .hp(monster.getHp())
                 .attack(monster.getAttack())
                 .build();
 
-        fightingEnermyRedisRepository.save(fightingEnermy);
+        fightingEnemyRedisRepository.save(fightingEnemy);
 
         return code;
     }
@@ -161,7 +154,7 @@ public class FightServiceImpl implements FightService {
                 .orElseThrow(()->new GameException(GameErrorMessage.GAME_NOT_FOUND));
         Player player = playerRedisRepository.findById(fightResultGetCommandDto.playerCode())
                 .orElseThrow(()->new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
-        FightingEnemy fightingEnemy = fightingEnemyRedisRepository.findById(fightResultGetCommandDto.fightingEnermyCode())
+        FightingEnemy fightingEnemy = fightingEnemyRedisRepository.findById(fightResultGetCommandDto.fightingEnemyCode())
                 .orElseThrow(()->new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
         String actCode = fightResultGetCommandDto.actCode();
@@ -195,13 +188,6 @@ public class FightServiceImpl implements FightService {
             gameStateCommandDto = itemUse(player, fightingEnemy, itemCode);
         }
 
-
-        game = game.toBuilder()
-                .diceValue(0)
-                .build();
-
-        gameRedisRepository.save(game);
-
         String endYn = gameStateCommandDto.endYn();
 
         //플레이어 저장
@@ -221,6 +207,10 @@ public class FightServiceImpl implements FightService {
         int fightEnemyHp = gameStateCommandDto.fightEnemyHp();
         if(fightEnemyHp == 0 || endYn.equals("Y")){
             fightingEnemyRedisRepository.delete(fightingEnemy);
+            game = game.toBuilder()
+                            .fightingEnemyCode("")
+                                    .build();
+            clearStat(player);
         }else {
             fightingEnemy = fightingEnemy.toBuilder()
                     .hp(fightEnemyHp)
@@ -228,6 +218,13 @@ public class FightServiceImpl implements FightService {
             fightingEnemyRedisRepository.save(fightingEnemy);
         }
 
+        game = game.toBuilder()
+                .diceValue(0)
+                .build();
+
+        gameRedisRepository.save(game);
+
+        //log.info("전투 끝 : "+gameStateCommandDto.prompt());
         return FightResultGetResponseDto.from(gameStateCommandDto);
     }
 
@@ -461,7 +458,7 @@ public class FightServiceImpl implements FightService {
                 result.append("대성공!!!\n");
                 result.append(player.getNickname()).append("은/는 적의 공격을 팅겨냈다!!!\n");
                 result.append("적에게 ").append(defensiveDamage).append(" 만큼의 충격을 돌려주었다!!!\n");
-                result.append("적의 HP : ").append(fightingEnemyHp);
+                result.append("적의 HP : ").append(fightingEnemyHp).append("\n");
             }else {
                 // 공격을 좀 막아줌
                 damage = Math.max(fightingEnemyAttack - (defesivePower + bonusDefesive), 0);
@@ -470,11 +467,11 @@ public class FightServiceImpl implements FightService {
                 if(damage > 0) {
                     result.append("적에게 ").append(defesivePower + bonusDefesive)
                             .append(" 만큼의 충격을 막아냈다!!!\n");
-                    result.append("적에게서 ").append(damage).append(" 만큼의 충격을 받았다.");
+                    result.append("적에게서 ").append(damage).append(" 만큼의 충격을 받았다.\n");
                 }else{
                     result.append(player.getNickname()).append("은/는 적의 공격을 막았다!!!\n");
                 }
-                result.append("적의 HP : ").append(fightingEnemyHp);
+                result.append("적의 HP : ").append(fightingEnemyHp).append("\n");
             }
         }else {
             if (extremeFlag){
@@ -484,13 +481,13 @@ public class FightServiceImpl implements FightService {
                 result.append("대실패!!!\n");
                 result.append(player.getNickname()).append("은/는 적의 공격을 막으려 했지만 대실패의 여파로 더욱 큰 충격을 받았다!!!\n");
                 result.append("적에게 ").append(damage).append(" 만큼의 충격을 받았다!!!\n");
-                result.append("적의 HP : ").append(fightingEnemyHp);
+                result.append("적의 HP : ").append(fightingEnemyHp).append("\n");
             }else{
                 damage = fightingEnemyAttack;
                 result.append("실패!!!\n");
                 result.append(player.getNickname()).append("은/는 적의 공격을 막으려 했지만 막을 수 없었다!!!\n");
                 result.append("적에게 ").append(damage).append(" 만큼의 충격을 받았다!!!\n");
-                result.append("적의 HP : ").append(fightingEnemyHp);
+                result.append("적의 HP : ").append(fightingEnemyHp).append("\n");
             }
         }
 
@@ -517,7 +514,6 @@ public class FightServiceImpl implements FightService {
             playerLevel = expGetCommandDto.playerLevel();
             playerExp = expGetCommandDto.playerExp();
             statPoint = expGetCommandDto.statPoint();
-            result.append(expGetCommandDto.prompt());
         }
 
         return GameStateCommandDto.of(result.toString(), endYn, playerHp, playerLevel, statPoint, playerExp, fightingEnemyHp);
@@ -525,7 +521,7 @@ public class FightServiceImpl implements FightService {
     //아이템 사용
     public GameStateCommandDto itemUse(Player player, FightingEnemy fightingEnemy, String itemCode){
         // 플레이어가 가진 아이템 목록에서 아이템을 사용
-        log.info("아이템 사용 시작");
+        //log.info("아이템 사용 시작");
         StringBuilder result = new StringBuilder();
         boolean haveItemFlag = false;
         List<String> itemCodeList = player.getItemCodeList();
@@ -590,7 +586,7 @@ public class FightServiceImpl implements FightService {
             result.append("전투가 종료까지 효과가 지속됩니다...");
             playerStateCommandDto = gameOverCheck(playerHp, nickname, playerLevel, statPoint, playerExp, fightingEnemyHp, fightingEnemyAttack, fightingEnemyLevel);
         } else if(itemCase.equals(ItemCase.DAMAGE)){
-            log.info("데미지 주는 아이템");
+            //log.info("데미지 주는 아이템");
             int damage = itemEffectValue;
             int bonusPoint = 0;
 
