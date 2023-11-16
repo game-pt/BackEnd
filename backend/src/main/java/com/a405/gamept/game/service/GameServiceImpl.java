@@ -115,6 +115,7 @@ public class GameServiceImpl implements GameService {
 
         Game game = Game.builder()
                 .code(code)
+                .storyCode(story.getCode())
                 .promptList(setStartPrompt(startPrompt))
                 .build();
         ValidateUtil.validate(game);
