@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface PromptService {
     PromptGetResponseDto setUserPrompt(PromptResultGetCommandDto promptResultGetCommandDto) throws GameException;
-    PromptGetResponseDto getChatGPTPrompt(PromptResultGetCommandDto promptResultGetCommandDto) throws GameException;
+    PromptResultGetCommandDto getChatGPTPrompt(PromptResultGetCommandDto promptResultGetCommandDto) throws GameException;
     PromptResultGetResponseDto getPrmoptResult(PromptResultGetCommandDto promptResultGetCommandDto, String responsePrompt) throws GameException;
     List<PromptGetResponseDto> getPromptList(PromptListGetCommandDto promptListGetCommandDto) throws GameException;
     SseEmitter subscribeEmitter(String gameCode);
-    void sendPrompt(String gameCode, String prompt) throws JsonProcessingException;
+    String sendPrompt(String gameCode, String prompt) throws JsonProcessingException;
 }

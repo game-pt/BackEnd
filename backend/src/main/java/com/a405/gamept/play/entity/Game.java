@@ -70,7 +70,7 @@ public class Game {
     private String fightingEnemyCode;
 
     /**
-     * promptList : 최근 prompt 5개
+     * promptList : 최근 prompt 6개
      */
     @Builder.Default
     private List<Prompt> promptList = new LinkedList<>();

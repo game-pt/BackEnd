@@ -229,6 +229,7 @@ public class ChatGptClientUtil {
                     try {
                         if (line.equals("[DONE]")) {
 //                            emitter.complete();
+                            emitter.send(SseEmitter.event().data(line));
                             return;
                         }
                         ChatGptForStreamResponseDto chatGptForStreamResponseDto = mapper.readValue(line, ChatGptForStreamResponseDto.class);
