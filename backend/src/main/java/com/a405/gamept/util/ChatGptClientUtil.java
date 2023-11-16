@@ -3,16 +3,23 @@ package com.a405.gamept.util;
 import com.a405.gamept.game.util.enums.GameErrorMessage;
 import com.a405.gamept.game.util.exception.GameException;
 import com.a405.gamept.play.entity.Prompt;
+import com.a405.gamept.util.dto.request.ChatGptForStreamRequestDto;
 import com.a405.gamept.util.dto.request.ChatGptRequestDto;
 import com.a405.gamept.util.dto.request.ChatGptMessage;
+import com.a405.gamept.util.dto.response.ChatGptForStreamResponseDto;
 import com.a405.gamept.util.dto.response.ChatGptResponseDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -183,6 +190,63 @@ public class ChatGptClientUtil {
             log.error(e.getMessage());
             throw new GameException(GameErrorMessage.PROMPT_INVALID);
         }
+    }
+
+    public String enterPromptForSse(SseEmitter emitter, String prompt, String memory, List<Prompt> promptList) throws JsonProcessingException {
+        int mSize = 1;
+        if (prompt != null && !prompt.equals("")) mSize++;
+        if (memory != null && !memory.equals("")) mSize++;
+        mSize += promptList.size();
+        ChatGptMessage[] messages = new ChatGptMessage[mSize];
+
+        int mIndex = 0;
+        messages[mIndex++] = new ChatGptMessage("system", PROMPT_FOR_SETTING);
+        if (memory != null && !memory.equals(""))
+            messages[mIndex++] = new ChatGptMessage("system", memory);
+        for (Prompt prevPrompt : promptList) {
+            messages[mIndex++] = new ChatGptMessage(prevPrompt.getRole(), prevPrompt.getContent());
+        }
+        if (prompt != null && !prompt.equals(""))
+            messages[mIndex++] = new ChatGptMessage("user", prompt);
+
+        ObjectMapper mapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        ChatGptForStreamRequestDto chatGptRequestDtoForStream = new ChatGptForStreamRequestDto(model, messages, 1, 1024, true);
+
+        String input = mapper.writeValueAsString(chatGptRequestDtoForStream);
+        StringBuilder outputSB = new StringBuilder();
+
+//        SseEmitter emitter = new SseEmitter((long) (5 * 60 * 1000));
+        WebClient client = WebClient.create();
+
+        client.post().uri(uri)
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + key)
+                .body(BodyInserters.fromValue(chatGptRequestDtoForStream))
+                .exchangeToFlux(response -> response.bodyToFlux(String.class))
+                .doOnNext(line -> {
+                    try {
+                        if (line.equals("[DONE]")) {
+//                            emitter.complete();
+                            emitter.send(SseEmitter.event().data(line));
+                            return;
+                        }
+                        ChatGptForStreamResponseDto chatGptForStreamResponseDto = mapper.readValue(line, ChatGptForStreamResponseDto.class);
+                        String answer = chatGptForStreamResponseDto.choices()[chatGptForStreamResponseDto.choices().length - 1].delta().content();
+                        if (answer != null) {
+                            outputSB.append(answer);
+                            emitter.send(SseEmitter.event().data(line));
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+//                .doOnError(emitter::completeWithError)
+//                .doOnComplete(emitter::complete)
+                .blockLast();
+
+        return outputSB.toString();
     }
 
 }

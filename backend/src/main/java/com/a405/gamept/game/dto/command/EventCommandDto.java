@@ -23,16 +23,13 @@ public record EventCommandDto(
         @Valid
         @NotBlank(message = "이벤트에 대한 행동이 입력되지 않았습니다.")
         @Size(min = 1, message = "이벤트에 대한 행동은 하나 이상이어야 합니다.")
-        List<ActCommandDto> acts,
-        @Valid
-        MonsterGetResponseDto monster
+        List<ActCommandDto> acts
 ) {
-    public static EventCommandDto from(Event event, List<ActCommandDto> acts, MonsterGetResponseDto monster) {
+    public static EventCommandDto from(Event event, List<ActCommandDto> acts) {
         return EventCommandDto.builder()
                 .eventCode(event.getCode())
                 .eventName(event.getName())
                 .acts(acts)
-                .monster(monster)
                 .build();
     }
 }
