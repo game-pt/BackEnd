@@ -83,7 +83,7 @@ public class GameController {
         return ResponseEntity.ok(true);
     }
 
-    @MessageMapping("/endin/{gameCode}")
+    @MessageMapping("/ending/{gameCode}")
     public void ending(@DestinationVariable String gameCode, @Valid @Payload EndingRequestDto endingRequestDto) throws GameException {
         webSocket.convertAndSend("/topic/ending/" + gameCode, gameService.setEnding(EndingCommandDto.from(endingRequestDto, gameCode)));
 
