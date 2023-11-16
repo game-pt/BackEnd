@@ -85,7 +85,7 @@ const ProfileInterface = () => {
   };
 
   return (
-    <div className="w-[400px] h-[173.58px] flex bg-[url(./src/assets/interface/profile_interface.png)] bg-cover">
+    <div className="w-[400px] h-[173.58px] flex bg-[url(./assets/interface/profile_interface.png)] bg-cover">
       <div className="min-w-[174px] h-full flex justify-center items-center">
         <ProfileImage
           alt="player_profile"
