@@ -13,5 +13,6 @@ public interface EventService {
     List<Event> findAllEventByStoryCode(String storyCode);
     String pickAtRandomEvent(Game game, String prompt);
     EventCommandDto checkEventInPrompt(Game game, String prompt);
+    int findLastEventInText(List<Event> eventList, String text);
 
 }

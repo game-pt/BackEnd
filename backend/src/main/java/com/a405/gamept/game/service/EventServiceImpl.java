@@ -202,7 +202,8 @@ public class EventServiceImpl implements EventService {
      * -1: 아무 이벤트도 찾지 못했음을 의미. <br/>
      * >= 0: 발견한 이벤트 중, 가장 마지막에 등장한 이벤트 리스트에서의 인덱스.
      */
-    private int findLastEventInText(List<Event> eventList, String text) {
+    @Override
+    public int findLastEventInText(List<Event> eventList, String text) {
         if (text == null) return -1;
 
         int lastEvent = -1;
