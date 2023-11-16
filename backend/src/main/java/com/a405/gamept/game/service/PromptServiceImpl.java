@@ -82,7 +82,6 @@ public class PromptServiceImpl implements PromptService {
     @Override
     @Transactional(readOnly = true)
     public PromptResultGetCommandDto getChatGPTPrompt(PromptResultGetCommandDto promptResultGetCommandDto) {
-        log.info("getChatGPTPrompt 호출");
         Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
         Player player = playerRedisRepository.findById(promptResultGetCommandDto.playerCode())
@@ -104,7 +103,6 @@ public class PromptServiceImpl implements PromptService {
 //        } else {
 //            promptInput +=  insertEventPrompt(game.getStoryCode(), eventRate);
 //        }
-//        log.info("최종 유저 프롬프트: " + promptInput);
         String promptInput = player.getNickname() + ": " + promptResultGetCommandDto.prompt();
         promptInput = eventService.pickAtRandomEvent(game, promptInput);
 
@@ -124,7 +122,6 @@ public class PromptServiceImpl implements PromptService {
     @Override
     @Transactional
     public PromptResultGetResponseDto getPrmoptResult(PromptResultGetCommandDto promptResultGetCommandDto, String responsePrompt) {
-        log.info("getPrmoptResult 호출");
         Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
         // Player 객체
@@ -180,7 +177,6 @@ public class PromptServiceImpl implements PromptService {
 //        if (selectedEvent == null) {  // 이벤트 발생하지 않았을 경우
 //            eventRate += 0.05;  // 이벤트 발생 확률 5% 상승
 //        } else {
-//            log.info(selectedEvent.toString() + " 이벤트 발생");
 //            eventRate = 0.00;  // 이벤트 발생 확률 0%로 초기화
 //            eventCnt += 1;  // 이벤트 발생 횟수 + 1
 //

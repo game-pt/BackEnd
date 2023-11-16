@@ -70,7 +70,6 @@ public class PromptController {
         promptResultGetCommandDto = promptService.getChatGPTPrompt(promptResultGetCommandDto);
         // ChatGPT에게 플레이어가 입력한 프롬프트 전송
         String outputPrompt = promptService.sendPrompt(gameCode, promptResultGetCommandDto.prompt());
-        log.info("outputPrompt = " + outputPrompt);
         webSocket.convertAndSend("/topic/event/" + gameCode, promptService.getPrmoptResult(promptResultGetCommandDto, outputPrompt));
     }
 

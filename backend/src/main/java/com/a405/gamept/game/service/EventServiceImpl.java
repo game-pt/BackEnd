@@ -135,7 +135,6 @@ public class EventServiceImpl implements EventService {
     public EventCommandDto checkEventInPrompt(Game game, String prompt) {
         // 강제 마왕 발생 이벤트
         if (game.getTurn() >= MAX_TURN) {
-            System.out.println("강제 마왕 이벤트 발생!!");
             Event occuredEvent = eventRepository.findById("EV-007")  // 마왕 발생
                     .orElseThrow(() -> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
             ArrayList<ActCommandDto> acts = new ArrayList<ActCommandDto>();
@@ -146,7 +145,6 @@ public class EventServiceImpl implements EventService {
             
         // 더 이상 이벤트가 발생하지 않도록 예방
         }  else if (game.getEventCnt() > EVENT_MAX_COUNT) {
-            System.out.println("이벤트 예방!!");
             return null;
         }
 
@@ -158,7 +156,6 @@ public class EventServiceImpl implements EventService {
 
         // 이벤트를 찾지 못한 경우,
         if (eventIndex == -1) {
-            System.out.println("이벤트 탐색 실패!!");
             return null;
         }
 
@@ -168,7 +165,6 @@ public class EventServiceImpl implements EventService {
                 .eventRate(0)
                 .build());
         Event occuredEvent = eventList.get(eventIndex);
-        System.out.println("이벤트 발생!!: " + occuredEvent.getName());
         ArrayList<ActCommandDto> acts = new ArrayList<ActCommandDto>();
         for (Act act : occuredEvent.getActList()) {
             acts.add(ActCommandDto.from(act));
@@ -192,9 +188,6 @@ public class EventServiceImpl implements EventService {
 //        text.lastIndexOf(EVENT_SEPARATOR_PRE + eventName) > text.lastIndexOf(eventName + EVENT_SEPARATOR_LST) ?
 //                        text.lastIndexOf(EVENT_SEPARATOR_PRE + eventName) :
 //                        text.lastIndexOf(eventName + EVENT_SEPARATOR_LST);
-        System.out.println("text: " + text);
-        System.out.println("left: " + left);
-        System.out.println("right: " + right);
 
         return left > right ? left : right;
     }
