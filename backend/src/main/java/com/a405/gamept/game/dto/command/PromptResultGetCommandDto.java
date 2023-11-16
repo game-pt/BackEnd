@@ -33,6 +33,7 @@ public record PromptResultGetCommandDto(
     public static PromptResultGetCommandDto from(PromptResultGetCommandDto promptResultGetCommandDto, String prompt) {
         return PromptResultGetCommandDto.builder()
                 .gameCode(promptResultGetCommandDto.gameCode())
+                .playerCode(promptResultGetCommandDto.playerCode())
                 .prompt(prompt)
                 .eventCommandDto(promptResultGetCommandDto.eventCommandDto())
                 .build();

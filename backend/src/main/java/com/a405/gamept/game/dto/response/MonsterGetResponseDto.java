@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Builder(access = AccessLevel.PRIVATE)
 @Slf4j
-public record MonsterGetResponseDto(
+public record                                 MonsterGetResponseDto(
         @NotBlank(message = "몬스터가 존재하지 않습니다.")
         @Pattern(regexp = RegexPatterns.FIGHTING_ENEMY, message = "몬스터가 올바르지 않습니다.")
         String code,
