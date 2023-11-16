@@ -53,7 +53,6 @@ public class GameServiceImpl implements GameService {
     private final ItemRepository itemRepository;
     private final StatRepository statRepository;
     private final ChatGptClientUtil chatGptClientUtil;
-    private final EventRepository eventRepository;
 
     @Override
     public List<StoryGetResponseDto> getStoryList() {
@@ -96,14 +95,13 @@ public class GameServiceImpl implements GameService {
 
         // 이벤트 지정
         List<String> eventStrList = new ArrayList<>();
-        String eventMemory = "";
         for(Event event : story.getEventList()) {
             eventStrList.add("TRPG 게임은 반드시 " + event.getName() + " 상황이 시작될 때," +
                     "[" + event.getName() + "]라고 출력해주어야 합니다. ");
             eventStrList.add(event.getName() + " 상황이란," +
                     "" + event.getPrompt().replace(".", "") + "는 경우를 말합니다.");
         }
-        String memory =
+        String startPrompt =
                         "당신은 TRPG의 게임 마스터가 되어 나의 대화에 맞춰 이야기를 이어나가야 합니다.\n " +
                         "나는 판타지 세계의 모험가가 되어 게임을 플레이합니다. \n" +
                         "TPRG 게임은 주로 대화 형식으로 게임이 이루어집니다. \n" +
@@ -118,8 +116,7 @@ public class GameServiceImpl implements GameService {
         Game game = Game.builder()
                 .code(code)
                 .storyCode(story.getCode())
-//                .memory(memory)
-//                .promptList(setStartPrompt(memory))
+                .promptList(setStartPrompt(startPrompt))
                 .build();
         ValidateUtil.validate(game);
         gameRedisRepository.save(game);
@@ -130,21 +127,21 @@ public class GameServiceImpl implements GameService {
         return gameSetResponseDto;
     }
 
-//    private List<Prompt> setStartPrompt(String memory) {
-//        List<Prompt> list = new ArrayList<>();
-//        list.add(Prompt.builder()
-//                .role("user")
-//                .content("모험을 시작한다.")
-//                .build());
-//        list.add(Prompt.builder()
-//                .role("assistant")
-//                .content(chatGptClientUtil.getChatGPTResult(memory, list, ""))
-//                .build());
-//
-//        list.remove(0);
-//
-//        return list;
-//    }
+    private List<Prompt> setStartPrompt(String memory) {
+        List<Prompt> list = new ArrayList<>();
+        list.add(Prompt.builder()
+                .role("user")
+                .content("모험을 시작한다.")
+                .build());
+        list.add(Prompt.builder()
+                .role("assistant")
+                .content(chatGptClientUtil.getChatGPTResult(memory, list, ""))
+                .build());
+
+        list.remove(0);
+
+        return list;
+    }
 
     @Override
     public ChatResponseDto chat(ChatCommandDto chatCommandDto) {
