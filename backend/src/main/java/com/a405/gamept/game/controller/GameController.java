@@ -77,8 +77,15 @@ public class GameController {
         webSocket.convertAndSendToUser(fightResultGetRequestDto.playerCode(), "/status", playerStatusGetResponseDto);
     }
 
-    @MessageMapping("/ending")
+    @PostMapping("/monster")
+    public ResponseEntity<?> setMonster(@Valid @RequestBody MonsterSetRequestDto monsterSetRequestDto) {
+        fightService.getMonster(MonsterSetCommandDto.from(monsterSetRequestDto));
+        return ResponseEntity.ok(true);
+    }
+
+    @MessageMapping("/ending/{gameCode}")
     public void ending(@DestinationVariable String gameCode, @Valid @Payload EndingRequestDto endingRequestDto) throws GameException {
         webSocket.convertAndSend("/topic/ending/" + gameCode, gameService.setEnding(EndingCommandDto.from(endingRequestDto, gameCode)));
+
     }
 }
