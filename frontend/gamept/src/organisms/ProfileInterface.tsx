@@ -90,7 +90,7 @@ const ProfileInterface = () => {
         <ProfileImage
           alt="player_profile"
           imgCode={getStatusAtom.imgCode}
-          size={150}
+          size={160}
         />
       </div>
       <div className="w-full h-full flex flex-col">
