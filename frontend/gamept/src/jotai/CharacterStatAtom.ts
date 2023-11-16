@@ -107,11 +107,23 @@ export const initExtra = atom(
 
 // get 캐릭터 스탯, set 캐릭터 스텟
 export const statControlAtom = atom(
-  (get) => get(characterStatusAtom).statList,
+  (get) => {
+    let statList = get(characterStatusAtom).statList;
+    // const localData = localStorage.getItem('characterStatus');
+    // if (statList.length === 0 && localData) {
+    //   // 새로고침했을 경우 로컬에 저장된 값 불러오기
+    //   statList = JSON.parse(localData).statList;
+    // }
+    return statList;
+  },
   (
     get,
     set,
-    changedStat: Array<{ statName: string; statValue: number; statCode: string }>
+    changedStat: Array<{
+      statName: string;
+      statValue: number;
+      statCode: string;
+    }>
   ) => {
     // 갱신할 객체
     const nextStatus = {
@@ -122,7 +134,7 @@ export const statControlAtom = atom(
         statValue: number;
         statCode: string;
       }>((element) => ({ ...element })),
-    }
+    };
     // 로컬에 갱신
     setLocal(nextStatus);
     set(characterStatusAtom, nextStatus);
@@ -209,7 +221,7 @@ const controlItemListAtom = atom(
 // });
 const deleteItem = atom(null, (get, set, usedItemCode: string) => {
   const prev = get(characterStatusAtom);
-  const itemList = prev.itemList.filter(e => e.code !== usedItemCode);
+  const itemList = prev.itemList.filter((e) => e.code !== usedItemCode);
   const nextStatus = {
     ...prev,
     itemList: itemList.map<{
@@ -228,21 +240,24 @@ export const useItemListAtom = () => useAtomValue(controlItemListAtom);
 export const useUpdateItemListAtom = () => useSetAtom(controlItemListAtom);
 export const useDeleteItemAtom = () => useSetAtom(deleteItem);
 
-
-
 export const statObjectAtom = atom(
-  (get) => { 
+  (get) => {
     return {
       statList: get(characterStatusAtom).statList,
-      statPoint: get(characterStatusAtom).statPoint
-    }
+      statPoint: get(characterStatusAtom).statPoint,
+    };
   },
   (
     get,
     set,
-    changedStat: {statPoint:number;
-      statList:
-      Array<{ statName: string; statValue: number; statCode: string }>}
+    changedStat: {
+      statPoint: number;
+      statList: Array<{
+        statName: string;
+        statValue: number;
+        statCode: string;
+      }>;
+    }
   ) => {
     // 갱신할 객체
     const nextStatus = {
@@ -253,7 +268,7 @@ export const statObjectAtom = atom(
         statValue: number;
         statCode: string;
       }>((element) => ({ ...element })),
-    }
+    };
     // 로컬에 갱신
     setLocal(nextStatus);
     set(characterStatusAtom, nextStatus);
