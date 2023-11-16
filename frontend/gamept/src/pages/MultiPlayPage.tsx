@@ -101,6 +101,8 @@ const MultiPlayPage = () => {
     } else setBlockInput(false);
   }, [event]);
 
+  const eventSource = new EventSource('http://localhost:8080/notifications/subscribe/1');
+
   // 웹소캣 객체 생성
   const connectHandler = () => {
     const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
@@ -275,22 +277,22 @@ const MultiPlayPage = () => {
           // 사망 여부 판별
           if (body.playerHp <= 0) {
             setEvent(null);
-            
+            endingEvent(body.prompt);
             return;
           }
 
           if (body.endYn === 'Y') {
-            // 종료 API 호출
-            const ChoiceFromDB = (await db.getAll())
-              .filter((v) => v.choice !== undefined)
-              .map((e) => e);
+            // // 종료 API 호출
+            // const ChoiceFromDB = (await db.getAll())
+            //   .filter((v) => v.choice !== undefined)
+            //   .map((e) => e);
 
-            // 직전 선택지 인덱스 디비에 저장
-            if (ChoiceFromDB.length > 0) {
-              for (let i = 0; i < ChoiceFromDB.length; i++) {
-                await db.deleteRecord(ChoiceFromDB[i].id);
-              }
-            }
+            // // 직전 선택지 인덱스 디비에 저장
+            // if (ChoiceFromDB.length > 0) {
+            //   for (let i = 0; i < ChoiceFromDB.length; i++) {
+            //     await db.deleteRecord(ChoiceFromDB[i].id);
+            //   }
+            // }
             setEvent(null);
           }
         },
@@ -672,6 +674,10 @@ const MultiPlayPage = () => {
           if (value.length === 0) initializeGame();
         });
       }
+
+      eventSource.addEventListener('sse', (message) => {
+        console.log(message);
+      })
     }
 
     const initializeEvent = async () => {
@@ -690,6 +696,7 @@ const MultiPlayPage = () => {
 
     return () => {
       disConnected();
+      eventSource.removeEventListener('sse', (event) => console.log(event));
     };
   }, []);
 
