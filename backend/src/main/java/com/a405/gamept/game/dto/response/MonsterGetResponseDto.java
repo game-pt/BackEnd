@@ -3,7 +3,7 @@ package com.a405.gamept.game.dto.response;
 import com.a405.gamept.game.entity.Monster;
 import com.a405.gamept.game.util.GameData;
 import com.a405.gamept.game.util.RegexPatterns;
-import com.a405.gamept.play.entity.FightingEnermy;
+import com.a405.gamept.play.entity.FightingEnemy;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -27,12 +27,12 @@ public record MonsterGetResponseDto(
         int monsterAttack
 
 ) {
-    public static MonsterGetResponseDto from(FightingEnermy fightingEnermy) {
+        public static MonsterGetResponseDto from(FightingEnemy fightingEnemy) {
         return MonsterGetResponseDto.builder()
-                .code(fightingEnermy.getCode())
-                .monsterLevel(fightingEnermy.getLevel())
-                .hp(fightingEnermy.getHp())
-                .monsterAttack(fightingEnermy.getAttack())
+                .code(fightingEnemy.getCode())
+                .monsterLevel(fightingEnemy.getLevel())
+                .hp(fightingEnemy.getHp())
+                .monsterAttack(fightingEnemy.getAttack())
                 .build();
-    }
+      }
 }
