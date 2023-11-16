@@ -154,7 +154,7 @@ public class FightServiceImpl implements FightService {
                 .orElseThrow(()->new GameException(GameErrorMessage.GAME_NOT_FOUND));
         Player player = playerRedisRepository.findById(fightResultGetCommandDto.playerCode())
                 .orElseThrow(()->new GameException(GameErrorMessage.PLAYER_NOT_FOUND));
-        FightingEnemy fightingEnemy = fightingEnemyRedisRepository.findById(fightResultGetCommandDto.fightingEnemyCode())
+        FightingEnemy fightingEnemy = fightingEnemyRedisRepository.findById(game.getFightingEnemyCode())
                 .orElseThrow(()->new GameException(GameErrorMessage.GAME_NOT_FOUND));
 
         String actCode = fightResultGetCommandDto.actCode();
