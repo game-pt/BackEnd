@@ -2,6 +2,7 @@
 export interface IPropmpt {
   type: string;
   data: IPromptHistory[][] | null;
+  now: string;
   playerCode?: string;
   isFetching: boolean;
 }
@@ -15,6 +16,7 @@ export interface IPromptInterface {
   gameType: string;
   isFetching: boolean;
   event: IEventType | null;
+  nowPrompt: string;
   block?: boolean;
   playerCode?: string;
   sendEventHandler?: (e: IActsType) => void;

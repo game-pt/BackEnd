@@ -49,6 +49,11 @@ const Prompt = (props: IPropmpt) => {
               ))}
             </div>
           ))}
+          {props.now !== '' && (
+            <div key={`prompt_now`} className={`my-4`} ref={lastPromptRef}>
+              <p>{props.now}</p>
+            </div>
+          )}
           {props.isFetching && (
             <div className="flex justify-center my-4" ref={lastPromptRef}>
               <LoadingSpinner1 />

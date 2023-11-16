@@ -38,6 +38,7 @@ const PromptInterface = (props: IPromptInterface) => {
           isFetching={props.isFetching}
           type="in-game"
           data={prompt}
+          now={props.nowPrompt}
         />
       )}
       <div className="w-full h-[250px] flex justify-center self-center">

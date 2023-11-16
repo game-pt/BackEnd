@@ -60,6 +60,7 @@ const SinglePlayPage = () => {
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
+  const [nowPrompt, setNowPrompt] = useState('');
   const itemUpdateAtom = useUpdateItemListAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
   const db = useIndexedDB('prompt');
@@ -672,6 +673,7 @@ const SinglePlayPage = () => {
           console.log(message.data);
           const data = JSON.parse(message.data);
           console.log(data);
+          // setNowPrompt(nowPrompt + data.content);
         });
       }
     };
@@ -770,6 +772,7 @@ const SinglePlayPage = () => {
           gameType="single"
           block={blockInput}
           playerCode={playerCode}
+          nowPrompt={nowPrompt}
           sendEventHandler={sendEventHandler}
           sendPromptHandler={sendPromptHandler}
         />
