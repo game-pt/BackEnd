@@ -107,7 +107,15 @@ export const initExtra = atom(
 
 // get 캐릭터 스탯, set 캐릭터 스텟
 export const statControlAtom = atom(
-  (get) => get(characterStatusAtom).statList,
+  (get) => {
+    let statList = get(characterStatusAtom).statList;
+    // const localData = localStorage.getItem('characterStatus');
+    // if (statList.length === 0 && localData) {
+    //   // 새로고침했을 경우 로컬에 저장된 값 불러오기
+    //   statList = JSON.parse(localData).statList;
+    // }
+    return statList;
+  },
   (
     get,
     set,
