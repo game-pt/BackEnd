@@ -6,17 +6,9 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-@RedisHash(value = "prompt")
 @Getter
 @Builder(toBuilder = true)
 public class Prompt {
-
-    /**
-     * [pk] gameCode : prompt 구분 값
-     */
-    @Id
-    private String code;
-
     /**
      * role: prompt를 보낸 주체 (system, user, assistant)
      */
