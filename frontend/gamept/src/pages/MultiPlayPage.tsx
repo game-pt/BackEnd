@@ -1,6 +1,6 @@
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Logo from '@/assets/logo/logo.png';
 import SideInterface from '@/organisms/SideInterface';
 import PromptInterface from '@/organisms/PromptInterface';
@@ -26,6 +26,20 @@ import {
 } from '@/jotai/CharacterStatAtom';
 import axios from 'axios';
 
+const MemoizedDiceModal = React.memo<{
+  dice: IDice;
+  setIsShowDice: (flag: boolean) => void;
+}>(({ dice, setIsShowDice }) => {
+  return (
+    <DiceModal
+      dice1={dice.dice1}
+      dice2={dice.dice2}
+      dice3={dice.dice3}
+      onClose={() => setIsShowDice(false)}
+    />
+  );
+});
+
 const MultiPlayPage = () => {
   const [chat, setChat] = useState<string[] | null>(null);
   const [event, setEvent] = useState<IEventType | null>(null);
@@ -42,17 +56,22 @@ const MultiPlayPage = () => {
   const promptAtom = usePromptAtom();
   const itemUpdateAtom = useUpdateItemListAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
-  const gameCode = 'mwAOIT';
-  const playerCode = 'mwAOIT-0lu9wx';
+  const gameCode = '4L6gIF';
+  const playerCode = '4L6gIF-atlK7u';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (event) setBlockInput(true);
-    else setBlockInput(false);
-    if (promptAtom[promptAtom.length - 1][0].role === playerCode)
-      setIsPromptFetching(true);
-  }, [promptAtom, event]);
+    if (event) {
+      setBlockInput(true);
+      if (event.eventName == '죽음') {
+        console.log('Game Over ==== Y');
+        setEvent(null);
+        navigate('/ending');
+        return;
+      }
+    } else setBlockInput(false);
+  }, [event]);
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -80,7 +99,7 @@ const MultiPlayPage = () => {
         (message) => {
           const body = JSON.parse(message.body);
 
-          if (body.dice1) {
+          if (body.dice1 && !isShowDice) {
             console.log(body);
             setDice(body);
             setIsShowDice(true);
@@ -108,20 +127,40 @@ const MultiPlayPage = () => {
           }
 
           if (body.gameOverYn === 'Y') {
-            console.log("Game Over ==== Y");
-            // 종료 API 호출
-            const ChoiceFromDB = (await db.getAll())
-              .filter((v) => v.choice !== undefined)
-              .map((e) => e);
+            console.log('Game Over ==== Y');
+            Swal.fire({
+              title: '사망',
+              text: `${body.prompt}`,
+              width: 600,
+              padding: '2rem',
+              color: '#FBCB73',
+              background: '#240903',
+              confirmButtonText: '확인',
+              confirmButtonColor: '#F0B279',
+              customClass: {
+                container: 'font-hol',
+                popup: 'rounded-lg',
+                title: 'text-48 mb-8',
+                htmlContainer: 'text-36',
+              },
+            }).then(async (result) => {
+              if (result.isConfirmed) {
+                disConnected();
+                // 종료 API 호출
+                const ChoiceFromDB = (await db.getAll())
+                  .filter((v) => v.choice !== undefined)
+                  .map((e) => e);
 
-            // 직전 선택지 인덱스 디비에 저장
-            if (ChoiceFromDB.length > 0) {
-              for (let i = 0; i < ChoiceFromDB.length; i++) {
-                await db.deleteRecord(ChoiceFromDB[i].id);
+                // 직전 선택지 인덱스 디비에 저장
+                if (ChoiceFromDB.length > 0) {
+                  for (let i = 0; i < ChoiceFromDB.length; i++) {
+                    await db.deleteRecord(ChoiceFromDB[i].id);
+                  }
+                }
+                setEvent(null);
+                navigate('/ending');
               }
-            }
-            setEvent(null);
-            navigate('/ending');
+            });
             return;
           }
 
@@ -255,20 +294,40 @@ const MultiPlayPage = () => {
           // setHP
           // HP 상태 값 변화
           if (body.playerHp <= 0) {
-            console.log("Game Over ==== Y");
-            // 종료 API 호출
-            const ChoiceFromDB = (await db.getAll())
-              .filter((v) => v.choice !== undefined)
-              .map((e) => e);
+            console.log('Game Over ==== Y');
+            Swal.fire({
+              title: '사망',
+              text: `${body.prompt}`,
+              width: 600,
+              padding: '2rem',
+              color: '#FBCB73',
+              background: '#240903',
+              confirmButtonText: '확인',
+              confirmButtonColor: '#F0B279',
+              customClass: {
+                container: 'font-hol',
+                popup: 'rounded-lg',
+                title: 'text-48 mb-8',
+                htmlContainer: 'text-36',
+              },
+            }).then(async (result) => {
+              if (result.isConfirmed) {
+                disConnected();
+                // 종료 API 호출
+                const ChoiceFromDB = (await db.getAll())
+                  .filter((v) => v.choice !== undefined)
+                  .map((e) => e);
 
-            // 직전 선택지 인덱스 디비에 저장
-            if (ChoiceFromDB.length > 0) {
-              for (let i = 0; i < ChoiceFromDB.length; i++) {
-                await db.deleteRecord(ChoiceFromDB[i].id);
+                // 직전 선택지 인덱스 디비에 저장
+                if (ChoiceFromDB.length > 0) {
+                  for (let i = 0; i < ChoiceFromDB.length; i++) {
+                    await db.deleteRecord(ChoiceFromDB[i].id);
+                  }
+                }
+                setEvent(null);
+                navigate('/ending');
               }
-            }
-            setEvent(null);
-            navigate('/ending');
+            });
             return;
           }
         },
@@ -293,7 +352,47 @@ const MultiPlayPage = () => {
           }
 
           // Event가 있다면
-          if (body.event !== null) {
+          if (body.event !== null && body.event !== undefined) {
+            if (body.event.eventName == '죽음') {
+              console.log('Game Over ==== Y');
+
+              Swal.fire({
+                title: '사망',
+                text: `${body.content}`,
+                width: 600,
+                padding: '2rem',
+                color: '#FBCB73',
+                background: '#240903',
+                confirmButtonText: '확인',
+                confirmButtonColor: '#F0B279',
+                customClass: {
+                  container: 'font-hol',
+                  popup: 'rounded-lg',
+                  title: 'text-48 mb-8',
+                  htmlContainer: 'text-36',
+                },
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  disConnected();
+                  // 종료 API 호출
+                  const ChoiceFromDB = (await db.getAll())
+                    .filter((v) => v.choice !== undefined)
+                    .map((e) => e);
+
+                  // 직전 선택지 인덱스 디비에 저장
+                  if (ChoiceFromDB.length > 0) {
+                    for (let i = 0; i < ChoiceFromDB.length; i++) {
+                      await db.deleteRecord(ChoiceFromDB[i].id);
+                    }
+                  }
+                  setEvent(null);
+                  navigate('/ending');
+                }
+              });
+
+              return;
+            }
+
             setEvent(body.event);
 
             const ChoiceFromDB = (await db.getAll())
@@ -390,12 +489,6 @@ const MultiPlayPage = () => {
         })
       );
     }
-
-    setTimeout(() => {
-      console.log('주사위 값 전송 딜레이');
-    }, 1000);
-
-    return;
   };
 
   const sendPromptHandler = (text: string) => {
@@ -447,16 +540,20 @@ const MultiPlayPage = () => {
         // 전투 이벤트 send
         // 주사위 값 받아와서 모달 보여주기
         getDicesHandler();
-        client.current.send(
-          `/fight/${gameCode}`,
-          {},
-          JSON.stringify({
-            playerCode,
-            actCode: choice.actCode,
-            subtask: checkSub[1],
-            fightingEnermyCode: body.monster ? body.monster.code : null,
-          })
-        );
+        setTimeout(() => {
+          if (client.current) {
+            client.current.send(
+              `/fight/${gameCode}`,
+              {},
+              JSON.stringify({
+                playerCode,
+                actCode: choice.actCode,
+                subtask: checkSub[1],
+                fightingEnermyCode: body.monster ? body.monster.code : null,
+              })
+            );
+          }
+        }, 1000);
         setIsPromptFetching(true);
         setPrompt([
           { msg: `[${choice.actName}]을 선택하겠습니다.`, role: playerCode },
@@ -497,16 +594,20 @@ const MultiPlayPage = () => {
 
       if (event && event.eventName == '전투') {
         getDicesHandler();
-        client.current.send(
-          `/fight/${gameCode}`,
-          {},
-          JSON.stringify({
-            playerCode,
-            actCode: choice.actCode,
-            subtask: choice.subtask,
-            fightingEnermyCode: body.monster ? body.monster.code : null,
-          })
-        );
+        setTimeout(() => {
+          if (client.current) {
+            client.current.send(
+              `/fight/${gameCode}`,
+              {},
+              JSON.stringify({
+                playerCode,
+                actCode: choice.actCode,
+                subtask: choice.subtask,
+                fightingEnermyCode: body.monster ? body.monster.code : null,
+              })
+            );
+          }
+        }, 1000);
 
         setIsPromptFetching(true);
         setPrompt([
@@ -534,14 +635,17 @@ const MultiPlayPage = () => {
       // 위에서 return에 안걸렸다면 일반 선택지 선택한 경우
       // select 채널에 send 해주기
       getDicesHandler();
-      client.current.send(
-        `/select/${gameCode}`,
-        {},
-        JSON.stringify({
-          actCode: choice.actCode,
-          playerCode,
-        })
-      );
+      setTimeout(() => {
+        if (client.current)
+          client.current.send(
+            `/select/${gameCode}`,
+            {},
+            JSON.stringify({
+              actCode: choice.actCode,
+              playerCode,
+            })
+          );
+      }, 1000);
       setIsPromptFetching(true);
       setPrompt([
         { msg: `[${choice.actName}]을 선택하겠습니다.`, role: playerCode },
@@ -600,7 +704,7 @@ const MultiPlayPage = () => {
         })
       );
     }
-  }
+  };
 
   useEffect(() => {
     const initializeGame = async () => {
@@ -661,7 +765,11 @@ const MultiPlayPage = () => {
       <div className="w-400 h-full flex flex-col justify-between items-start">
         <img src={Logo} alt="로고" className="w-[300px]" />
         <div className="w-full h-[400px] flex justify-center">
-          <SideInterface sendChat={sendChatHandler} chat={chat} deleteItem={deleteItem} />
+          <SideInterface
+            sendChat={sendChatHandler}
+            chat={chat}
+            deleteItem={deleteItem}
+          />
         </div>
         <ProfileInterface />
       </div>
@@ -680,12 +788,7 @@ const MultiPlayPage = () => {
         />
       </div>
       {isShowDice && (
-        <DiceModal
-          dice1={dice.dice1}
-          dice2={dice.dice2}
-          dice3={dice.dice3}
-          onClose={() => setIsShowDice(false)}
-        />
+        <MemoizedDiceModal dice={dice} setIsShowDice={setIsShowDice} />
       )}
     </div>
   );

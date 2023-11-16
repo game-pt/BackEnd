@@ -22,15 +22,16 @@ const EndingPage = () => {
   const db = useIndexedDB('prompt');
   const client = useRef<CompatClient | null>(null);
   const navigate = useNavigate();
-  const [gameCode] = useGameCode();
-  const [playerCode] = usePlayerCode();
+  // const [gameCode] = useGameCode();
+  // const [playerCode] = usePlayerCode();
+  const gameCode = '4L6gIF';
+  const playerCode = '4L6gIF-atlK7u';
   const [promptData, setPromptData] = useState<IPromptHistory[][] | null>(null);
   const [isFetching, setIsFetching] = useState<boolean>(true);
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
     const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
-    // const sock = new SockJS(`http://70.12.247.95:8080/ws`);
     client.current = Stomp.over(() => sock);
 
     // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
@@ -61,9 +62,17 @@ const EndingPage = () => {
             setPromptData([prompt]);
             setIsFetching(false);
           }
-        },
-        {}
+        }
       );
+
+      // 엔딩 페이지 소켓 연결과 동시에 Send
+      client.current.send(
+        `/ending/${gameCode}`,
+        {},
+        JSON.stringify({
+          playerCode,
+        })
+      )
     });
   };
 
@@ -78,14 +87,6 @@ const EndingPage = () => {
   useEffect(() => {
     if (client.current === null) {
       connectHandler();
-    } else {
-      client.current.send(
-        `/ending/${gameCode}`,
-        {},
-        JSON.stringify({
-          playerCode,
-        })
-      )
     }
   }, []);
 

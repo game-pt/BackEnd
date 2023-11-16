@@ -54,6 +54,11 @@ const Prompt = (props: IPropmpt) => {
           )}
         </div>
       )}
+      {!props.data && props.isFetching && (
+        <div className="flex justify-center my-4" ref={lastPromptRef}>
+          <LoadingSpinner1 />
+        </div>
+      )}
       <div className="w-full h-1/6 absolute bg-gradient-to-t from-transparent from-30% to-backgroud"></div>
     </div>
   );
