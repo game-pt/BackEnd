@@ -600,6 +600,15 @@ const MultiPlayPage = () => {
       );
   };
 
+  const sendEventStat = (statCode: string) => {
+    if (client.current) {
+      client.current.send(
+        `/stat-up/${gameCode}/${playerCode}/${statCode}`,
+        {}
+      );
+    }
+  }
+
   const leaveGame = () => {
     Swal.fire({
       title: '경고문',
@@ -709,6 +718,7 @@ const MultiPlayPage = () => {
             sendChat={sendChatHandler}
             chat={chat}
             deleteItem={deleteItem}
+            sendEventStat={sendEventStat}
           />
         </div>
         <ProfileInterface />
