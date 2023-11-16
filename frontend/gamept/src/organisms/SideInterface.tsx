@@ -158,6 +158,17 @@ const ItemTab = (props: { deleteItem: (itemCode:string) => void }) => {
     setItemList(updatedItemList);
   };
 
+  useEffect(() => {
+    itemListAtom.forEach(e => {
+      initList[e.name] = {
+        img: `${e.name}.png`,
+        desc: e.desc,
+        code: e.code
+      }
+    })
+    setItemList(initList);
+  }, [itemListAtom]);
+
   return (
     <div className="w-full h-full flex flex-col p-6 bg-transparent text-16">
       {Object.keys(itemList).map((e, i) => (

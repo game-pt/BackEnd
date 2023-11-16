@@ -23,7 +23,7 @@ export interface IPromptInterface {
 
 export interface IChoiceGroup {
   gameType: string;
-  data?: IActsType[] | null; 
+  data?: IActsType[] | null;
   onClickEvent?: (e: IActsType) => void;
 }
 

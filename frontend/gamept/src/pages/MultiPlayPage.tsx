@@ -56,18 +56,46 @@ const MultiPlayPage = () => {
   const promptAtom = usePromptAtom();
   const itemUpdateAtom = useUpdateItemListAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
-  const gameCode = '4L6gIF';
-  const playerCode = '4L6gIF-atlK7u';
+  const gameCode = 'rUUGH0';
+  const playerCode = 'rUUGH0-WiY7oG';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
+  const endingEvent = (text: string) => {
+    Swal.fire({
+      title: '죽음',
+      text: `${text}`,
+      width: 600,
+      padding: '2rem',
+      color: '#FBCB73',
+      background: '#240903',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#F0B279',
+      allowEnterKey: true,
+      customClass: {
+        container: 'font-hol',
+        popup: 'rounded-lg',
+        title: 'text-48 mb-8',
+        htmlContainer: 'text-36',
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        disConnected();
+        navigate('/ending');
+      }
+    });
+  }
+
   useEffect(() => {
     if (event) {
+      console.log(event);
       setBlockInput(true);
       if (event.eventName == '죽음') {
         console.log('Game Over ==== Y');
-        setEvent(null);
-        navigate('/ending');
+        console.log(promptAtom);
+        let str = ``;
+        promptAtom[promptAtom.length - 1].forEach(e => str += `${e.msg + '\n'}`);
+        endingEvent(str);
         return;
       }
     } else setBlockInput(false);
@@ -128,39 +156,7 @@ const MultiPlayPage = () => {
 
           if (body.gameOverYn === 'Y') {
             console.log('Game Over ==== Y');
-            Swal.fire({
-              title: '사망',
-              text: `${body.prompt}`,
-              width: 600,
-              padding: '2rem',
-              color: '#FBCB73',
-              background: '#240903',
-              confirmButtonText: '확인',
-              confirmButtonColor: '#F0B279',
-              customClass: {
-                container: 'font-hol',
-                popup: 'rounded-lg',
-                title: 'text-48 mb-8',
-                htmlContainer: 'text-36',
-              },
-            }).then(async (result) => {
-              if (result.isConfirmed) {
-                disConnected();
-                // 종료 API 호출
-                const ChoiceFromDB = (await db.getAll())
-                  .filter((v) => v.choice !== undefined)
-                  .map((e) => e);
-
-                // 직전 선택지 인덱스 디비에 저장
-                if (ChoiceFromDB.length > 0) {
-                  for (let i = 0; i < ChoiceFromDB.length; i++) {
-                    await db.deleteRecord(ChoiceFromDB[i].id);
-                  }
-                }
-                setEvent(null);
-                navigate('/ending');
-              }
-            });
+            endingEvent(body.prompt);
             return;
           }
 
@@ -276,6 +272,13 @@ const MultiPlayPage = () => {
             }
           }
 
+          // 사망 여부 판별
+          if (body.playerHp <= 0) {
+            setEvent(null);
+            
+            return;
+          }
+
           if (body.endYn === 'Y') {
             // 종료 API 호출
             const ChoiceFromDB = (await db.getAll())
@@ -289,46 +292,6 @@ const MultiPlayPage = () => {
               }
             }
             setEvent(null);
-          }
-
-          // setHP
-          // HP 상태 값 변화
-          if (body.playerHp <= 0) {
-            console.log('Game Over ==== Y');
-            Swal.fire({
-              title: '사망',
-              text: `${body.prompt}`,
-              width: 600,
-              padding: '2rem',
-              color: '#FBCB73',
-              background: '#240903',
-              confirmButtonText: '확인',
-              confirmButtonColor: '#F0B279',
-              customClass: {
-                container: 'font-hol',
-                popup: 'rounded-lg',
-                title: 'text-48 mb-8',
-                htmlContainer: 'text-36',
-              },
-            }).then(async (result) => {
-              if (result.isConfirmed) {
-                disConnected();
-                // 종료 API 호출
-                const ChoiceFromDB = (await db.getAll())
-                  .filter((v) => v.choice !== undefined)
-                  .map((e) => e);
-
-                // 직전 선택지 인덱스 디비에 저장
-                if (ChoiceFromDB.length > 0) {
-                  for (let i = 0; i < ChoiceFromDB.length; i++) {
-                    await db.deleteRecord(ChoiceFromDB[i].id);
-                  }
-                }
-                setEvent(null);
-                navigate('/ending');
-              }
-            });
-            return;
           }
         },
         {}
@@ -355,40 +318,10 @@ const MultiPlayPage = () => {
           if (body.event !== null && body.event !== undefined) {
             if (body.event.eventName == '죽음') {
               console.log('Game Over ==== Y');
-
-              Swal.fire({
-                title: '사망',
-                text: `${body.content}`,
-                width: 600,
-                padding: '2rem',
-                color: '#FBCB73',
-                background: '#240903',
-                confirmButtonText: '확인',
-                confirmButtonColor: '#F0B279',
-                customClass: {
-                  container: 'font-hol',
-                  popup: 'rounded-lg',
-                  title: 'text-48 mb-8',
-                  htmlContainer: 'text-36',
-                },
-              }).then(async (result) => {
-                if (result.isConfirmed) {
-                  disConnected();
-                  // 종료 API 호출
-                  const ChoiceFromDB = (await db.getAll())
-                    .filter((v) => v.choice !== undefined)
-                    .map((e) => e);
-
-                  // 직전 선택지 인덱스 디비에 저장
-                  if (ChoiceFromDB.length > 0) {
-                    for (let i = 0; i < ChoiceFromDB.length; i++) {
-                      await db.deleteRecord(ChoiceFromDB[i].id);
-                    }
-                  }
-                  setEvent(null);
-                  navigate('/ending');
-                }
-              });
+              console.log(promptAtom);
+              let str = ``;
+              promptAtom[promptAtom.length - 1].forEach(e => str += `${e.msg + '\n'}`);
+              endingEvent(str);
 
               return;
             }

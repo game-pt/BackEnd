@@ -14,8 +14,8 @@ import { useIndexedDB } from 'react-indexed-db-hook';
 import { useEffect, useRef, useState } from 'react';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { useGameCode } from '@/hooks/useGameCode';
-import { usePlayerCode } from '@/hooks/usePlayerCode';
+// import { useGameCode } from '@/hooks/useGameCode';
+// import { usePlayerCode } from '@/hooks/usePlayerCode';
 import { IPromptHistory } from '@/types/components/Prompt.types';
 
 const EndingPage = () => {
@@ -24,12 +24,11 @@ const EndingPage = () => {
   const navigate = useNavigate();
   // const [gameCode] = useGameCode();
   // const [playerCode] = usePlayerCode();
-  const gameCode = '4L6gIF';
-  const playerCode = '4L6gIF-atlK7u';
+  const gameCode = 'rUUGH0';
+  const playerCode = 'rUUGH0-WiY7oG';
   const [promptData, setPromptData] = useState<IPromptHistory[][] | null>(null);
   const [isFetching, setIsFetching] = useState<boolean>(true);
 
-  // 웹소캣 객체 생성
   const connectHandler = () => {
     const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
     client.current = Stomp.over(() => sock);
@@ -48,38 +47,32 @@ const EndingPage = () => {
         console.log('Additional details: ' + frame.body);
       };
 
-      // 엔딩 프롬프트 구독
-      client.current.subscribe(
-        `/topic/ending/${gameCode}`,
-        async (message) => {
-          const body = JSON.parse(message.body);
+      client.current.subscribe(`/topic/ending/${gameCode}`, async (message) => {
+        const body = JSON.parse(message.body);
 
-          if (body.content !== undefined && body.role !== undefined) {
-            const prompt = body.content.split('\n').map((e: string) => {
-              return { msg: e, role: body.role };
-            });
+        if (body.content !== undefined && body.role !== undefined) {
+          const prompt = body.content.split('\n').map((e: string) => {
+            return { msg: e, role: body.role };
+          });
 
-            setPromptData([prompt]);
-            setIsFetching(false);
-          }
+          setPromptData([prompt]);
+          setIsFetching(false);
         }
-      );
+      });
 
-      // 엔딩 페이지 소켓 연결과 동시에 Send
       client.current.send(
         `/ending/${gameCode}`,
         {},
         JSON.stringify({
           playerCode,
         })
-      )
+      );
     });
   };
 
   const handleFinishGame = () => {
     localStorage.removeItem('gameCode');
     localStorage.removeItem('playerCode');
-    // 인덱스db 초기화
     db.clear();
     navigate('/createGame');
   };

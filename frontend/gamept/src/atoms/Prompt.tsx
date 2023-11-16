@@ -24,9 +24,9 @@ const Prompt = (props: IPropmpt) => {
           {props.data.map((e, i) => (
             <div
               key={`prompt_${i}`}
-              className={`my-4 ${e[0].role === props.playerCode  && `flex`}`}
+              className={`my-4 ${e[0].role === props.playerCode && `flex`}`}
               ref={
-                (props.data && props.data.length - 1 === i) && !props.isFetching
+                props.data && props.data.length - 1 === i && !props.isFetching
                   ? lastPromptRef
                   : null
               }
@@ -39,7 +39,9 @@ const Prompt = (props: IPropmpt) => {
               )}
               {e.map((v, j) => (
                 <p
-                  className={v.role === props.playerCode ? `text-secondaryContainer` : ``}
+                  className={
+                    v.role === props.playerCode ? `text-secondaryContainer` : ``
+                  }
                   key={`promptMsg_${i}_${j}`}
                 >
                   {v.msg}
@@ -60,6 +62,7 @@ const Prompt = (props: IPropmpt) => {
         </div>
       )}
       <div className="w-full h-1/6 absolute bg-gradient-to-t from-transparent from-30% to-backgroud"></div>
+      <div className="w-full h-4 absolute -bottom-0 bg-gradient-to-b from-transparent from-30% to-backgroud"></div>
     </div>
   );
 };
