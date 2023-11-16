@@ -15,6 +15,9 @@ const SinglePlayPage = () => {
   // 코드 이식 후 아래 빌드 에러 방지용 코드 제거
   gameCode;
   playerCode;
+  const deleteItem = (itemCode: string) => {
+    console.log(itemCode);
+  }
   ///////////////////////////////////////////////////////////////////////////////
 
   return (
@@ -22,7 +25,7 @@ const SinglePlayPage = () => {
       <div className="w-400 h-full flex flex-col justify-between items-start">
         <img src={Logo} alt="로고" className="w-[300px]" />
         <div className="w-full h-[400px] flex justify-center">
-          <SideInterface />
+          <SideInterface deleteItem={deleteItem} />
         </div>
         <ProfileInterface />
       </div>
