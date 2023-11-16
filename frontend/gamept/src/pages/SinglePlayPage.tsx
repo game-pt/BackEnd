@@ -668,12 +668,13 @@ const SinglePlayPage = () => {
       if (eventSource.current) {
         eventSource.current.addEventListener('sse', (message) => {
           console.log(message);
+          console.log(nowPrompt);
         });
         eventSource.current.addEventListener('message', (message) => {
-          console.log(message.data);
+          // console.log(message.data);
           const data = JSON.parse(message.data);
-          console.log(data);
-          // setNowPrompt(nowPrompt + data.content);
+          // console.log(data.choices[0].delta.content);
+          setNowPrompt(nowPrompt + data.content);
         });
       }
     };
