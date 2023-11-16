@@ -26,9 +26,11 @@ import {
   characterStatusAtom,
   useStatUpAtom,
   useUpdateItemListAtom,
+  useUpdateProfileAtom,
 } from '@/jotai/CharacterStatAtom';
 import axios from 'axios';
 import { fetchGetPlayerInfo } from '@/services/CreateCharacterService';
+import { IProfileInterface } from '@/types/components/ProfileInterface.type';
 
 const MemoizedDiceModal = React.memo<{
   dice: IDice;
@@ -54,6 +56,7 @@ const SinglePlayPage = () => {
     dice2: 0,
     dice3: 0,
   });
+  const eventSource = useRef<EventSource | null>(null);
   const client = useRef<CompatClient | null>(null);
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
@@ -63,6 +66,8 @@ const SinglePlayPage = () => {
   const navigate = useNavigate();
   // From SideInterface
   const setStatList = useStatUpAtom();
+  // From ProfileInterface
+  const setProfileStat = useUpdateProfileAtom();
 
   const [gameCode] = useGameCode();
   const [playerCode] = usePlayerCode();
@@ -107,7 +112,6 @@ const SinglePlayPage = () => {
     } else setBlockInput(false);
   }, [event]);
 
-  const eventSource = new EventSource('http://localhost:8080/notifications/subscribe/1');
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -138,6 +142,14 @@ const SinglePlayPage = () => {
           const statPoint = playerStat.statPoint;
 
           setStatList({ statPoint: statPoint, statList: statList });
+        }
+      )
+
+      // ProfileInterface
+      client.current.subscribe(
+        `/queue/${playerCode}/status`,
+        (message) => {
+          setProfileStat(message.body as IProfileInterface);
         }
       )
 
@@ -317,7 +329,41 @@ const SinglePlayPage = () => {
         {}
       );
 
-      // 프롬프트 데이터 송수신용
+      client.current.subscribe(
+        `/topic/event/${gameCode}`,
+        async (message) => {
+          const body = JSON.parse(message.body);
+
+          if (body.event.eventName == '죽음') {
+            console.log('Game Over ==== Y');
+            console.log(promptAtom);
+            let str = ``;
+            promptAtom[promptAtom.length - 1].forEach(e => str += `${e.msg + '\n'}`);
+            endingEvent(str);
+
+            return;
+          }
+
+          setEvent(body.event);
+
+          const ChoiceFromDB = (await db.getAll())
+            .filter((v) => v.choice !== undefined)
+            .map((e) => e);
+
+          // 직전 선택지 인덱스 디비에 저장
+          if (ChoiceFromDB.length === 0) {
+            await db.add({ choice: body });
+          } else if (ChoiceFromDB.length <= 1) {
+            await db.update({ choice: body, id: ChoiceFromDB[0].id });
+          } else {
+            for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
+              await db.deleteRecord(ChoiceFromDB[i].id);
+            }
+          }
+        }
+      )
+
+      // 프롬프트 데이터 수신용
       client.current.subscribe(
         `/topic/prompt/${gameCode}`,
         async (message) => {
@@ -325,56 +371,12 @@ const SinglePlayPage = () => {
 
           console.log(body);
 
-          if (body.content !== undefined && body.role !== playerCode) {
-            const prompt = body.content.split('\n').map((e: string) => {
-              return { msg: e, role: body.role };
-            });
+          const prompt = body.content.split('\n').map((e: string) => {
+            return { msg: e, role: body.role };
+          });
 
-            setPrompt(prompt);
-            setIsPromptFetching(false);
-          }
-
-          // Event가 있다면
-          if (body.event !== null && body.event !== undefined) {
-            if (body.event.eventName == '죽음') {
-              console.log('Game Over ==== Y');
-              console.log(promptAtom);
-              let str = ``;
-              promptAtom[promptAtom.length - 1].forEach(e => str += `${e.msg + '\n'}`);
-              endingEvent(str);
-
-              return;
-            }
-
-            setEvent(body.event);
-
-            const ChoiceFromDB = (await db.getAll())
-              .filter((v) => v.choice !== undefined)
-              .map((e) => e);
-
-            // 직전 선택지 인덱스 디비에 저장
-            if (ChoiceFromDB.length === 0) {
-              await db.add({ choice: body });
-            } else if (ChoiceFromDB.length <= 1) {
-              await db.update({ choice: body, id: ChoiceFromDB[0].id });
-            } else {
-              for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
-                await db.deleteRecord(ChoiceFromDB[i].id);
-              }
-            }
-          } else {
-            setEvent(null);
-            const ChoiceFromDB = (await db.getAll())
-              .filter((v) => v.choice !== undefined)
-              .map((e) => e);
-
-            // 직전 선택지 인덱스 디비에 저장
-            if (ChoiceFromDB.length > 0) {
-              for (let i = 0; i < ChoiceFromDB.length; i++) {
-                await db.deleteRecord(ChoiceFromDB[i].id);
-              }
-            }
-          }
+          setPrompt(prompt);
+          setIsPromptFetching(false);
         },
         {}
       );
@@ -411,6 +413,8 @@ const SinglePlayPage = () => {
             client.current.unsubscribe('sub-4');
             client.current.unsubscribe('sub-5');
             client.current.unsubscribe('sub-6');
+            client.current.unsubscribe('sub-7');
+            client.current.unsubscribe('sub-8');
           }
         });
       } catch (err) {
@@ -419,6 +423,8 @@ const SinglePlayPage = () => {
       client.current = null;
     } else console.log('Already Disconnected!!!');
   };
+
+  // const handleLe
 
   const getDicesHandler = () => {
     if (client.current) {
@@ -432,17 +438,30 @@ const SinglePlayPage = () => {
     }
   };
 
-  const sendPromptHandler = (text: string) => {
+  const sendPromptHandler = async (text: string) => {
     // 사용자가 입력한 프롬프트 송신 메서드
-    if (client.current) {
-      client.current.send(
-        `/prompt/${gameCode}`,
-        {},
-        JSON.stringify({
-          playerCode,
-          prompt: text,
-        })
-      );
+    // if (client.current) {
+    //   client.current.send(
+    //     `/prompt/${gameCode}`,
+    //     {},
+    //     JSON.stringify({
+    //       playerCode,
+    //       prompt: text,
+    //     })
+    //   );
+    //   setIsPromptFetching(true);
+    //   setPrompt([{ msg: text, role: playerCode }]);
+    // }
+    if (gameCode !== '' && playerCode !== '') {
+      const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/prompt/send/${gameCode}`, JSON.stringify({
+        playerCode,
+        prompt: text
+      }), {
+        headers: {
+          "Content-Type": "application/json;charset=utf-8"
+        }
+      });
+      console.log(res.data);
       setIsPromptFetching(true);
       setPrompt([{ msg: text, role: playerCode }]);
     }
@@ -625,8 +644,7 @@ const SinglePlayPage = () => {
     }).then((result) => {
       if (result.isDenied) {
         disConnected();
-        db.clear();
-        navigate('/');
+        navigate('/ending');
       }
     });
   };
@@ -645,13 +663,32 @@ const SinglePlayPage = () => {
   };
 
   useEffect(() => {
+    const connetEventSource = () => {
+      eventSource.current = new EventSource(`${import.meta.env.VITE_SERVER_URL}/prompt/subscribe/${gameCode}`);
+      console.log(eventSource.current);
+
+      if (eventSource.current) {
+        eventSource.current.addEventListener('sse', (message) => {
+          console.log(message);
+        })
+      }
+    }
     const initializeGame = async () => {
+      if (playerCode === '' || gameCode === '') return;
       try {
+
+        console.log(playerCode, gameCode);
+        await fetchGetPlayerInfo(gameCode, playerCode).then((playerInfo) => {
+          console.log(playerInfo);
+          setStatList({ statPoint: playerInfo.statPoint, statList: playerInfo.statList });
+        })
         const res = await axios.get(
           `${
             import.meta.env.VITE_SERVER_URL
           }/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
         );
+
+        console.log(res.data);
 
         res.data.forEach((e: { role: string; content: string }) => {
           const arr = e.content.split('\n').map((v) => {
@@ -666,10 +703,7 @@ const SinglePlayPage = () => {
 
     if (client.current === null) {
       connectHandler();
-      fetchGetPlayerInfo(gameCode, playerCode).then((playerInfo) => {
-        console.log(playerInfo);
-        setStatList({ statPoint: playerInfo.statPoint, statList: playerInfo.statList });
-      })
+      
       const itemList = localStorage.getItem('characterStatus');
 
       if (itemList) {
@@ -682,9 +716,7 @@ const SinglePlayPage = () => {
         });
       }
 
-      eventSource.addEventListener('sse', (message) => {
-        console.log(message);
-      })
+      
     }
 
     const initializeEvent = async () => {
@@ -698,14 +730,16 @@ const SinglePlayPage = () => {
         console.log(ChoiceFromDB[0].choice);
       }
     };
-
+    if (gameCode !== '') {
+      connetEventSource();
+    }
     initializeEvent();
 
     return () => {
       disConnected();
-      eventSource.removeEventListener('sse', (event) => console.log(event));
+      if (eventSource.current) eventSource.current.removeEventListener('sse', (event) => console.log(event));
     };
-  }, []);
+  }, [playerCode, gameCode]);
 
   return (
     <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary">

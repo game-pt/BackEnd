@@ -101,7 +101,7 @@ const MultiPlayPage = () => {
     } else setBlockInput(false);
   }, [event]);
 
-  const eventSource = new EventSource('http://localhost:8080/notifications/subscribe/1');
+  // const eventSource = new EventSource('http://localhost:8080/notifications/subscribe/1');
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
@@ -631,8 +631,7 @@ const MultiPlayPage = () => {
     }).then((result) => {
       if (result.isDenied) {
         disConnected();
-        db.clear();
-        navigate('/');
+        navigate('/ending');
       }
     });
   };
@@ -684,9 +683,9 @@ const MultiPlayPage = () => {
         });
       }
 
-      eventSource.addEventListener('sse', (message) => {
-        console.log(message);
-      })
+      // eventSource.addEventListener('sse', (message) => {
+      //   console.log(message);
+      // })
     }
 
     const initializeEvent = async () => {
@@ -705,7 +704,7 @@ const MultiPlayPage = () => {
 
     return () => {
       disConnected();
-      eventSource.removeEventListener('sse', (event) => console.log(event));
+      // eventSource.removeEventListener('sse', (event) => console.log(event));
     };
   }, []);
 

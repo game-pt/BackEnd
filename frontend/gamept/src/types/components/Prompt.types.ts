@@ -29,8 +29,9 @@ export interface IChoiceGroup {
 
 export interface IMonsterType {
   code: string;
-  monsterLevel: number;
-  monsterAttack: number;
+  level: number;
+  attack: number;
+  hp: number;
 }
 
 export interface IPromptType {

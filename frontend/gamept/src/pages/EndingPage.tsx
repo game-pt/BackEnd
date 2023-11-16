@@ -73,8 +73,9 @@ const EndingPage = () => {
   const handleFinishGame = () => {
     localStorage.removeItem('gameCode');
     localStorage.removeItem('playerCode');
+    localStorage.removeItem('characterStatus');
     db.clear();
-    navigate('/createGame');
+    navigate('/');
   };
 
   useEffect(() => {

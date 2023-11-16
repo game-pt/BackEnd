@@ -2,75 +2,75 @@ import Gauge from '@/atoms/Gauge';
 import axios from 'axios';
 import {
   initCharacterStatusAtom,
-  useUpdateProfileAtom,
+  // useUpdateProfileAtom,
 } from '@/jotai/CharacterStatAtom';
 import { useAtom } from 'jotai';
-import { useRef, useEffect } from 'react';
-import SockJS from 'sockjs-client';
-import { CompatClient, Stomp } from '@stomp/stompjs';
-import { IProfileInterface } from '@/types/components/ProfileInterface.type';
+// import { useRef, useEffect } from 'react';
+// import SockJS from 'sockjs-client';
+// import { CompatClient, Stomp } from '@stomp/stompjs';
+// import { IProfileInterface } from '@/types/components/ProfileInterface.type';
+// import { usePlayerCode } from '@/hooks/usePlayerCode';
 import ProfileImage from '@/atoms/ProfileImage';
-import { usePlayerCode } from '@/hooks/usePlayerCode';
 
 const ProfileInterface = () => {
   const [getStatusAtom] = useAtom(initCharacterStatusAtom);
-  const [playerCode] = usePlayerCode();
-  const client = useRef<CompatClient | null>(null);
-  const setProfileStat = useUpdateProfileAtom();
+  // const [playerCode] = usePlayerCode();
+  // const client = useRef<CompatClient | null>(null);
+  // const setProfileStat = useUpdateProfileAtom();
   console.log('스테이터스', getStatusAtom);
-  const connectHandler = () => {
-    const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
-    client.current = Stomp.over(() => sock);
+  // const connectHandler = () => {
+  //   const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
+  //   client.current = Stomp.over(() => sock);
 
-    // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
-    // client.current.debug = () => null;
+  //   // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
+  //   // client.current.debug = () => null;
 
-    client.current.connect({}, () => {
-      if (client.current == null) {
-        console.log('Error');
-        return;
-      }
+  //   client.current.connect({}, () => {
+  //     if (client.current == null) {
+  //       console.log('Error');
+  //       return;
+  //     }
 
-      // hp, exp, level 받아오는 채널
-      client.current.subscribe(
-        `/queue/${playerCode}/status`,
-        (message) => {
-          console.log(JSON.parse(message.body));
-          // message.body를 통해 데이터 받아서
-          // 프로필 업데이트 로직 수행
-          // 해당 방 구독하는 모든 플레이어들 데이터 저장하는 객체에다가 업데이트
-          setProfileStat(message.body as IProfileInterface);
-        },
-        {}
-      );
-    });
-  };
+  //     // hp, exp, level 받아오는 채널
+  //     client.current.subscribe(
+  //       `/queue/${playerCode}/status`,
+  //       (message) => {
+  //         console.log(JSON.parse(message.body));
+  //         // message.body를 통해 데이터 받아서
+  //         // 프로필 업데이트 로직 수행
+  //         // 해당 방 구독하는 모든 플레이어들 데이터 저장하는 객체에다가 업데이트
+  //         setProfileStat(message.body as IProfileInterface);
+  //       },
+  //       {}
+  //     );
+  //   });
+  // };
 
-  const disConnected = () => {
-    if (client.current !== null) {
-      try {
-        client.current.debug = () => null;
-        client.current.disconnect(() => {
-          if (client.current) {
-            client.current.unsubscribe('sub-0');
-          }
-        });
-      } catch (err) {
-        console.log('disconneted Failed');
-      }
-      client.current = null;
-    } else console.log('Already Disconnected!!!');
-  };
+  // const disConnected = () => {
+  //   if (client.current !== null) {
+  //     try {
+  //       client.current.debug = () => null;
+  //       client.current.disconnect(() => {
+  //         if (client.current) {
+  //           client.current.unsubscribe('sub-0');
+  //         }
+  //       });
+  //     } catch (err) {
+  //       console.log('disconneted Failed');
+  //     }
+  //     client.current = null;
+  //   } else console.log('Already Disconnected!!!');
+  // };
 
-  useEffect(() => {
-    if (client.current === null) {
-      connectHandler();
-    }
+  // useEffect(() => {
+  //   if (client.current === null) {
+  //     connectHandler();
+  //   }
 
-    return () => {
-      disConnected();
-    };
-  }, []);
+  //   return () => {
+  //     disConnected();
+  //   };
+  // }, []);
 
   const handleLevelUp = async () => {
     // 어차피 소켓을 통해 변동사항이 전달된다면 레벨업처리가 필요한가?
