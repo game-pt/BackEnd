@@ -223,9 +223,12 @@ public class FightServiceImpl implements FightService {
                 .build();
 
         gameRedisRepository.save(game);
-
+        String gameOverYn = "N";
+        if(playerHp == 0 || (fightingEnemy.getCode().equals("MON-011") && fightEnemyHp == 0)){
+            gameOverYn = "Y";
+        }
         //log.info("전투 끝 : "+gameStateCommandDto.prompt());
-        return FightResultGetResponseDto.from(gameStateCommandDto);
+        return FightResultGetResponseDto.of(gameStateCommandDto, gameOverYn);
     }
 
     public void clearStat(Player player){
