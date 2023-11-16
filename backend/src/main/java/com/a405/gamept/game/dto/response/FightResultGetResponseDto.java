@@ -15,9 +15,10 @@ public record FightResultGetResponseDto(
         String prompt,
         @NotBlank(message = "이야기 도중 여부는 필수 입니다.")
         String endYn,
-        int playerHp
+        @NotBlank(message = "게임 도중 여부는 필수 입니다.")
+        String gameOverYn
 ) {
-        public static FightResultGetResponseDto from(GameStateCommandDto gameStateCommandDto){
-                return new FightResultGetResponseDto(gameStateCommandDto.prompt(), gameStateCommandDto.endYn(), gameStateCommandDto.playerHp());
+        public static FightResultGetResponseDto of(GameStateCommandDto gameStateCommandDto, String gameOverYn){
+                return new FightResultGetResponseDto(gameStateCommandDto.prompt(), gameStateCommandDto.endYn(), gameOverYn);
         }
 }
