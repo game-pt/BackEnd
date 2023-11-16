@@ -18,11 +18,9 @@ public record FightResultGetRequestDto(
         @NotNull(message = "하위 항목 여부는 필수입니다.")
         Subtask subtask,
         @NotBlank(message = "플레이어 코드는 필수입니다.")
-        String playerCode,
-        @NotBlank(message = "몬스터 코드는 필수입니다.")
-        String fightingEnermyCode
+        String playerCode
 ) {
     public FightResultGetCommandDto toCommand(String gameCode){
-        return new FightResultGetCommandDto(this.actCode, this.subtask, gameCode, this.playerCode, this.fightingEnermyCode);
+        return new FightResultGetCommandDto(this.actCode, this.subtask, gameCode, this.playerCode);
     }
 }
