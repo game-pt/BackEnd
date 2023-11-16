@@ -502,7 +502,7 @@ public class FightServiceImpl implements FightService {
         if(playerHp == 0){
             //게임 오버
             result.append("HP가 0이 되어버렸다...\n");
-            result.append(player.getNickname()).append(" 은 쓰러지고 말았다.\n").append(damage).append("눈앞이 깜깜해진다.....\n");
+            result.append(player.getNickname()).append("눈앞이 깜깜해진다.....\n");
             endYn = "Y";
 
         }else if(fightingEnemyHp == 0){
@@ -734,7 +734,7 @@ public class FightServiceImpl implements FightService {
 
         if(playerHp <= 0){
             result.append("HP가 0이 되어버렸다...\n");
-            result.append(nickname).append(" 은 쓰러지고 말았다.\n").append(damage).append("눈앞이 깜깜해진다.....\n");
+            result.append(nickname).append(" 은 쓰러지고 말았다.\n").append("눈앞이 깜깜해진다.....\n");
         }
 
         String endYn = playerHp <= 0?"Y":"N";
