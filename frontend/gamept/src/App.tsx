@@ -6,7 +6,7 @@
 import Logo from '@/assets/logo/logo.png';
 import SelectButton from './atoms/SelectButton';
 import { useNavigate } from 'react-router-dom';
-import kakao from '@/assets/logo/kakaologo.png';
+import kakao from '@/assets/logo/kakaologo.svg';
 
 function App() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ function App() {
     <div className="w-screen h-screen bg-backgroundDeep flex flex-col items-center justify-center caret-transparent">
       <img src={Logo} alt="GamePT 로고" className="w-1/2" />
 
-      <div className="w-[450px] h-[70px] bg-yKakao rounded-[12px] flex flex-row justify-between items-center mb-5 px-5">
+      <div className="w-[450px] h-[70px] bg-yKakao rounded-[16px] flex flex-row justify-between items-center mb-5 px-5">
         <img
           src={kakao}
           alt="카카오 로고"
