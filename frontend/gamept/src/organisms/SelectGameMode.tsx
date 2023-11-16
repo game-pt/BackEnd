@@ -10,7 +10,8 @@ import { useState } from 'react';
 import GameModeCard from './GameModeCard';
 import { IGameModeCard } from '@/types/components/GameModeCard.type';
 import { ISelectGameMode } from '@/types/components/MakeGameProcess.type';
-import MultiplayModal from './MultiplayModal';
+// import MultiplayModal from './MultiplayModal';
+import CommingSoonModal from './CommingSoonModal';
 import { gameModeAtom } from '@/jotai/MakeGameAtom';
 import { useAtom } from 'jotai';
 const SelectGameMode = (props: ISelectGameMode) => {
@@ -54,11 +55,17 @@ const SelectGameMode = (props: ISelectGameMode) => {
         ))}
       </div>
       {isShowModal && (
+        <CommingSoonModal
+          onClose={() => setIsShowModal(false)}
+          // onGoSelectStory={props.onGoSelectStory}
+        />
+      )}
+      {/* {isShowModal && (
         <MultiplayModal
           onClose={() => setIsShowModal(false)}
           onGoSelectStory={props.onGoSelectStory}
         />
-      )}
+      )} */}
     </div>
   );
 };
