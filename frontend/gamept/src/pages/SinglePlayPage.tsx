@@ -671,6 +671,9 @@ const SinglePlayPage = () => {
         eventSource.current.addEventListener('sse', (message) => {
           console.log(message);
         })
+        eventSource.current.addEventListener('message', (message) => {
+          console.log(message);
+        })
       }
     }
     const initializeGame = async () => {
@@ -737,7 +740,10 @@ const SinglePlayPage = () => {
 
     return () => {
       disConnected();
-      if (eventSource.current) eventSource.current.removeEventListener('sse', (event) => console.log(event));
+      if (eventSource.current) {
+        eventSource.current.removeEventListener('sse', (event) => console.log(event));
+        eventSource.current.removeEventListener('message', (event) => console.log(event));
+      }
     };
   }, [playerCode, gameCode]);
 
