@@ -236,12 +236,11 @@ public class PromptServiceImpl implements PromptService {
 
     @Override
     public String sendPrompt(String gameCode, String inputPrompt) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-
         Game game = gameRedisRepository.findById(gameCode)
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
         SseEmitter emitter = emitterRepository.get(gameCode);
-        String outputPrompt = chatGptClientUtil.enterPromptForSse(emitter, inputPrompt, game.getMemory(), game.getPromptList());
+        String outputPrompt = chatGptClientUtil.enterPromptForSse(emitter, inputPrompt, game.getSettingPrompt(), game.getMemory(), game.getPromptList());
+        log.info("ChatGPT Result: " + outputPrompt);
 
         return outputPrompt;
     }

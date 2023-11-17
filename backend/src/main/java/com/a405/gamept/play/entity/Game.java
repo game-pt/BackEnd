@@ -33,6 +33,12 @@ public class Game {
     private String storyCode;
 
     /**
+     * settingPrompt : 게임의 설정을 위한 프롬프트
+     */
+    @NotBlank(message = "스토리 설정 프롬프트가 올바르지 않습니다.")
+    private String settingPrompt;
+
+    /**
      * memory : 프롬프트 저장
      */
     @Builder.Default
@@ -87,9 +93,10 @@ public class Game {
     private String mappedEmitter = null;
 
     @Builder
-    public Game(String code, String storyCode, String memory, int turn, int eventCnt, double eventRate, List<String> playerList, String fightingEnemyCode, List<Prompt> promptList, int diceValue, String mappedEmitter) {
+    public Game(String code, String storyCode, String settingPrompt, String memory, int turn, int eventCnt, double eventRate, List<String> playerList, String fightingEnemyCode, List<Prompt> promptList, int diceValue, String mappedEmitter) {
         this.code = code;
         this.storyCode = storyCode;
+        this.settingPrompt = settingPrompt;
         this.memory = memory;
         this.turn = turn;
         this.eventCnt = eventCnt;
