@@ -24,9 +24,9 @@ const CreateGamePage = () => {
     setIsSelectStory(true);
   };
 
-  if (isSuccess) {
-    console.log(data);
-  }
+  // if (isSuccess) {
+  //   console.log(data);
+  // }
 
   return (
     <div className="w-screen h-screen bg-backgroundDeep max-h-[750px] relative flex flex-col justify-center">

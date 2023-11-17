@@ -6,7 +6,7 @@
 import Logo from '@/assets/logo/logo.png';
 import SelectButton from './atoms/SelectButton';
 import { useNavigate } from 'react-router-dom';
-import kakao from '@/assets/logo/kakaologo.svg';
+// import kakao from '@/assets/logo/kakaologo.svg';
 
 function App() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ function App() {
     <div className="w-screen h-screen bg-backgroundDeep flex flex-col items-center justify-center caret-transparent">
       <img src={Logo} alt="GamePT 로고" className="w-1/2" />
 
-      <div className="w-[450px] h-[70px] bg-yKakao rounded-[16px] flex flex-row justify-between items-center mb-5 px-5">
+      {/* <div className="w-[450px] h-[70px] bg-yKakao rounded-[16px] flex flex-row justify-between items-center mb-5 px-5">
         <img
           src={kakao}
           alt="카카오 로고"
@@ -33,11 +33,11 @@ function App() {
         <span className="text-black font-hol text-24 font-bold inline-block w-full text-center">
           카카오 로그인
         </span>
-      </div>
+      </div> */}
       <SelectButton
         height="70px"
         onClickEvent={handleCreateGame}
-        text="로그인 없이 게임 시작하기"
+        text="게임 시작하기"
         width="450px"
         isShadow
       />
