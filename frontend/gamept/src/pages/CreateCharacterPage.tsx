@@ -130,8 +130,8 @@ const CreateCharacterPage = () => {
 
           handleNextStage(res.playerCode);
         },
-        onError: (err) => {
-          console.log('에러 근데 검출이 안됨', err);
+        onError: () => {
+          // console.log('에러 근데 검출이 안됨', err);
         },
       }
     );
