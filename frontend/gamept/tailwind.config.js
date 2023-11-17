@@ -10,6 +10,9 @@ export default {
   ],
   theme: {
     extend: {
+      screen: {
+        xl: '1100px',
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'button-background': 'url("./src/assets/button-background.png")',
