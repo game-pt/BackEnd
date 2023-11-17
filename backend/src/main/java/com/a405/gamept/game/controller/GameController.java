@@ -75,14 +75,17 @@ public class GameController {
         PlayerStatusGetResponseDto playerStatusGetResponseDto = playerService.getPlayerStatus(PlayerStatusGetCommandDto.of(fightResultGetRequestDto.playerCode()));
         webSocket.convertAndSend("/topic/fight/" + gameCode, fightResultGetResponseDto);
         webSocket.convertAndSendToUser(fightResultGetRequestDto.playerCode(), "/status", playerStatusGetResponseDto);
-        //return ResponseEntity.ok(fightService.getFightResult(fightResultGetRequestDto.toCommand(gameCode)));
     }
 
-    /*
     @PostMapping("/monster")
     public ResponseEntity<?> setMonster(@Valid @RequestBody MonsterSetRequestDto monsterSetRequestDto) {
-        fightService.setMonster(MonsterSetCommandDto.from(monsterSetRequestDto));
+        fightService.getMonster(MonsterSetCommandDto.from(monsterSetRequestDto));
         return ResponseEntity.ok(true);
     }
-     */
+
+    @MessageMapping("/ending/{gameCode}")
+    public void ending(@DestinationVariable String gameCode, @Valid @Payload EndingRequestDto endingRequestDto) throws GameException {
+        webSocket.convertAndSend("/topic/ending/" + gameCode, gameService.setEnding(EndingCommandDto.from(endingRequestDto, gameCode)));
+
+    }
 }

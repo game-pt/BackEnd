@@ -754,7 +754,7 @@ const SinglePlayPage = () => {
   }, [playerCode, gameCode]);
 
   return (
-    <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary">
+    <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary max-h-[750px] my-auto">
       <div className="w-400 h-full flex flex-col justify-between items-start">
         <img src={Logo} alt="로고" className="w-[300px]" />
         <div className="w-full h-[400px] flex justify-center">

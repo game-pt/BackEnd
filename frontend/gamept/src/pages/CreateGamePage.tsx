@@ -24,15 +24,22 @@ const CreateGamePage = () => {
     setIsSelectStory(true);
   };
 
-  if (isSuccess) {
-    console.log(data);
-  }
+  // if (isSuccess) {
+  //   console.log(data);
+  // }
 
   return (
-    <div className="w-screen h-screen bg-backgroundDeep">
+    <div className="w-screen h-screen bg-backgroundDeep max-h-[750px] relative flex flex-col justify-center">
       <Logo />
-      {!isSelectStory && <SelectGameMode onGoSelectStory={goSelectStory} />}
-      {isSelectStory && <SelectGameStory stories={data} />}
+      {!isSelectStory && data && (
+        <SelectGameMode onGoSelectStory={goSelectStory} />
+      )}
+      {isSelectStory && data && <SelectGameStory stories={data} />}
+      {!data && isSuccess && (
+        <div className="font-hol m-auto text-32 text-center">
+          요청에 문제가 발생했습니다. 새로고침해주세요!
+        </div>
+      )}
     </div>
   );
 };

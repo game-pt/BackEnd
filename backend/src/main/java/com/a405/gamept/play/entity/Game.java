@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RedisHash(value = "game", timeToLive = 14 * 24 * 60 * 60)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -69,7 +70,7 @@ public class Game {
     private String fightingEnemyCode;
 
     /**
-     * promptList : 최근 prompt 5개
+     * promptList : 최근 prompt 6개
      */
     @Builder.Default
     private List<Prompt> promptList = new LinkedList<>();
@@ -79,8 +80,14 @@ public class Game {
      */
     private int diceValue;
 
+    /**
+     * 각 게임마다 프롬프트 통신하기 위한 SseEmitter 관리
+     */
+    @Builder.Default
+    private String mappedEmitter = null;
+
     @Builder
-    public Game(String code, String storyCode, String memory, int turn, int eventCnt, double eventRate, List<String> playerList, String fightingEnemyCode, List<Prompt> promptList, int diceValue) {
+    public Game(String code, String storyCode, String memory, int turn, int eventCnt, double eventRate, List<String> playerList, String fightingEnemyCode, List<Prompt> promptList, int diceValue, String mappedEmitter) {
         this.code = code;
         this.storyCode = storyCode;
         this.memory = memory;
@@ -91,6 +98,7 @@ public class Game {
         this.fightingEnemyCode = fightingEnemyCode;
         this.promptList = promptList;
         this.diceValue = diceValue;
+        this.mappedEmitter = mappedEmitter;
     }
 
     @Builder

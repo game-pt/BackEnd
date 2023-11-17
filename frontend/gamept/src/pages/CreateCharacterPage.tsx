@@ -130,8 +130,8 @@ const CreateCharacterPage = () => {
 
           handleNextStage(res.playerCode);
         },
-        onError: (err) => {
-          console.log('에러 근데 검출이 안됨', err);
+        onError: () => {
+          // console.log('에러 근데 검출이 안됨', err);
         },
       }
     );
@@ -165,7 +165,7 @@ const CreateCharacterPage = () => {
   ];
 
   return (
-    <div className="bg-backgroundDeep w-screen h-screen">
+    <div className="bg-backgroundDeep w-screen h-screen max-h-[750px] relative">
       <Logo />
       {isRaceSuccess && createCharacterProcess[processLevel]}
       {processLevel === 3 && <LoadingGameMake />}
