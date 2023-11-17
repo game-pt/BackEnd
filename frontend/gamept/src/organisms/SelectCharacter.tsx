@@ -18,7 +18,7 @@ const SelectCharacter = (props: ISelectCharacter) => {
       <div className="text-primary text-32 font-hol pt-[100px] text-center">
         당신의 {props.type}은 무엇입니까?
       </div>
-      <div className="m-auto w-[80%] min-w-[850px] flex flex-row gap-10 justify-center my-[30px] flex-wrap">
+      <div className="m-auto xl:w-full w-[50%] min-w-[850px] flex flex-row gap-10 justify-center my-[30px] flex-wrap">
         {props.data.map((character, idx) => (
           <CharacterCard
             baseStats={props.type === '종족' ? character.statList : statList}
