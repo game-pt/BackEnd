@@ -6,9 +6,11 @@
  * 따로 props 보내주면 문제 없습니다.
  */
 
-import LogoImg from '../assets/GamePTLogo.svg';
+// import LogoImg from '../assets/GamePTLogo.svg';
 
 const Logo = ({ className }: { className?: string }) => {
+  const api = import.meta.env.VITE_SERVER_URL.split('api')[0];
+  const LogoImg = api + '/GamePTLogo.svg';
   return (
     <img
       src={LogoImg}
