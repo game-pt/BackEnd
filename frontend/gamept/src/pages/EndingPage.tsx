@@ -88,7 +88,7 @@ const EndingPage = () => {
     <div className="font-hol relative w-screen h-screen mx-auto bg-backgroundDeep">
       <div className="text-primary flex flex-col items-center w-full h-full gap-10 pt-10">
         <Logo className="relative mx-auto" />
-        <Prompt data={promptData} type="ending" isFetching={isFetching} />
+        <Prompt data={promptData} type="ending" isFetching={isFetching} now='' />
         <SelectButton
           height="70px"
           onClickEvent={handleFinishGame}

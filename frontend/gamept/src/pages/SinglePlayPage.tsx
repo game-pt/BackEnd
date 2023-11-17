@@ -61,6 +61,7 @@ const SinglePlayPage = () => {
   const [_getPrompt, setPrompt] = usePrompt();
   const promptAtom = usePromptAtom();
   const [nowPrompt, setNowPrompt] = useState('');
+  const [finishPrompt, setFinishPrompt] = useState(false);
   const itemUpdateAtom = useUpdateItemListAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
   const db = useIndexedDB('prompt');
@@ -117,9 +118,7 @@ const SinglePlayPage = () => {
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
-    console.log(import.meta.env.VITE_SOCKET_URL);
     const sock = new SockJS(`${import.meta.env.VITE_SOCKET_URL}`);
-    console.log(sock);
     // const sock = new SockJS(`http://70.12.247.95:8080/ws`);
     client.current = Stomp.over(() => sock);
 
@@ -329,7 +328,7 @@ const SinglePlayPage = () => {
 
       client.current.subscribe(`/topic/event/${gameCode}`, async (message) => {
         const body = JSON.parse(message.body);
-
+        console.log(body);
         if (body.event.eventName == '죽음') {
           console.log('Game Over ==== Y');
           console.log(promptAtom);
@@ -368,11 +367,19 @@ const SinglePlayPage = () => {
 
           console.log(body);
 
-          const prompt = body.content.split('\n').map((e: string) => {
-            return { msg: e, role: body.role };
-          });
-
-          if (prompt.role !== playerCode) setPrompt(prompt);
+          
+          if (body.role !== playerCode) {
+            const prompt = body.content.split('\n').map((e: string) => {
+              return { msg: e, role: body.role };
+            });
+            setPrompt(prompt);
+          }
+          // else {
+          //   const prompt = body.content.split('\n').map((e: string) => {
+          //     return { msg: e.split(": ")[1], role: body.role };
+          //   });
+          //   setPrompt(prompt);
+          // }
           setIsPromptFetching(false);
         },
         {}
@@ -450,21 +457,25 @@ const SinglePlayPage = () => {
     //   setPrompt([{ msg: text, role: playerCode }]);
     // }
     if (gameCode !== '' && playerCode !== '') {
-      const res = await axios.post(
-        `${import.meta.env.VITE_SERVER_URL}/prompt/send/${gameCode}`,
-        JSON.stringify({
-          playerCode,
-          prompt: text,
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-          },
-        }
-      );
-      console.log(res.data);
-      setIsPromptFetching(true);
-      setPrompt([{ msg: text, role: playerCode }]);
+      try {
+        const res = await axios.post(
+          `${import.meta.env.VITE_SERVER_URL}/prompt/send/${gameCode}`,
+          JSON.stringify({
+            playerCode,
+            prompt: text,
+          }),
+          {
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8',
+            },
+          }
+        );
+        console.log(res.data);
+        setPrompt([{ msg: text, role: playerCode }]);
+        setIsPromptFetching(true);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -661,6 +672,13 @@ const SinglePlayPage = () => {
   };
 
   useEffect(() => {
+    if (finishPrompt) {
+      setPrompt([{ msg: nowPrompt, role: 'assistant' }]);
+      setFinishPrompt(false);
+    }
+  }, [nowPrompt]);
+
+  useEffect(() => {
     const connetEventSource = () => {
       eventSource.current = new EventSource(
         `${import.meta.env.VITE_SERVER_URL}/prompt/subscribe/${gameCode}`
@@ -669,21 +687,27 @@ const SinglePlayPage = () => {
 
       if (eventSource.current) {
         eventSource.current.addEventListener('sse', (message) => {
-          console.log(message);
-          console.log(nowPrompt);
+          if (message.data.length > 99) {
+            const data = JSON.parse(message.data);
+            setNowPrompt((prev) => prev + data.choices[0].delta.content);
+          } else if (message.data === '[DONE]') {
+            setFinishPrompt(true);
+            setIsPromptFetching(false);
+          } else {
+            console.log(message.data, isPromptFetching);
+            setNowPrompt((prev) => {
+              console.log(prev);
+              return "";
+            });
+          }
         });
-        eventSource.current.addEventListener('message', (message) => {
-          // console.log(message.data);
-          const data = JSON.parse(message.data);
-          // console.log(data.choices[0].delta.content);
-          setNowPrompt(nowPrompt + data.choices[0].delta.content);
-        });
+
       }
     };
+
     const initializeGame = async () => {
       if (playerCode === '' || gameCode === '') return;
       try {
-        console.log(playerCode, gameCode);
         await fetchGetPlayerInfo(gameCode, playerCode).then((playerInfo) => {
           console.log(playerInfo);
           setStatList({
@@ -692,8 +716,7 @@ const SinglePlayPage = () => {
           });
         });
         const res = await axios.get(
-          `${
-            import.meta.env.VITE_SERVER_URL
+          `${import.meta.env.VITE_SERVER_URL
           }/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
         );
 
@@ -716,7 +739,7 @@ const SinglePlayPage = () => {
       if (itemList) {
         itemUpdateAtom(JSON.parse(itemList).itemList);
       }
-      console.log(promptAtom);
+
       if (promptAtom.length <= 1) {
         db.getAll().then((value) => {
           if (value.length === 0) initializeGame();
@@ -735,7 +758,7 @@ const SinglePlayPage = () => {
         console.log(ChoiceFromDB[0].choice);
       }
     };
-    if (gameCode !== '') {
+    if (eventSource.current === null && gameCode !== '') {
       connetEventSource();
     }
     initializeEvent();
@@ -751,7 +774,7 @@ const SinglePlayPage = () => {
         );
       }
     };
-  }, [playerCode, gameCode]);
+  }, [playerCode, gameCode, eventSource.current]);
 
   return (
     <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary max-h-[750px] my-auto">
