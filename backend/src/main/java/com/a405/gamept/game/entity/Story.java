@@ -35,6 +35,7 @@ public class Story extends BaseEntity {
     /**
      * desc : 스토리 설명
      * */
+    @Column(length = 1023)
     private String desc;
 
 }
