@@ -14,7 +14,7 @@ import org.springframework.data.redis.core.RedisHash;
 @Builder(toBuilder = true)
 @Getter
 @ToString
-public class FightingEnermy {
+public class FightingEnemy {
 
     /**
      * [pk] code : 몬스터의 넘버
@@ -38,7 +38,7 @@ public class FightingEnermy {
     private int attack;
 
     @Builder
-    public FightingEnermy(String code, int level, int hp, int attack){
+    public FightingEnemy(String code, int level, int hp, int attack){
         this.code = code;
         this.level = level;
         this.hp = hp;

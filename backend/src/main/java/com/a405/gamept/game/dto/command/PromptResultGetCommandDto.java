@@ -8,7 +8,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
-@Builder(access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
 @Slf4j
 public record PromptResultGetCommandDto(
 
@@ -33,6 +33,7 @@ public record PromptResultGetCommandDto(
     public static PromptResultGetCommandDto from(PromptResultGetCommandDto promptResultGetCommandDto, String prompt) {
         return PromptResultGetCommandDto.builder()
                 .gameCode(promptResultGetCommandDto.gameCode())
+                .playerCode(promptResultGetCommandDto.playerCode())
                 .prompt(prompt)
                 .eventCommandDto(promptResultGetCommandDto.eventCommandDto())
                 .build();
