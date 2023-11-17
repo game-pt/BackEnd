@@ -84,7 +84,7 @@ const MultiPlayPage = () => {
         navigate('/ending');
       }
     });
-  }
+  };
 
   useEffect(() => {
     if (event) {
@@ -94,7 +94,9 @@ const MultiPlayPage = () => {
         console.log('Game Over ==== Y');
         console.log(promptAtom);
         let str = ``;
-        promptAtom[promptAtom.length - 1].forEach(e => str += `${e.msg + '\n'}`);
+        promptAtom[promptAtom.length - 1].forEach(
+          (e) => (str += `${e.msg + '\n'}`)
+        );
         endingEvent(str);
         return;
       }
@@ -322,7 +324,9 @@ const MultiPlayPage = () => {
               console.log('Game Over ==== Y');
               console.log(promptAtom);
               let str = ``;
-              promptAtom[promptAtom.length - 1].forEach(e => str += `${e.msg + '\n'}`);
+              promptAtom[promptAtom.length - 1].forEach(
+                (e) => (str += `${e.msg + '\n'}`)
+              );
               endingEvent(str);
 
               return;
@@ -602,12 +606,9 @@ const MultiPlayPage = () => {
 
   const sendEventStat = (statCode: string) => {
     if (client.current) {
-      client.current.send(
-        `/stat-up/${gameCode}/${playerCode}/${statCode}`,
-        {}
-      );
+      client.current.send(`/stat-up/${gameCode}/${playerCode}/${statCode}`, {});
     }
-  }
+  };
 
   const leaveGame = () => {
     Swal.fire({

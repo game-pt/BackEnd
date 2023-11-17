@@ -117,7 +117,9 @@ const SinglePlayPage = () => {
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
-    const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
+    console.log(import.meta.env.VITE_SOCKET_URL);
+    const sock = new SockJS(`${import.meta.env.VITE_SOCKET_URL}`);
+    console.log(sock);
     // const sock = new SockJS(`http://70.12.247.95:8080/ws`);
     client.current = Stomp.over(() => sock);
 
@@ -674,7 +676,7 @@ const SinglePlayPage = () => {
           // console.log(message.data);
           const data = JSON.parse(message.data);
           // console.log(data.choices[0].delta.content);
-          setNowPrompt(nowPrompt + data.content);
+          setNowPrompt(nowPrompt + data.choices[0].delta.content);
         });
       }
     };
