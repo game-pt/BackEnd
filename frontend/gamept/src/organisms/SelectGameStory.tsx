@@ -25,9 +25,7 @@ const SelectGameStory = (props: ISelectGameStory) => {
   const navigate = useNavigate();
   const { mutate, data, isLoading, isSuccess } = useMutation(fetchPostGame);
   const handleSelectStory = (storyCode: string) => {
-    mutate(storyCode, {
-      onError: (err) => console.log('에러', err),
-    });
+    mutate(storyCode, {});
     // const setGameCodeFromAPI = async () => {
     // const gameCode = (await fetchPostGame(storyCode)).code;
 
