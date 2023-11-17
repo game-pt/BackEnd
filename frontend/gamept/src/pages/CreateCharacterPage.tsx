@@ -29,7 +29,7 @@ import { useGameCode } from '@/hooks/useGameCode';
 const CreateCharacterPage = () => {
   const navigate = useNavigate();
   const [gameCode, _setGameCode] = useGameCode();
-  const [playerCode, setPlayerCode] = usePlayerCode();
+  // const [playerCode, setPlayerCode] = usePlayerCode();
   // const getGameCodeAtom = useGetGameCode();
   if (gameCode === '') {
     navigate(-1);
