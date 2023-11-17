@@ -169,7 +169,7 @@ public class PromptServiceImpl implements PromptService {
         PromptResultGetResponseDto promptResultGetResponseDto = PromptResultGetResponseDto.builder()
                 .gameCode(game.getCode())
                 // .prompt(responsePrompt)
-                .event(EventGetResponseDto.from(event))
+                .event((event != null)? EventGetResponseDto.from(event) : null)
                 .monster(monsterGetResponseDto)
                 .build();
         ValidateUtil.validate(promptResultGetResponseDto);
