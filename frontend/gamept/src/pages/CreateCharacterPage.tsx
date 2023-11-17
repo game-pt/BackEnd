@@ -25,15 +25,12 @@ import { initCharacterStatusAtom, initExtra } from '@/jotai/CharacterStatAtom';
 import { usePlayerCode } from '@/hooks/usePlayerCode';
 // import { useGetGameCode } from '@/jotai/MakeGameAtom';
 import { useGameCode } from '@/hooks/useGameCode';
-// import { useNavigate } from 'react-router-dom';
+
 const CreateCharacterPage = () => {
-  const navigate = useNavigate();
   const [gameCode, _setGameCode] = useGameCode();
-  // const [playerCode, setPlayerCode] = usePlayerCode();
+  const [_playerCode, setPlayerCode] = usePlayerCode();
   // const getGameCodeAtom = useGetGameCode();
-  if (gameCode === '') {
-    navigate(-1);
-  }
+
   const [characterStatus, setCharacterStatus] = useState<ICharacterStatus>({
     race: '',
     raceCode: '',
@@ -47,6 +44,7 @@ const CreateCharacterPage = () => {
   });
 
   const [processLevel, setProcessLevel] = useState(0);
+  const navigate = useNavigate();
   // const [gameCode] = useAtom(selectGameCodeAtom);
   const [, initCharacter] = useAtom(initCharacterStatusAtom);
   const [, initExtraData] = useAtom(initExtra);
