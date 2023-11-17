@@ -732,6 +732,7 @@ const MultiPlayPage = () => {
           isFetching={isPromptFetching}
           gameType="single"
           block={blockInput}
+          nowPrompt=""
           playerCode={playerCode}
           sendEventHandler={sendEventHandler}
           sendPromptHandler={sendPromptHandler}
