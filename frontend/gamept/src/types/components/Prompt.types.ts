@@ -2,6 +2,7 @@
 export interface IPropmpt {
   type: string;
   data: IPromptHistory[][] | null;
+  now: string;
   playerCode?: string;
   isFetching: boolean;
 }
@@ -15,6 +16,7 @@ export interface IPromptInterface {
   gameType: string;
   isFetching: boolean;
   event: IEventType | null;
+  nowPrompt: string;
   block?: boolean;
   playerCode?: string;
   sendEventHandler?: (e: IActsType) => void;
@@ -23,14 +25,15 @@ export interface IPromptInterface {
 
 export interface IChoiceGroup {
   gameType: string;
-  data?: IActsType[] | null; 
+  data?: IActsType[] | null;
   onClickEvent?: (e: IActsType) => void;
 }
 
 export interface IMonsterType {
   code: string;
-  monsterLevel: number;
-  monsterAttack: number;
+  level: number;
+  attack: number;
+  hp: number;
 }
 
 export interface IPromptType {
