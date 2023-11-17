@@ -66,7 +66,9 @@ public class GameController {
     @MessageMapping("/select/{gameCode}")
     public void playGame(@DestinationVariable String gameCode, @Valid @Payload ActResultGetRequestDto actResultGetRequestDto) {
         ActResultGetResponseDto actResultGetResponseDto = gameService.playAct(actResultGetRequestDto.toCommand(gameCode));
+        PlayerStatusGetResponseDto playerStatusGetResponseDto = playerService.getPlayerStatus(PlayerStatusGetCommandDto.of(actResultGetRequestDto.playerCode()));
         webSocket.convertAndSend("/topic/select/"+gameCode, actResultGetResponseDto);
+        webSocket.convertAndSendToUser(actResultGetRequestDto.playerCode(), "/status", playerStatusGetResponseDto);
     }
 
     @MessageMapping("/fight/{gameCode}")
