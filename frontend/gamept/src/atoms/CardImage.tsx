@@ -11,6 +11,8 @@ import { ICardImage } from '@/types/components/Image.types';
 
 const CardImage = (props: ICardImage) => {
   // const imgUrl = new URL(props.url, import.meta.url).href;
+  // const api = import.meta.env.VITE_SERVER_URL;
+  // const imgUrl = api + props.url;
   const imgUrl = props.url;
 
   return (
