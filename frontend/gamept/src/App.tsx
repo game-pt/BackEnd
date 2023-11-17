@@ -6,7 +6,7 @@
 import Logo from '@/assets/logo/logo.png';
 import SelectButton from './atoms/SelectButton';
 import { useNavigate } from 'react-router-dom';
-import kakao from '@/assets/logo/kakaologo.svg';
+// import kakao from '@/assets/logo/kakaologo.svg';
 
 function App() {
   const navigate = useNavigate();
