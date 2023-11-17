@@ -1,5 +1,5 @@
 # GAMEPT
-![logo.png](/documet/img/logo.png)
+![logo.png](/document/img/logo.png)
 ## 소개
 판타지 세계로 여행을 떠나보고 싶다고 생각하신 적 없으신가요? 게임에서 내 마음대로 행동하고 싶으셨던 적 없으신가요? <br/>
 저희의 GAMEPT는 가능합니다! <br/>
