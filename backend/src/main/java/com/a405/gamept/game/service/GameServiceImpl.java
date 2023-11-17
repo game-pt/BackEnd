@@ -355,6 +355,7 @@ public class GameServiceImpl implements GameService {
             }
             promptResult.append("\n").append(tmp);
         }
+
         game = game.toBuilder()
                 .diceValue(0)
                 .build();

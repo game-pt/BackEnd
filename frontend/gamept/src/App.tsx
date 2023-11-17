@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+/**
+ * 카카오 로그인 하는지는 모르겠으나 일단 버튼 모양만 넣었습니다
+ * 게임 저장 여부 판단하는 로직은 미구현입니다.
+ */
+
+import Logo from '@/assets/logo/logo.png';
+import SelectButton from './atoms/SelectButton';
+import { useNavigate } from 'react-router-dom';
+// import kakao from '@/assets/logo/kakaologo.svg';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const navigate = useNavigate();
+
+  const handleCreateGame = () => {
+    // game이 존재하는지 체크
+    if (isExistGame()) {
+      return;
+    }
+
+    navigate('/createGame');
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="w-screen h-screen bg-backgroundDeep flex flex-col items-center justify-center caret-transparent">
+      <img src={Logo} alt="GamePT 로고" className="w-1/2" />
+
+      {/* <div className="w-[450px] h-[70px] bg-yKakao rounded-[16px] flex flex-row justify-between items-center mb-5 px-5">
+        <img
+          src={kakao}
+          alt="카카오 로고"
+          className="w-[35px] h-auto my-auto"
+        />
+        <span className="text-black font-hol text-24 font-bold inline-block w-full text-center">
+          카카오 로그인
+        </span>
+      </div> */}
+      <SelectButton
+        height="70px"
+        onClickEvent={handleCreateGame}
+        text="게임 시작하기"
+        width="450px"
+        isShadow
+      />
+    </div>
+  );
 }
 
-export default App
+const isExistGame = () => {
+  return false;
+};
+
+export default App;
