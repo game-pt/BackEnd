@@ -649,7 +649,6 @@ const MultiPlayPage = () => {
       );
     }
   };
-  };
 
   useEffect(() => {
     const initializeGame = async () => {
