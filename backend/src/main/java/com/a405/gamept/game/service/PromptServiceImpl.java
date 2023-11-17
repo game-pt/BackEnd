@@ -50,6 +50,7 @@ public class PromptServiceImpl implements PromptService {
     @Override
     @Transactional(readOnly = true)
     public PromptGetResponseDto setUserPrompt(PromptResultGetCommandDto promptResultGetCommandDto) throws GameException {
+        log.info("setUserPrompt() 호출");
         ValidateUtil.validate(promptResultGetCommandDto);
         Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
@@ -67,12 +68,14 @@ public class PromptServiceImpl implements PromptService {
                 .build();  // 클라이언트에 보낼 플레이어 입력 프롬프트
         ValidateUtil.validate(promptGetResponseDto);
 
+        log.info("setUserPrompt() 종료");
         return promptGetResponseDto;
     }
 
     @Override
     @Transactional(readOnly = true)
     public PromptResultGetCommandDto getChatGPTPrompt(PromptResultGetCommandDto promptResultGetCommandDto) {
+        log.info("getChatGPTPrompt() 호출");
         Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
         Player player = playerRedisRepository.findById(promptResultGetCommandDto.playerCode())
@@ -91,12 +94,14 @@ public class PromptServiceImpl implements PromptService {
         promptResultGetCommandDto = promptResultGetCommandDto.toBuilder().prompt(promptInput).build();
         ValidateUtil.validate(promptResultGetCommandDto);
 
+        log.info("getChatGPTPrompt() 종료");
         return promptResultGetCommandDto;
     }
 
     @Override
     @Transactional
     public PromptResultGetResponseDto getPrmoptResult(PromptResultGetCommandDto promptResultGetCommandDto, String responsePrompt) {
+        log.info("getPromptResult() 호출");
         Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
         // Player 객체
@@ -168,6 +173,8 @@ public class PromptServiceImpl implements PromptService {
                 .monster(monsterGetResponseDto)
                 .build();
         ValidateUtil.validate(promptResultGetResponseDto);
+
+        log.info("getPromptResult() 종료");
         return promptResultGetResponseDto;
     }
 
