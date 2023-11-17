@@ -108,7 +108,7 @@ const MultiPlayPage = () => {
           }
 
           if (body.gameOverYn === 'Y') {
-            console.log("Game Over ==== Y");
+            console.log('Game Over ==== Y');
             // 종료 API 호출
             const ChoiceFromDB = (await db.getAll())
               .filter((v) => v.choice !== undefined)
@@ -255,7 +255,7 @@ const MultiPlayPage = () => {
           // setHP
           // HP 상태 값 변화
           if (body.playerHp <= 0) {
-            console.log("Game Over ==== Y");
+            console.log('Game Over ==== Y');
             // 종료 API 호출
             const ChoiceFromDB = (await db.getAll())
               .filter((v) => v.choice !== undefined)
@@ -600,7 +600,7 @@ const MultiPlayPage = () => {
         })
       );
     }
-  }
+  };
 
   useEffect(() => {
     const initializeGame = async () => {
@@ -657,11 +657,15 @@ const MultiPlayPage = () => {
   }, []);
 
   return (
-    <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary">
+    <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary max-h-[750px] my-auto">
       <div className="w-400 h-full flex flex-col justify-between items-start">
         <img src={Logo} alt="로고" className="w-[300px]" />
         <div className="w-full h-[400px] flex justify-center">
-          <SideInterface sendChat={sendChatHandler} chat={chat} deleteItem={deleteItem} />
+          <SideInterface
+            sendChat={sendChatHandler}
+            chat={chat}
+            deleteItem={deleteItem}
+          />
         </div>
         <ProfileInterface />
       </div>
