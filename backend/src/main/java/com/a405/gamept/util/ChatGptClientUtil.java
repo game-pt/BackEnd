@@ -236,7 +236,7 @@ public class ChatGptClientUtil {
                         String answer = chatGptForStreamResponseDto.choices()[chatGptForStreamResponseDto.choices().length - 1].delta().content();
                         if (answer != null) {
                             outputSB.append(answer);
-                            emitter.send(SseEmitter.event().data(line));
+                            emitter.send(SseEmitter.event().name("sse").data(line));
                         }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
