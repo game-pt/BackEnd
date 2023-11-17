@@ -1,7 +1,7 @@
 package com.a405.gamept.game.dto.response;
 
-import com.a405.gamept.game.dto.command.DeathCheckCommandDto;
-import com.a405.gamept.game.entity.*;
+import com.a405.gamept.game.dto.command.GameStateCommandDto;
+import com.a405.gamept.game.dto.command.PlayerStateCommandDto;
 import jakarta.validation.constraints.NotBlank;
 
 /**
@@ -15,9 +15,10 @@ public record FightResultGetResponseDto(
         String prompt,
         @NotBlank(message = "이야기 도중 여부는 필수 입니다.")
         String endYn,
-        int playerHp
+        @NotBlank(message = "게임 도중 여부는 필수 입니다.")
+        String gameOverYn
 ) {
-        public static FightResultGetResponseDto from(DeathCheckCommandDto deathCheckCommandDto){
-                return new FightResultGetResponseDto(deathCheckCommandDto.prompt(), deathCheckCommandDto.endYn(), deathCheckCommandDto.playerHp());
+        public static FightResultGetResponseDto of(GameStateCommandDto gameStateCommandDto, String gameOverYn){
+                return new FightResultGetResponseDto(gameStateCommandDto.prompt(), gameStateCommandDto.endYn(), gameOverYn);
         }
 }
