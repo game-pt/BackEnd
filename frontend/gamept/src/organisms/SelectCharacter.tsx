@@ -14,11 +14,11 @@ const SelectCharacter = (props: ISelectCharacter) => {
   const statList = props.statList ?? initData;
 
   return (
-    <div>
+    <div className="w-screen">
       <div className="text-primary text-32 font-hol pt-[100px] text-center">
         당신의 {props.type}은 무엇입니까?
       </div>
-      <div className="flex flex-row gap-10 justify-center my-[30px]">
+      <div className="m-auto w-[80%] min-w-[850px] flex flex-row gap-10 justify-center my-[30px] flex-wrap">
         {props.data.map((character, idx) => (
           <CharacterCard
             baseStats={props.type === '종족' ? character.statList : statList}

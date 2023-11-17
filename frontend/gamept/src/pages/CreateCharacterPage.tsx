@@ -165,7 +165,7 @@ const CreateCharacterPage = () => {
   ];
 
   return (
-    <div className="bg-backgroundDeep w-screen h-screen">
+    <div className="bg-backgroundDeep w-screen h-screen max-h-[750px] relative">
       <Logo />
       {isRaceSuccess && createCharacterProcess[processLevel]}
       {processLevel === 3 && <LoadingGameMake />}
