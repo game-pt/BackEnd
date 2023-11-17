@@ -13,7 +13,7 @@ public enum GameErrorMessage  {
     STORY_NOT_FOUND(BAD_REQUEST, "해당 스토리가 존재하지 않습니다."),
 
     // 플레이어 관련 에러 메시지
-    PLAYER_NOT_FOUND(NOT_FOUND, "해당 유저가 존재하지 없습니다."),
+    PLAYER_NOT_FOUND(NOT_FOUND, "해당 유저가 존재하지 않습니다."),
     PLAYER_FULL(BAD_REQUEST, "게임의 플레이어 정원이 다 찼습니다."),
     RACE_NOT_FOUND(BAD_REQUEST, "해당 종족이 존재하지 않습니다."),
     RACE_INVALID(INTERNAL_SERVER_ERROR, "종족이 유효하지 않습니다."),
