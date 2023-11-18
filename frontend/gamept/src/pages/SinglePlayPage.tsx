@@ -23,7 +23,7 @@ import DiceModal from '@/organisms/DiceModal';
 import { IDice } from '@/types/components/Dice.types';
 import { useAtom } from 'jotai';
 import {
-  characterStatusAtom,
+  initCharacterStatusAtom,
   useStatUpAtom,
   useUpdateItemListAtom,
   useUpdateProfileAtom,
@@ -63,7 +63,7 @@ const SinglePlayPage = () => {
   const [nowPrompt, setNowPrompt] = useState('');
   const [finishPrompt, setFinishPrompt] = useState(false);
   const itemUpdateAtom = useUpdateItemListAtom();
-  const [status, _setStatus] = useAtom(characterStatusAtom);
+  const [status] = useAtom(initCharacterStatusAtom);
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
   // From SideInterface
@@ -326,16 +326,16 @@ const SinglePlayPage = () => {
               (e) => (str += `${e.msg + '\n'}`)
             );
             endingEvent(str);
-  
+
             return;
           }
-  
+
           setEvent(body.event);
-  
+
           const ChoiceFromDB = (await db.getAll())
             .filter((v) => v.choice !== undefined)
             .map((e) => e);
-  
+
           // 직전 선택지 인덱스 디비에 저장
           if (ChoiceFromDB.length === 0) {
             await db.add({ choice: body });
@@ -356,7 +356,7 @@ const SinglePlayPage = () => {
           const body = JSON.parse(message.body);
 
           console.log(body);
-          
+
           if (body.role !== playerCode) {
             const prompt = body.content.split('\n').map((e: string) => {
               return { msg: e, role: body.role };
@@ -364,7 +364,7 @@ const SinglePlayPage = () => {
             setPrompt(prompt);
           } else {
             const prompt = body.content.split('\n').map((e: string) => {
-              return { msg: e.split(": ")[1], role: body.role };
+              return { msg: e.split(': ')[1], role: body.role };
             });
             setPrompt(prompt);
           }
@@ -671,7 +671,6 @@ const SinglePlayPage = () => {
             console.log(message.data);
           }
         });
-
       }
     };
 
@@ -686,7 +685,8 @@ const SinglePlayPage = () => {
           });
         });
         const res = await axios.get(
-          `${import.meta.env.VITE_SERVER_URL
+          `${
+            import.meta.env.VITE_SERVER_URL
           }/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
         );
 
