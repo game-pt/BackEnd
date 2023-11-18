@@ -15,7 +15,7 @@ const CardImage = (props: ICardImage) => {
   // console.log(api);
   const imgUrl = api + props.url;
   // const imgUrl = 'http://localhost:3000/' + props.url;
-
+  console.log('경로확인', new URL(props.url, import.meta.url).href);
   return (
     <div className="relative w-full h-[315px]">
       <img

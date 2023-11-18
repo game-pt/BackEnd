@@ -10,7 +10,8 @@ import { useNavigate } from 'react-router-dom';
 
 function App() {
   const navigate = useNavigate();
-
+  const api = import.meta.env.VITE_SERVER_URL.split('api')[0];
+  const LogoImg = api + '/GamePTLogo.svg';
   const handleCreateGame = () => {
     // game이 존재하는지 체크
     if (isExistGame()) {
@@ -22,7 +23,7 @@ function App() {
 
   return (
     <div className="w-screen h-screen bg-backgroundDeep flex flex-col items-center justify-center caret-transparent">
-      <img src={Logo} alt="GamePT 로고" className="w-1/2" />
+      <img src={LogoImg} alt="GamePT 로고" className="w-1/2 mb-5" />
 
       {/* <div className="w-[450px] h-[70px] bg-yKakao rounded-[16px] flex flex-row justify-between items-center mb-5 px-5">
         <img

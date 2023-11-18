@@ -12,12 +12,9 @@ import ProfileBorder from '../assets/ProfileBorder.svg';
 import { IProfileImage } from '@/types/components/Image.types';
 
 const ProfileImage = (props: IProfileImage) => {
-  // const profileImgUrl = new URL(
-  //   `../assets/profile${props.imgCode}.svg`,
-  //   import.meta.url
-  // ).href;
+  const api = import.meta.env.VITE_SERVER_URL.split('api')[0];
 
-  const profileImgUrl = `./src/assets/profile/${props.imgCode}`;
+  const profileImgUrl = api + props.imgCode;
   return (
     <div
       onClick={props.onClickEvent}
