@@ -3,7 +3,7 @@
  * 게임 저장 여부 판단하는 로직은 미구현입니다.
  */
 
-import Logo from '@/assets/logo/logo.png';
+// import Logo from '@/assets/logo/logo.png';
 import SelectButton from './atoms/SelectButton';
 import { useNavigate } from 'react-router-dom';
 // import kakao from '@/assets/logo/kakaologo.svg';
