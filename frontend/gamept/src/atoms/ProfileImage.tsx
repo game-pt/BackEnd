@@ -14,7 +14,7 @@ import { IProfileImage } from '@/types/components/Image.types';
 const ProfileImage = (props: IProfileImage) => {
   const api = import.meta.env.VITE_SERVER_URL.split('api')[0];
 
-  const profileImgUrl = api + props.imgCode;
+  const profileImgUrl = api + 'profile/' + props.imgCode;
   return (
     <div
       onClick={props.onClickEvent}
