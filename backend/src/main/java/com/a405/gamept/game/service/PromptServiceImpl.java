@@ -86,7 +86,7 @@ public class PromptServiceImpl implements PromptService {
         // promptInput = eventService.pickAtRandomEvent(game, promptInput);
 
         if (30 <= game.getTurn()) {  // 마왕 등장 처리 로직
-            promptInput += "[전투] 갑자기... 마왕 '우서기우스'라는 자가 나에게 전투를 걸어왔다. [전투]을 앞에 붙여 얘기하세요.";
+            promptInput += "[전투] 갑자기... 마왕 '우서기우스'라는 자가 나에게 전투를 걸어왔다. [전투]를 앞에 붙여 얘기하세요.";
         } else if (game.getEventCnt() < 10) {
             promptInput += insertEventPrompt(game.getStoryCode(), game.getEventRate());
         }
@@ -318,7 +318,8 @@ public class PromptServiceImpl implements PromptService {
             for (Event event : eventList) {
                 sum += event.getWeight();
                 if (random < sum) {  // 확률에 해당할 경우
-                    return "\n" + event.getPrompt();
+                    return "\n" + event.getPrompt()
+                            + "\n[" + event.getName() + "]를 앞에 붙여 얘기하세요.";
                 }
             }
         }
