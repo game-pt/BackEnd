@@ -103,12 +103,9 @@ const MultiPlayPage = () => {
     } else setBlockInput(false);
   }, [event]);
 
-  // const eventSource = new EventSource('http://localhost:8080/notifications/subscribe/1');
-
   // 웹소캣 객체 생성
   const connectHandler = () => {
     const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
-    // const sock = new SockJS(`http://70.12.247.95:8080/ws`);
     client.current = Stomp.over(() => sock);
 
     // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
@@ -284,17 +281,6 @@ const MultiPlayPage = () => {
           }
 
           if (body.endYn === 'Y') {
-            // // 종료 API 호출
-            // const ChoiceFromDB = (await db.getAll())
-            //   .filter((v) => v.choice !== undefined)
-            //   .map((e) => e);
-
-            // // 직전 선택지 인덱스 디비에 저장
-            // if (ChoiceFromDB.length > 0) {
-            //   for (let i = 0; i < ChoiceFromDB.length; i++) {
-            //     await db.deleteRecord(ChoiceFromDB[i].id);
-            //   }
-            // }
             setEvent(null);
           }
         },
@@ -683,10 +669,6 @@ const MultiPlayPage = () => {
           if (value.length === 0) initializeGame();
         });
       }
-
-      // eventSource.addEventListener('sse', (message) => {
-      //   console.log(message);
-      // })
     }
 
     const initializeEvent = async () => {
@@ -705,7 +687,6 @@ const MultiPlayPage = () => {
 
     return () => {
       disConnected();
-      // eventSource.removeEventListener('sse', (event) => console.log(event));
     };
   }, []);
 

@@ -33,7 +33,7 @@ const Prompt = (props: IPropmpt) => {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [currentIndex, ms_delay, props]);
+  }, [currentIndex, ms_delay, props.now]);
 
   useEffect(() => {
     if (lastPromptRef.current) {
@@ -42,7 +42,15 @@ const Prompt = (props: IPropmpt) => {
     if (!props.isFetching && props.now.length === 0) {
       setCurrentIndex(0);
     }
+    
   }, [props.isFetching, props.data, props.now]);
+
+  useEffect(() => {
+    if (!props.isFetching && props.now.length === currentIndex) {
+      setWord('');
+      if (props.setNowPrompt) props.setNowPrompt('');
+    }
+  }, [props.isFetching, currentIndex, props.now])
 
   if (props.type === undefined) return <LoadingSpinner1 />;
   const promptHeight =

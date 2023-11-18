@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 // Propmt Atoms Props Type
 export interface IPropmpt {
   type: string;
@@ -5,6 +7,7 @@ export interface IPropmpt {
   now: string;
   playerCode?: string;
   isFetching: boolean;
+  setNowPrompt?: Dispatch<SetStateAction<string>>;
 }
 
 export interface IPromptHistory {
@@ -17,6 +20,7 @@ export interface IPromptInterface {
   isFetching: boolean;
   event: IEventType | null;
   nowPrompt: string;
+  setNowPrompt?: Dispatch<SetStateAction<string>>;
   block?: boolean;
   playerCode?: string;
   sendEventHandler?: (e: IActsType) => void;

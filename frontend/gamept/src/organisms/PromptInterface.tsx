@@ -36,6 +36,7 @@ const PromptInterface = (props: IPromptInterface) => {
         <Prompt
           playerCode={props.playerCode}
           isFetching={props.isFetching}
+          setNowPrompt={props.setNowPrompt}
           type="in-game"
           data={prompt}
           now={props.nowPrompt}

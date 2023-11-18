@@ -119,7 +119,6 @@ const SinglePlayPage = () => {
   // 웹소캣 객체 생성
   const connectHandler = () => {
     const sock = new SockJS(`${import.meta.env.VITE_SOCKET_URL}`);
-    // const sock = new SockJS(`http://70.12.247.95:8080/ws`);
     client.current = Stomp.over(() => sock);
 
     // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
@@ -366,7 +365,6 @@ const SinglePlayPage = () => {
           const body = JSON.parse(message.body);
 
           console.log(body);
-
           
           if (body.role !== playerCode) {
             const prompt = body.content.split('\n').map((e: string) => {
@@ -374,12 +372,12 @@ const SinglePlayPage = () => {
             });
             setPrompt(prompt);
           }
-          // else {
-          //   const prompt = body.content.split('\n').map((e: string) => {
-          //     return { msg: e.split(": ")[1], role: body.role };
-          //   });
-          //   setPrompt(prompt);
-          // }
+          else {
+            const prompt = body.content.split('\n').map((e: string) => {
+              return { msg: e.split(": ")[1], role: body.role };
+            });
+            setPrompt(prompt);
+          }
           setIsPromptFetching(false);
         },
         {}
@@ -458,7 +456,7 @@ const SinglePlayPage = () => {
     // }
     if (gameCode !== '' && playerCode !== '') {
       try {
-        const res = await axios.post(
+        await axios.post(
           `${import.meta.env.VITE_SERVER_URL}/prompt/send/${gameCode}`,
           JSON.stringify({
             playerCode,
@@ -470,8 +468,6 @@ const SinglePlayPage = () => {
             },
           }
         );
-        console.log(res.data);
-        setPrompt([{ msg: text, role: playerCode }]);
         setIsPromptFetching(true);
       } catch (error) {
         console.log(error);
@@ -691,14 +687,11 @@ const SinglePlayPage = () => {
             const data = JSON.parse(message.data);
             setNowPrompt((prev) => prev + data.choices[0].delta.content);
           } else if (message.data === '[DONE]') {
+            console.log(message.data);
             setFinishPrompt(true);
             setIsPromptFetching(false);
           } else {
-            console.log(message.data, isPromptFetching);
-            setNowPrompt((prev) => {
-              console.log(prev);
-              return "";
-            });
+            console.log(message.data);
           }
         });
 
@@ -799,6 +792,7 @@ const SinglePlayPage = () => {
           block={blockInput}
           playerCode={playerCode}
           nowPrompt={nowPrompt}
+          setNowPrompt={setNowPrompt}
           sendEventHandler={sendEventHandler}
           sendPromptHandler={sendPromptHandler}
         />
