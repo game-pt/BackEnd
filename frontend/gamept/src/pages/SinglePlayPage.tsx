@@ -301,24 +301,13 @@ const SinglePlayPage = () => {
           }
 
           // 사망 여부 판별
-          if (body.playerHp <= 0) {
+          if (body.gameOverYn === 'Y') {
             setEvent(null);
             endingEvent(body.prompt);
             return;
           }
 
           if (body.endYn === 'Y') {
-            // // 종료 API 호출
-            // const ChoiceFromDB = (await db.getAll())
-            //   .filter((v) => v.choice !== undefined)
-            //   .map((e) => e);
-
-            // // 직전 선택지 인덱스 디비에 저장
-            // if (ChoiceFromDB.length > 0) {
-            //   for (let i = 0; i < ChoiceFromDB.length; i++) {
-            //     await db.deleteRecord(ChoiceFromDB[i].id);
-            //   }
-            // }
             setEvent(null);
           }
         },
@@ -328,32 +317,34 @@ const SinglePlayPage = () => {
       client.current.subscribe(`/topic/event/${gameCode}`, async (message) => {
         const body = JSON.parse(message.body);
         console.log(body);
-        if (body.event.eventName == '죽음') {
-          console.log('Game Over ==== Y');
-          console.log(promptAtom);
-          let str = ``;
-          promptAtom[promptAtom.length - 1].forEach(
-            (e) => (str += `${e.msg + '\n'}`)
-          );
-          endingEvent(str);
-
-          return;
-        }
-
-        setEvent(body.event);
-
-        const ChoiceFromDB = (await db.getAll())
-          .filter((v) => v.choice !== undefined)
-          .map((e) => e);
-
-        // 직전 선택지 인덱스 디비에 저장
-        if (ChoiceFromDB.length === 0) {
-          await db.add({ choice: body });
-        } else if (ChoiceFromDB.length <= 1) {
-          await db.update({ choice: body, id: ChoiceFromDB[0].id });
-        } else {
-          for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
-            await db.deleteRecord(ChoiceFromDB[i].id);
+        if (body.event) {
+          if (body.event.eventName == '죽음') {
+            console.log('Game Over ==== Y');
+            console.log(promptAtom);
+            let str = ``;
+            promptAtom[promptAtom.length - 1].forEach(
+              (e) => (str += `${e.msg + '\n'}`)
+            );
+            endingEvent(str);
+  
+            return;
+          }
+  
+          setEvent(body.event);
+  
+          const ChoiceFromDB = (await db.getAll())
+            .filter((v) => v.choice !== undefined)
+            .map((e) => e);
+  
+          // 직전 선택지 인덱스 디비에 저장
+          if (ChoiceFromDB.length === 0) {
+            await db.add({ choice: body });
+          } else if (ChoiceFromDB.length <= 1) {
+            await db.update({ choice: body, id: ChoiceFromDB[0].id });
+          } else {
+            for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
+              await db.deleteRecord(ChoiceFromDB[i].id);
+            }
           }
         }
       });
@@ -371,8 +362,7 @@ const SinglePlayPage = () => {
               return { msg: e, role: body.role };
             });
             setPrompt(prompt);
-          }
-          else {
+          } else {
             const prompt = body.content.split('\n').map((e: string) => {
               return { msg: e.split(": ")[1], role: body.role };
             });
@@ -441,19 +431,6 @@ const SinglePlayPage = () => {
   };
 
   const sendPromptHandler = async (text: string) => {
-    // 사용자가 입력한 프롬프트 송신 메서드
-    // if (client.current) {
-    //   client.current.send(
-    //     `/prompt/${gameCode}`,
-    //     {},
-    //     JSON.stringify({
-    //       playerCode,
-    //       prompt: text,
-    //     })
-    //   );
-    //   setIsPromptFetching(true);
-    //   setPrompt([{ msg: text, role: playerCode }]);
-    // }
     if (gameCode !== '' && playerCode !== '') {
       try {
         await axios.post(
