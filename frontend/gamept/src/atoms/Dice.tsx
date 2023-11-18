@@ -30,10 +30,6 @@ const DiceFace = (props: IDiceFace) => {
   );
 };
 
-/**
- * throw => 주사위가 던져지는지에 대한 props
- * true면 던져지기, 렌더 시 throw 추적해서 true 값일때면 throw 클래스를 다이스에 붙여주기
- */
 const Dice = (props: IDice) => {
   const setVal1 = useCallback((num: number) => {
     const element: HTMLElement | null = document.querySelector('.dice1');
