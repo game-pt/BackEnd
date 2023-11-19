@@ -37,7 +37,6 @@ import static io.lettuce.core.RedisURI.DEFAULT_TIMEOUT;
 @RequiredArgsConstructor
 @Slf4j
 public class PromptServiceImpl implements PromptService {
-    private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000;
     private final FightService fightService;
     private final EventService eventService;
     private final GameRedisRepository gameRedisRepository;
@@ -46,6 +45,7 @@ public class PromptServiceImpl implements PromptService {
     private final EmitterRepository emitterRepository;
     private final ChatGptClientUtil chatGptClientUtil;
     private final int MAX_PREV_PROMPT_NUMBER = 6;
+    private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000;
 
     @Override
     @Transactional(readOnly = true)
@@ -130,7 +130,7 @@ public class PromptServiceImpl implements PromptService {
 
         // EventCommandDto eventCommandDto = eventService.checkEventInPrompt(game, responsePrompt);
         Event event = null;
-        if (game.getEventCnt() < 10/*EVENT_MAX_COUNT*/ && game.getTurn() < 30) {  // 대화 30턴 미만, 이벤트 발생 횟수 10번 미만일 경우
+//        if (game.getEventCnt() < 10/*EVENT_MAX_COUNT*/ && game.getTurn() < 30) {  // 대화 30턴 미만, 이벤트 발생 횟수 10번 미만일 경우
             // 스토리 코드에 따른 이벤트 리스트
             List<Event> eventList = eventRepository.findAllByStoryCode(game.getStoryCode())
                     .orElseThrow(() -> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
@@ -138,6 +138,12 @@ public class PromptServiceImpl implements PromptService {
             // 텍스트에서 가장 마지막에 등장한 이벤트의 인덱스
             int eventIndex = eventService.findLastEventInText(eventList, responsePrompt);
             event = (0 <= eventIndex) ? eventList.get(eventIndex) : null;
+//        }
+
+        if (game.getEventCnt() >= 10 || game.getTurn() >= 30) {
+            if (!event.getName().equals("죽음")) {
+                event = null;
+            }
         }
 
         double eventRate = game.getEventRate();
@@ -218,7 +224,10 @@ public class PromptServiceImpl implements PromptService {
     @Override
     @Transactional
     public SseEmitter subscribeEmitter(String gameCode) {
-        SseEmitter emitter = createEmitter(gameCode);
+        SseEmitter emitter = emitterRepository.get(gameCode);
+        if (emitter == null) {
+            emitter = createEmitter(gameCode);
+        }
 
         sendToClient(gameCode, "EventStream Created. [gameCode=" + gameCode + "]");
         return emitter;
@@ -241,6 +250,9 @@ public class PromptServiceImpl implements PromptService {
         Game game = gameRedisRepository.findById(gameCode)
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
         SseEmitter emitter = emitterRepository.get(gameCode);
+        if (emitter == null) {
+            createEmitter(game.getCode());
+        }
         String outputPrompt = chatGptClientUtil.enterPromptForSse(emitter, inputPrompt, game.getSettingPrompt(), game.getMemory(), game.getPromptList());
         log.info("ChatGPT Result: " + outputPrompt);
 
