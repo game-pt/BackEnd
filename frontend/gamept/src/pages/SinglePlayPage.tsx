@@ -376,6 +376,7 @@ const SinglePlayPage = () => {
             const prompt = body.content.split('\n').map((e: string) => {
               return { msg: e.split(': ')[1], role: body.role };
             });
+            setBlockInput(true);
             setIsPromptFetching(true);
             setPrompt(prompt);
           }
@@ -700,6 +701,7 @@ const SinglePlayPage = () => {
           } else if (message.data === '[DONE]') {
             console.log(message.data);
             setFinishPrompt(true);
+            setBlockInput(false);
             setIsPromptFetching(false);
           } else {
             console.log(message.data);
