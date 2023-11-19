@@ -83,6 +83,7 @@ const Prompt = (props: IPropmpt) => {
                   {e[0].role === props.playerCode && (
                     <img
                       src={`${api}profile/${characterStatus.imgCode}`}
+                      alt={`Player_Profile_img`}
                       className="w-6 h-6 mt-2 mr-2 rounded-full"
                     />
                   )}
