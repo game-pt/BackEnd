@@ -7,7 +7,7 @@ import lombok.Builder;
 public record ChatGptForStreamRequestDto(
         String model,
         ChatGptMessage[] messages,
-        int temperature,
+        double temperature,
         int max_tokens,
         boolean stream
 ) {

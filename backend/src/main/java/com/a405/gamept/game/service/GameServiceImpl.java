@@ -98,20 +98,38 @@ public class GameServiceImpl implements GameService {
         for(Event event : story.getEventList()) {
             eventStrList.add("TRPG 게임은 반드시 " + event.getName() + " 상황이 시작될 때," +
                     "[" + event.getName() + "]라고 출력해주어야 합니다. ");
-            eventStrList.add(event.getName() + " 상황이란," +
+            eventStrList.add(event.getName() + " 상황이란, " +
                     "" + event.getPrompt() + "\n");
         }
+
+        /*
+        당신은 TRPG의 게임 마스터가 되어 나의 대화를 참고하여 주도적이고 능동적으로 이야기를 진행시켜야 합니다.
+        나는 판타지 세계의 모험가가 되어 TRPG 게임을 플레이합니다.
+        당신이 대신해서 나의 말이나 대답을 절대 말할 수 없습니다.
+        내가 반드시 대답할 수 있는 여지를 주어야 합니다.
+        당신은 절대로 나에게 선택지를 주지 않아야 합니다.
+        당신은 현재 상황을 자세히 묘사하고 경어를 사용해야 합니다.
+        당신은 TRPG 게임을 진행해가면서 스토리에 따라 당신이 임의로 등장인물을 등장시킬 수 있습니다.
+        TRPG 게임은 주로 게임의 등장인물과 대화를 하거나 상호작용을 하면서 게임이 진행됩니다.
+        TRPG 게임에서 등장하는 인물들은 평어를 사용할 수도 있고, 경어를 사용할 수도 있습니다.
+        아래에 제시하는 주제, 이벤트에 맞춰 이야기를 진행해주세요.
+        첫 시작은 당신이 TRPG 게임의 안내자의 입장이 되어 나를 반겨줍니다.
+         */
         String settingPrompt =
-                        "당신은 TRPG의 게임 마스터가 되어 나의 대화에 맞춰 이야기를 이어나가야 합니다.\n " +
-                        "나는 판타지 세계의 모험가가 되어 게임을 플레이합니다. \n" +
-                        "TPRG 게임은 주로 대화 형식으로 게임이 이루어집니다. \n" +
-                        "아래에 제시하는 주제, 이벤트, 글자수에 맞춰 이야기를 이어나가 주세요. \n" +
-                        "나의 대답을 당신이 말할 수 없습니다. \n" +
-                        "내가 대답할 수 있는 여지를 주어야 합니다. \n" +
-                        "당신은 선택지를 줄 수 없습니다. \n" +
+                        "Instruction: - Write the narration in Korean and Write the conversation of the characters in double quotes in Korean. - Format the conversation so that there's a single line space preceding and succeeding each dialogue entry.\n" +
+                        "You must become the game master of TRPG and take the initiative and actively advance the story by referring to my dialogue.\n" +
+                        "I play TRPG games as an adventurer in a fantasy world.\n" +
+                        "You can never speak my words or answer for me.\n" +
+                        "I must give myself room to answer.\n" +
+                        "You should never give me a choice.\n" +
+                        "You should describe the current situation in detail and use honorifics.\n" +
+                        "As you progress through the TRPG game, you can randomly introduce characters according to the story.\n" +
+                        "TRPG games are mainly played by talking or interacting with the game characters.\n" +
+                        "Characters in TRPG games may use common words or honorifics.\n" +
+                        "Please proceed with the story according to the topics and events presented below.\n" +
                         String.join("\n", eventStrList) + "\n" +
-                        "첫 시작은 당신이 안내자의 입장이 되어 나와 만난 것을 반겨줍니다.\n" +
-                        "\n주제: " + story.getDesc() + "\n 글자 수 : 최대 100자";
+                        "At the beginning, you welcome me as a guide to the TRPG game.\n" +
+                        "\n주제: " + story.getDesc();
 
         Game game = Game.builder()
                 .code(code)

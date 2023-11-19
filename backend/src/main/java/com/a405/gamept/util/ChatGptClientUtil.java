@@ -218,7 +218,7 @@ public class ChatGptClientUtil {
         ObjectMapper mapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-        ChatGptForStreamRequestDto chatGptRequestDtoForStream = new ChatGptForStreamRequestDto(model, messages, 1, 4096, true);
+        ChatGptForStreamRequestDto chatGptRequestDtoForStream = new ChatGptForStreamRequestDto(model, messages, 0.6, 1024, true);
 
         String input = mapper.writeValueAsString(chatGptRequestDtoForStream);
         StringBuilder outputSB = new StringBuilder();
