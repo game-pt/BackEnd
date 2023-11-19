@@ -457,29 +457,53 @@ const SinglePlayPage = () => {
         );
       } catch (error) {
         console.log(error);
-        console.log(promptAtom);
         const list = await db.getAll();
         const idx = list[list.length - 1].id;
         db.deleteRecord(idx);
-        Swal.fire({
-          title: '에러 발생',
-          text: '다시 시도해주시기 바랍니다!',
-          icon: 'error',
-          width: 600,
-          padding: '2.5rem',
-          color: '#FBCB73',
-          background: '#240903',
-          confirmButtonText: '확인',
-          confirmButtonColor: '#F0B279',
-          customClass: {
-            container: 'font-hol',
-            popup: 'rounded-lg',
-            title: 'text-48 mb-8',
-          },
-        }).then(result => {
-          if (result.isConfirmed) location.reload();
-          location.reload();
-        });
+
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 504) {
+            Swal.fire({
+              title: '서버 지연 상태',
+              text: '잠시 후 다시 시도해주시기 바랍니다!',
+              icon: 'error',
+              width: 600,
+              padding: '2.5rem',
+              color: '#FBCB73',
+              background: '#240903',
+              confirmButtonText: '확인',
+              confirmButtonColor: '#F0B279',
+              customClass: {
+                container: 'font-hol',
+                popup: 'rounded-lg',
+                title: 'text-48 mb-8',
+              },
+            }).then(result => {
+              if (result.isConfirmed) location.reload();
+              location.reload();
+            });
+          } else {
+            Swal.fire({
+              title: '에러 발생',
+              text: '다시 시도해주시기 바랍니다!',
+              icon: 'error',
+              width: 600,
+              padding: '2.5rem',
+              color: '#FBCB73',
+              background: '#240903',
+              confirmButtonText: '확인',
+              confirmButtonColor: '#F0B279',
+              customClass: {
+                container: 'font-hol',
+                popup: 'rounded-lg',
+                title: 'text-48 mb-8',
+              },
+            }).then(result => {
+              if (result.isConfirmed) location.reload();
+              location.reload();
+            });
+          }
+        }
       }
     }
   };
@@ -708,6 +732,10 @@ const SinglePlayPage = () => {
             console.log(message.data);
           }
         });
+
+        eventSource.current.onerror = () => {
+          eventSource.current = null;
+        }
       }
     };
 
@@ -749,13 +777,14 @@ const SinglePlayPage = () => {
         itemUpdateAtom(JSON.parse(itemList).itemList);
       }
 
-      if (promptAtom.length <= 1) {
-        db.getAll().then((value) => {
-          if (value.length === 0) {
-            console.log("initialGame!!!!!!!!!!!!!!!!!")
-            initializeGame();
-          }
-        });
+      if (eventSource.current === null) {
+        if (promptAtom.length <= 1) {
+          db.getAll().then((value) => {
+            if (value.length === 0) {
+              initializeGame();
+            }
+          });
+        }
       }
     }
 
@@ -786,7 +815,7 @@ const SinglePlayPage = () => {
         );
       }
     };
-  }, [playerCode, gameCode]);
+  }, [playerCode, gameCode, eventSource.current]);
 
   return (
     <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary max-h-[750px] my-auto">
