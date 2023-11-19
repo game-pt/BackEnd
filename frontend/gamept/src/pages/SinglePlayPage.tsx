@@ -626,7 +626,11 @@ const SinglePlayPage = () => {
     }).then((result) => {
       if (result.isDenied) {
         disConnected();
-        navigate('/ending');
+        localStorage.removeItem('gameCode');
+        localStorage.removeItem('playerCode');
+        localStorage.removeItem('characterStatus');
+        db.clear();
+        navigate('/');
       }
     });
   };
