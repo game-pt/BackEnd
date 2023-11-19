@@ -1,7 +1,7 @@
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import React, { useState, useRef, useEffect } from 'react';
-import Logo from '@/assets/logo/logo.png';
+// import Logo from '@/assets/logo/logo.png';
 import SideInterface from '@/organisms/SideInterface';
 import PromptInterface from '@/organisms/PromptInterface';
 import TextButton from '@/atoms/TextButton';
@@ -70,7 +70,8 @@ const SinglePlayPage = () => {
   const setStatList = useStatUpAtom();
   // From ProfileInterface
   const setProfileStat = useUpdateProfileAtom();
-
+  const Logo =
+    import.meta.env.VITE_SERVER_URL.split('api')[0] + 'GamePTLogo.png';
   const [gameCode] = useGameCode();
   const [playerCode] = usePlayerCode();
 
