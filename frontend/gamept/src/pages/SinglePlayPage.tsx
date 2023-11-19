@@ -130,7 +130,7 @@ const SinglePlayPage = () => {
         return;
       }
 
-      client.current.onStompError = function (frame) {
+      client.current.onStompError = (frame) => {
         console.log('Broker reported error: ' + frame.headers['message']);
         console.log('Additional details: ' + frame.body);
       };
@@ -184,7 +184,11 @@ const SinglePlayPage = () => {
 
           if (body.gameOverYn === 'Y') {
             console.log('Game Over ==== Y');
-            endingEvent(body.prompt);
+            let str = ``;
+            promptAtom[promptAtom.length - 1].forEach(
+              (e) => (str += `${e.msg + '\n'}`)
+            );
+            endingEvent(str);
             return;
           }
 
@@ -303,7 +307,11 @@ const SinglePlayPage = () => {
           // 사망 여부 판별
           if (body.gameOverYn === 'Y') {
             setEvent(null);
-            endingEvent(body.prompt);
+            let str = ``;
+            promptAtom[promptAtom.length - 1].forEach(
+              (e) => (str += `${e.msg + '\n'}`)
+            );
+            endingEvent(str);
             return;
           }
 
@@ -415,8 +423,6 @@ const SinglePlayPage = () => {
       client.current = null;
     } else console.log('Already Disconnected!!!');
   };
-
-  // const handleLe
 
   const getDicesHandler = () => {
     if (client.current) {
