@@ -188,11 +188,11 @@ public class ChatGptClientUtil {
             log.info("ChatGPT result: " + jsonNode.get("choices").get(0).get("message").get("content").asText());
 
             // ChatGPT 응답 content 반환
-            System.out.println("됐다!!");
+            log.info("됐다!!");
             return jsonNode.get("choices").get(0).get("message").get("content").asText();
         } catch (RuntimeException | IOException | InterruptedException e) {
             log.error(e.getMessage());
-            System.out.println("에러!!");
+            log.info("에러!!");
             throw new GameException(GameErrorMessage.PROMPT_INVALID);
         }
     }
@@ -218,7 +218,7 @@ public class ChatGptClientUtil {
         ObjectMapper mapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-        ChatGptForStreamRequestDto chatGptRequestDtoForStream = new ChatGptForStreamRequestDto(model, messages, 1, 1024, true);
+        ChatGptForStreamRequestDto chatGptRequestDtoForStream = new ChatGptForStreamRequestDto(model, messages, 1, 4096, true);
 
         String input = mapper.writeValueAsString(chatGptRequestDtoForStream);
         StringBuilder outputSB = new StringBuilder();
@@ -233,6 +233,7 @@ public class ChatGptClientUtil {
                 .body(BodyInserters.fromValue(chatGptRequestDtoForStream))
                 .exchangeToFlux(response -> response.bodyToFlux(String.class))
                 .doOnNext(line -> {
+                    log.info(line);
                     try {
                         if (line.equals("[DONE]")) {
 //                            emitter.complete();
