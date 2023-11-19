@@ -3,7 +3,6 @@ import LoadingSpinner1 from './LoadingSpinner1';
 import { useEffect, useRef, useState } from 'react';
 
 const Prompt = (props: IPropmpt) => {
-  console.log(props);
   const lastPromptRef = useRef<HTMLDivElement | null>(null);
   const [word, setWord] = useState('');
   const targetRef = useRef<HTMLParagraphElement>(null);

@@ -146,7 +146,8 @@ const SinglePlayPage = () => {
 
       // ProfileInterface
       client.current.subscribe(`/queue/${playerCode}/status`, (message) => {
-        setProfileStat(message.body as IProfileInterface);
+        const body = JSON.parse(message.body);
+        setProfileStat(body as IProfileInterface);
       });
 
       // 주사위 데이터 송수신용
