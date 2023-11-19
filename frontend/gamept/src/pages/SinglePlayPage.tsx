@@ -686,7 +686,7 @@ const SinglePlayPage = () => {
         localStorage.removeItem('playerCode');
         localStorage.removeItem('characterStatus');
         db.clear();
-        navigate('/');
+        location.href = "/";
       }
     });
   };
@@ -712,6 +712,7 @@ const SinglePlayPage = () => {
   }, [nowPrompt, finishPrompt]);
 
   useEffect(() => {
+    console.log(promptAtom);
     const connetEventSource = () => {
       eventSource.current = new EventSource(
         `${import.meta.env.VITE_SERVER_URL}/prompt/subscribe/${gameCode}`
@@ -810,10 +811,8 @@ const SinglePlayPage = () => {
         eventSource.current.removeEventListener('sse', (event) =>
           console.log(event)
         );
-        eventSource.current.removeEventListener('message', (event) =>
-          console.log(event)
-        );
       }
+
     };
   }, [playerCode, gameCode, eventSource.current]);
 
