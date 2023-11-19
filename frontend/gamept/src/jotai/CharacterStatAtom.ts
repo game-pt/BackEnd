@@ -51,7 +51,7 @@ export const initCharacterStatusAtom = atom(
       race: status.race.name,
       job: status.job.name,
       imgCode: '',
-      statPoint: 3, // 테스트용
+      statPoint: 0,
       hp: status.hp,
       level: status.level,
       exp: status.exp,
