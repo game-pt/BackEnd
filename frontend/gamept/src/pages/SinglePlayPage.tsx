@@ -370,13 +370,14 @@ const SinglePlayPage = () => {
               return { msg: e, role: body.role };
             });
             setPrompt(prompt);
+            setIsPromptFetching(false);
           } else {
             const prompt = body.content.split('\n').map((e: string) => {
               return { msg: e.split(': ')[1], role: body.role };
             });
+            setIsPromptFetching(true);
             setPrompt(prompt);
           }
-          setIsPromptFetching(false);
         },
         {}
       );
@@ -451,9 +452,31 @@ const SinglePlayPage = () => {
             },
           }
         );
-        setIsPromptFetching(true);
       } catch (error) {
         console.log(error);
+        console.log(promptAtom);
+        const list = await db.getAll();
+        const idx = list[list.length - 1].id;
+        db.deleteRecord(idx);
+        Swal.fire({
+          title: '에러 발생',
+          text: '다시 시도해주시기 바랍니다!',
+          icon: 'error',
+          width: 600,
+          padding: '2.5rem',
+          color: '#FBCB73',
+          background: '#240903',
+          confirmButtonText: '확인',
+          confirmButtonColor: '#F0B279',
+          customClass: {
+            container: 'font-hol',
+            popup: 'rounded-lg',
+            title: 'text-48 mb-8',
+          },
+        }).then(result => {
+          if (result.isConfirmed) location.reload();
+          location.reload();
+        });
       }
     }
   };
@@ -659,7 +682,7 @@ const SinglePlayPage = () => {
       setPrompt([{ msg: nowPrompt, role: 'assistant' }]);
       setFinishPrompt(false);
     }
-  }, [nowPrompt]);
+  }, [nowPrompt, finishPrompt]);
 
   useEffect(() => {
     const connetEventSource = () => {
@@ -700,6 +723,8 @@ const SinglePlayPage = () => {
           }/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
         );
 
+        console.log(res.data, promptAtom);
+
         res.data.forEach((e: { role: string; content: string }) => {
           const arr = e.content.split('\n').map((v) => {
             return { msg: v, role: e.role };
@@ -722,7 +747,10 @@ const SinglePlayPage = () => {
 
       if (promptAtom.length <= 1) {
         db.getAll().then((value) => {
-          if (value.length === 0) initializeGame();
+          if (value.length === 0) {
+            console.log("initialGame!!!!!!!!!!!!!!!!!")
+            initializeGame();
+          }
         });
       }
     }
@@ -754,7 +782,7 @@ const SinglePlayPage = () => {
         );
       }
     };
-  }, [playerCode, gameCode, eventSource.current]);
+  }, [playerCode, gameCode]);
 
   return (
     <div className="w-screen h-screen flex font-hol bg-backgroundDeep text-primary max-h-[750px] my-auto">
