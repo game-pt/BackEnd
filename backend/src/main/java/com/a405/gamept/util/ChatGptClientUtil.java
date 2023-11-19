@@ -178,7 +178,7 @@ public class ChatGptClientUtil {
                 .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(map)))
                 .build();
 
-        log.info("느려!!");
+        // log.info("느려!!");
         HttpResponse<String> response = null;  // Response 받을 변수
         try {
             response = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
@@ -192,7 +192,6 @@ public class ChatGptClientUtil {
             return jsonNode.get("choices").get(0).get("message").get("content").asText();
         } catch (RuntimeException | IOException | InterruptedException e) {
             log.error(e.getMessage());
-            // log.info("에러!!");
             throw new GameException(GameErrorMessage.PROMPT_INVALID);
         }
     }
