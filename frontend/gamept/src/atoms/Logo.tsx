@@ -10,7 +10,7 @@
 
 const Logo = ({ className }: { className?: string }) => {
   const api = import.meta.env.VITE_SERVER_URL.split('api')[0];
-  const LogoImg = api + '/GamePTLogo.svg';
+  const LogoImg = api + 'GamePTLogo.png';
   return (
     <img
       src={LogoImg}

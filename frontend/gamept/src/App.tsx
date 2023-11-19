@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 function App() {
   const navigate = useNavigate();
   const api = import.meta.env.VITE_SERVER_URL.split('api')[0];
-  const LogoImg = api + '/GamePTLogo.svg';
+  const LogoImg = api + 'GamePTLogo.png';
   const handleCreateGame = () => {
     // game이 존재하는지 체크
     if (isExistGame()) {
