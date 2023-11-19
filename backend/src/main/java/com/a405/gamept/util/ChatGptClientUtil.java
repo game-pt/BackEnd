@@ -188,11 +188,11 @@ public class ChatGptClientUtil {
             log.info("ChatGPT result: " + jsonNode.get("choices").get(0).get("message").get("content").asText());
 
             // ChatGPT 응답 content 반환
-            log.info("됐다!!");
+            // log.info("됐다!!");
             return jsonNode.get("choices").get(0).get("message").get("content").asText();
         } catch (RuntimeException | IOException | InterruptedException e) {
             log.error(e.getMessage());
-            log.info("에러!!");
+            // log.info("에러!!");
             throw new GameException(GameErrorMessage.PROMPT_INVALID);
         }
     }

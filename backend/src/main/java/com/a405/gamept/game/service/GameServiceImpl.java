@@ -157,7 +157,7 @@ public class GameServiceImpl implements GameService {
                 .content(chatGptClientUtil.getChatGPTResult(settingPrompt, list, ""))
                 .build());
 
-//        list.remove(0);
+        list.remove(0);
 
         return list;
     }
