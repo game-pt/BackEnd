@@ -131,7 +131,7 @@ const SinglePlayPage = () => {
         return;
       }
 
-      client.current.onStompError = function (frame) {
+      client.current.onStompError = (frame) => {
         console.log('Broker reported error: ' + frame.headers['message']);
         console.log('Additional details: ' + frame.body);
       };
@@ -147,7 +147,8 @@ const SinglePlayPage = () => {
 
       // ProfileInterface
       client.current.subscribe(`/queue/${playerCode}/status`, (message) => {
-        setProfileStat(message.body as IProfileInterface);
+        const body = JSON.parse(message.body);
+        setProfileStat(body as IProfileInterface);
       });
 
       // 주사위 데이터 송수신용
@@ -185,7 +186,11 @@ const SinglePlayPage = () => {
 
           if (body.gameOverYn === 'Y') {
             console.log('Game Over ==== Y');
-            endingEvent(body.prompt);
+            let str = ``;
+            promptAtom[promptAtom.length - 1].forEach(
+              (e) => (str += `${e.msg + '\n'}`)
+            );
+            endingEvent(str);
             return;
           }
 
@@ -304,7 +309,11 @@ const SinglePlayPage = () => {
           // 사망 여부 판별
           if (body.gameOverYn === 'Y') {
             setEvent(null);
-            endingEvent(body.prompt);
+            let str = ``;
+            promptAtom[promptAtom.length - 1].forEach(
+              (e) => (str += `${e.msg + '\n'}`)
+            );
+            endingEvent(str);
             return;
           }
 
@@ -363,13 +372,15 @@ const SinglePlayPage = () => {
               return { msg: e, role: body.role };
             });
             setPrompt(prompt);
+            setIsPromptFetching(false);
           } else {
             const prompt = body.content.split('\n').map((e: string) => {
               return { msg: e.split(': ')[1], role: body.role };
             });
+            setBlockInput(true);
+            setIsPromptFetching(true);
             setPrompt(prompt);
           }
-          setIsPromptFetching(false);
         },
         {}
       );
@@ -417,8 +428,6 @@ const SinglePlayPage = () => {
     } else console.log('Already Disconnected!!!');
   };
 
-  // const handleLe
-
   const getDicesHandler = () => {
     if (client.current) {
       client.current.send(
@@ -446,9 +455,55 @@ const SinglePlayPage = () => {
             },
           }
         );
-        setIsPromptFetching(true);
       } catch (error) {
         console.log(error);
+        const list = await db.getAll();
+        const idx = list[list.length - 1].id;
+        db.deleteRecord(idx);
+
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 504) {
+            Swal.fire({
+              title: '서버 지연 상태',
+              text: '잠시 후 다시 시도해주시기 바랍니다!',
+              icon: 'error',
+              width: 600,
+              padding: '2.5rem',
+              color: '#FBCB73',
+              background: '#240903',
+              confirmButtonText: '확인',
+              confirmButtonColor: '#F0B279',
+              customClass: {
+                container: 'font-hol',
+                popup: 'rounded-lg',
+                title: 'text-48 mb-8',
+              },
+            }).then(result => {
+              if (result.isConfirmed) location.reload();
+              location.reload();
+            });
+          } else {
+            Swal.fire({
+              title: '에러 발생',
+              text: '다시 시도해주시기 바랍니다!',
+              icon: 'error',
+              width: 600,
+              padding: '2.5rem',
+              color: '#FBCB73',
+              background: '#240903',
+              confirmButtonText: '확인',
+              confirmButtonColor: '#F0B279',
+              customClass: {
+                container: 'font-hol',
+                popup: 'rounded-lg',
+                title: 'text-48 mb-8',
+              },
+            }).then(result => {
+              if (result.isConfirmed) location.reload();
+              location.reload();
+            });
+          }
+        }
       }
     }
   };
@@ -627,7 +682,11 @@ const SinglePlayPage = () => {
     }).then((result) => {
       if (result.isDenied) {
         disConnected();
-        navigate('/ending');
+        localStorage.removeItem('gameCode');
+        localStorage.removeItem('playerCode');
+        localStorage.removeItem('characterStatus');
+        db.clear();
+        location.href = "/";
       }
     });
   };
@@ -650,9 +709,10 @@ const SinglePlayPage = () => {
       setPrompt([{ msg: nowPrompt, role: 'assistant' }]);
       setFinishPrompt(false);
     }
-  }, [nowPrompt]);
+  }, [nowPrompt, finishPrompt]);
 
   useEffect(() => {
+    console.log(promptAtom);
     const connetEventSource = () => {
       eventSource.current = new EventSource(
         `${import.meta.env.VITE_SERVER_URL}/prompt/subscribe/${gameCode}`
@@ -667,11 +727,16 @@ const SinglePlayPage = () => {
           } else if (message.data === '[DONE]') {
             console.log(message.data);
             setFinishPrompt(true);
+            setBlockInput(false);
             setIsPromptFetching(false);
           } else {
             console.log(message.data);
           }
         });
+
+        eventSource.current.onerror = () => {
+          eventSource.current = null;
+        }
       }
     };
 
@@ -690,6 +755,8 @@ const SinglePlayPage = () => {
             import.meta.env.VITE_SERVER_URL
           }/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
         );
+
+        console.log(res.data, promptAtom);
 
         res.data.forEach((e: { role: string; content: string }) => {
           const arr = e.content.split('\n').map((v) => {
@@ -711,10 +778,14 @@ const SinglePlayPage = () => {
         itemUpdateAtom(JSON.parse(itemList).itemList);
       }
 
-      if (promptAtom.length <= 1) {
-        db.getAll().then((value) => {
-          if (value.length === 0) initializeGame();
-        });
+      if (eventSource.current === null) {
+        if (promptAtom.length <= 1) {
+          db.getAll().then((value) => {
+            if (value.length === 0) {
+              initializeGame();
+            }
+          });
+        }
       }
     }
 
@@ -740,10 +811,8 @@ const SinglePlayPage = () => {
         eventSource.current.removeEventListener('sse', (event) =>
           console.log(event)
         );
-        eventSource.current.removeEventListener('message', (event) =>
-          console.log(event)
-        );
       }
+
     };
   }, [playerCode, gameCode, eventSource.current]);
 
