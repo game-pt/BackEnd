@@ -225,14 +225,14 @@ public class ChatGptClientUtil {
 //        SseEmitter emitter = new SseEmitter((long) (5 * 60 * 1000));
         WebClient client = WebClient.create();
 
-        log.info("느려!!");
+        // log.info("느려!!");
         client.post().uri(uri)
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + key)
                 .body(BodyInserters.fromValue(chatGptRequestDtoForStream))
                 .exchangeToFlux(response -> response.bodyToFlux(String.class))
                 .doOnNext(line -> {
-                    log.info(line);
+                    // log.info(line);
                     try {
                         if (line.equals("[DONE]")) {
 //                            emitter.complete();
@@ -253,7 +253,7 @@ public class ChatGptClientUtil {
 //                .doOnComplete(emitter::complete)
                 .blockLast();
 
-        log.info("됐다!!");
+        // log.info("됐다!!");
         return outputSB.toString();
     }
 
