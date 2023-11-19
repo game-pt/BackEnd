@@ -141,11 +141,12 @@ public class PromptServiceImpl implements PromptService {
         }
 
         double eventRate = game.getEventRate();
+        int eventCnt = game.getEventCnt();
         if (event == null) {  // 이벤트 발생하지 않았을 경우
             eventRate += 0.05;  // 이벤트 발생 확률 5% 상승
         } else {
             eventRate = 0.00;  // 이벤트 발생 확률 0%로 초기화
-            eventRate += 1;  // 이벤트 발생 횟수 + 1
+            eventCnt += 1;  // 이벤트 발생 횟수 + 1
         }
 
         MonsterGetResponseDto monsterGetResponseDto = null;
@@ -159,6 +160,7 @@ public class PromptServiceImpl implements PromptService {
         }
 
         gameRedisRepository.save(game.toBuilder()
+                .eventCnt(eventCnt)
                 .eventRate(eventRate)
                 .promptList(game.getPromptList())
                 .turn(game.getTurn() + 1)
