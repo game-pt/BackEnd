@@ -387,7 +387,8 @@ public class GameServiceImpl implements GameService {
         List<ActStat> actStatList = actStatRepository.findAllByActCode(act.getCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.ACT_STAT_NOT_FOUND));
         StringBuilder result = new StringBuilder();
-        result.append("[ \n").append(" 스탯 변화 발생\n");
+
+        result.append("[ ").append(" 스탯 변화 발생 ]\n");
 
         for (ActStat actStat : actStatList) {
             //log.info("관련 스탯은 : "+actStat.getStat().getName());
@@ -403,12 +404,11 @@ public class GameServiceImpl implements GameService {
                 } else if (bonusPoint < 0) {
                     result.append("< HP >가 " + bonusPoint * 10 + " 감소 했습니다.\n");
                     if (hp + (bonusPoint * 10) <= 0) {
-                        result.append(" ] ");
                         return result.toString();
                     }
                 }
             } else {
-                log.info("스탯 상승 또는 감소");
+                //log.info("스탯 상승 또는 감소");
                 String statCode = actStat.getStat().getCode();
                 int targetStat = player.getStat().get(statCode);
                 int statValue = targetStat + bonusPoint;
@@ -433,7 +433,6 @@ public class GameServiceImpl implements GameService {
         }
 
         playerRedisRepository.save(player);
-        result.append(" ]");
         return result.toString();
     }
 
