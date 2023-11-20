@@ -22,6 +22,7 @@ export interface IPromptInterface {
   nowPrompt: string;
   setNowPrompt?: Dispatch<SetStateAction<string>>;
   block?: boolean;
+  blockChoice?: boolean;
   playerCode?: string;
   sendEventHandler?: (e: IActsType) => void;
   sendPromptHandler?: (text: string) => void;
