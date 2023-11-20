@@ -340,14 +340,12 @@ public class GameServiceImpl implements GameService {
             bonusPoint = flag ? -1 : 0;
             prompt.append("성공적이지 못한 ");
         }
-        prompt.append(act.getName()).append("를 했다.");
+        prompt.append(act.getName()).append("를 했다.").append("\n");
         //log.info(prompt.toString());
         // ChatGPT에 프롬프트 전송
-        StringBuilder promptResult = new StringBuilder();
-        promptResult.append(prompt).append("\n");
-        String gptPrompt = chatGptClientUtil.getChatGPTResult(game.getMemory(), game.getPromptList(), "플레이어인 " + promptResult.toString());
-//        log.info(gptPrompt);
-        promptResult.append(gptPrompt);
+        String gptPrompt = chatGptClientUtil.getChatGPTResult(game.getMemory(), game.getPromptList(), "플레이어인 " + prompt.toString());
+////        log.info(gptPrompt);
+        prompt.append(gptPrompt).append("\n");
 
         // 스탯 변화 진행
         int playerHp = player.getHp();
@@ -356,7 +354,7 @@ public class GameServiceImpl implements GameService {
             StatChangeCommandDto statChangeCommandDto = statChane(playerHp, playerStat, act.getCode(), bonusPoint);
             playerHp = statChangeCommandDto.playerHp();
             playerStat = statChangeCommandDto.playerStat();
-            promptResult.append(statChangeCommandDto.prompt()).append("/n");
+            prompt.append(statChangeCommandDto.prompt()).append("\n");
         }
 
 
@@ -367,12 +365,9 @@ public class GameServiceImpl implements GameService {
 
         if (playerHp == 0) {
             //죽음
-            // playerRedisRepository.delete(player);
-            // gameRedisRepository.delete(game);
-            StringBuilder dead = new StringBuilder();
-            dead.append("HP가 0이 되었다.\n");
-            dead.append(player.getNickname()).append(" 은 쓰러지고 말았다.\n");
-            dead.append("눈앞이 깜깜해진다.....\n");
+            prompt.append("HP가 0이 되었다.").append("\n");
+            prompt.append(player.getNickname()).append(" 은 쓰러지고 말았다.").append("\n");
+            prompt.append("눈앞이 깜깜해진다.....").append("\n");
             gameOverYn = "Y";
         } else {
             Event event = act.getEvent();
@@ -380,7 +375,7 @@ public class GameServiceImpl implements GameService {
                 itemYn = "Y";
                 ItemRandomGetCommandDto itemRandomGetCommandDto = getItem(game.getStoryCode(), player);
                 itemCode = itemRandomGetCommandDto.itemCode();
-                promptResult.append("\n").append(itemRandomGetCommandDto.prompt());
+                prompt.append(itemRandomGetCommandDto.prompt());
             }
         }
 
@@ -395,7 +390,7 @@ public class GameServiceImpl implements GameService {
                 .build();
         playerRedisRepository.save(player);
 
-        return ActResultGetResponseDto.of(actResultGetCommandDto.gameCode(), promptResult.toString(), itemYn, itemCode, gameOverYn);
+        return ActResultGetResponseDto.of(actResultGetCommandDto.gameCode(), prompt.toString(), itemYn, itemCode, gameOverYn);
     }
 
     public StatChangeCommandDto statChane(int playerHp, Map<String, Integer> playerStat, String actCode, int bonusPoint) {
@@ -404,7 +399,7 @@ public class GameServiceImpl implements GameService {
                 .orElseThrow(() -> new GameException(GameErrorMessage.ACT_STAT_NOT_FOUND));
         StringBuilder result = new StringBuilder();
 
-        result.append("[ ").append(" 스탯 변화 발생 ]\n");
+        result.append("[ ").append(" 스탯 변화 발생 ]").append("\n");
 
         for (ActStat actStat : actStatList) {
             //log.info("관련 스탯은 : "+actStat.getStat().getName());
@@ -414,9 +409,9 @@ public class GameServiceImpl implements GameService {
 
                 playerHp = Math.min(playerHp + (bonusPoint * 10), maxHp);
                 if (bonusPoint > 0) {
-                    result.append("< HP >가 " + bonusPoint * 10 + " 회복 되었습니다.\n");
+                    result.append("< HP >가 " + bonusPoint * 10 + " 회복 되었습니다.").append("\n");
                 } else if (bonusPoint < 0) {
-                    result.append("< HP >가 " + bonusPoint * 10 + " 감소 했습니다.\n");
+                    result.append("< HP >가 " + bonusPoint * 10 + " 감소 했습니다.").append("\n");
                     if (playerHp + (bonusPoint * 10) <= 0) {
                         return StatChangeCommandDto.of(result.toString(), playerHp, playerStat);
                     }
@@ -435,10 +430,10 @@ public class GameServiceImpl implements GameService {
                         .orElseThrow(() -> new GameException(GameErrorMessage.STAT_INVALID));
                 if (bonusPoint > 0) {
                     result.append("< ").append(stat.getName()).append(" >").append(" 이/가 +").append(bonusPoint)
-                            .append(" 증가 했습니다.\n");
+                            .append(" 증가 했습니다.").append("\n");
                 } else {
                     result.append("< ").append(stat.getName()).append(" >").append(" 이/가 ").append(bonusPoint)
-                            .append(" 감소 했습니다.\n");
+                            .append(" 감소 했습니다.").append("\n");
                 }
             }
         }
