@@ -3,14 +3,15 @@
  * 게임 저장 여부 판단하는 로직은 미구현입니다.
  */
 
-import Logo from '@/assets/logo/logo.png';
+// import Logo from '@/assets/logo/logo.png';
 import SelectButton from './atoms/SelectButton';
 import { useNavigate } from 'react-router-dom';
 // import kakao from '@/assets/logo/kakaologo.svg';
 
 function App() {
   const navigate = useNavigate();
-
+  const api = import.meta.env.VITE_SERVER_URL.split('api')[0];
+  const LogoImg = api + 'GamePTLogo_L.png';
   const handleCreateGame = () => {
     // game이 존재하는지 체크
     if (isExistGame()) {
@@ -22,7 +23,7 @@ function App() {
 
   return (
     <div className="w-screen h-screen bg-backgroundDeep flex flex-col items-center justify-center caret-transparent">
-      <img src={Logo} alt="GamePT 로고" className="w-1/2" />
+      <img src={LogoImg} alt="GamePT 로고" className="w-1/2 mb-5" />
 
       {/* <div className="w-[450px] h-[70px] bg-yKakao rounded-[16px] flex flex-row justify-between items-center mb-5 px-5">
         <img

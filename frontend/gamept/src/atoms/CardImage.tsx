@@ -11,8 +11,11 @@ import { ICardImage } from '@/types/components/Image.types';
 
 const CardImage = (props: ICardImage) => {
   // const imgUrl = new URL(props.url, import.meta.url).href;
-  const imgUrl = props.url;
-
+  const api = import.meta.env.VITE_SERVER_URL.split('api')[0];
+  // console.log(api);
+  const imgUrl = api + props.url;
+  // const imgUrl = 'http://localhost:3000/' + props.url;
+  console.log('경로확인', new URL(props.url, import.meta.url).href);
   return (
     <div className="relative w-full h-[315px]">
       <img

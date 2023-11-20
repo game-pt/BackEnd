@@ -1,27 +1,38 @@
-import { useEffect, useRef, useState } from 'react';
-import SockJS from 'sockjs-client';
+import { useEffect, useState } from 'react';
+// import { useEffect, useRef, useState } from 'react';
+// import SockJS from 'sockjs-client';
 import './SideInterface.css'; // Import your CSS file
-import { StatValuesType, SkillValuesType, TabContent, StatObjectType } from '@/types/components/Tab.types';
-import { CompatClient, Stomp } from '@stomp/stompjs';
+import {
+  StatValuesType,
+  SkillValuesType,
+  TabContent,
+  StatObjectType,
+} from '@/types/components/Tab.types';
+// import { CompatClient, Stomp } from '@stomp/stompjs';
+// import { CompatClient } from '@stomp/stompjs';
 
-import { useGameCode } from '@/hooks/useGameCode';
-import { usePlayerCode } from '@/hooks/usePlayerCode';
+// import { useGameCode } from '@/hooks/useGameCode';
+// import { usePlayerCode } from '@/hooks/usePlayerCode';
 import ChattingTab from '@/atoms/ChattingTab';
 import { ISideInterface } from '@/types/components/SideInterface.types';
-import { TbNavigation } from "react-icons/tb";
-import { GiCardDiscard } from "react-icons/gi";
-import { useDeleteItemAtom, useItemListAtom, useStatAtom, useStatObjectAtom, useStatUpAtom } from '@/jotai/CharacterStatAtom';
+import { TbNavigation } from 'react-icons/tb';
+import { GiCardDiscard } from 'react-icons/gi';
+import {
+  useDeleteItemAtom,
+  useItemListAtom,
+  useStatAtom,
+  useStatObjectAtom,
+} from '@/jotai/CharacterStatAtom';
+// import { useDeleteItemAtom, useItemListAtom, useStatAtom, useStatObjectAtom, useStatUpAtom } from '@/jotai/CharacterStatAtom';
 // import { useUpdateStatAtom } from '@/jotai/CharacterStatAtom';
 import { useAtomValue } from 'jotai';
 import { characterStatusAtom } from '@/jotai/CharacterStatAtom';
-import { fetchGetPlayerInfo } from '@/services/CreateCharacterService';
-
+// import { fetchGetPlayerInfo } from '@/services/CreateCharacterService';
 
 // import { useStatAtom, useUpdateProfileAtom } from '@/jotai/CharacterStatAtom';
 
 // const setProfileStat = useUpdateProfileAtom();
 // const getStat = useStatAtom();
-
 
 //////////////////////////////////////////////////////////////////////////
 /* 빌드 에러 방지용 임시 주석
@@ -39,7 +50,7 @@ const fetchInitialStats = async () => {
 
 type Props = {
   sendEventStat: (statCode: string) => void;
-}
+};
 
 // const StatTab = () => {
 const StatTab: React.FC<Props> = ({ sendEventStat }) => {
@@ -49,7 +60,6 @@ const StatTab: React.FC<Props> = ({ sendEventStat }) => {
   // 스탯 업데이트 함수 불러오기
   // const setStatList = useUpdateStatAtom();
   // const [statPoints, setStatPoints] = useState(3);
-
 
   // 스탯 증가 함수
   // const increaseStat = (statCode: string) => {
@@ -61,7 +71,7 @@ const StatTab: React.FC<Props> = ({ sendEventStat }) => {
   //       }
   //       return stat;
   //     });
-  
+
   //     // setStatList에 새로운 배열을 직접 전달
   //     setStatList(newStats);
   //     setStatPoints(statPoints - 1);
@@ -86,7 +96,9 @@ const StatTab: React.FC<Props> = ({ sendEventStat }) => {
       ))}
       <div className="text-base flex items-center justify-center">
         <p>스탯 포인트 :&nbsp;</p>
-        <div className="border-2 shadow-md border-primary px-2">{statObject.statPoint}</div>
+        <div className="border-2 shadow-md border-primary px-2">
+          {statObject.statPoint}
+        </div>
       </div>
     </div>
   );
@@ -100,7 +112,8 @@ const SkillTab = () => {
     // 서버에서 스킬 목록을 가져오는 함수
     // (생략 - 현재는 characterStatusAtom에서 이미 받아오고 있기 때문에 필요 없음)
   }, []);
-
+  const api = import.meta.env.VITE_SERVER_URL.split('api')[0];
+  const skillSrc = api + 'skill/';
   return (
     <div className="w-full h-full flex flex-col p-6 bg-transparent text-16 overflow-y-auto">
       {skillList.map((skill, i) => (
@@ -108,7 +121,7 @@ const SkillTab = () => {
           <div className="border border-[#5C5C5C] rounded">
             <img
               className="w-[64px] rounded"
-              src={`./src/assets/skill/${skill.img || `${skill.name}.png`}`}
+              src={`${skillSrc}${skill.img || `${skill.name}.png`}`}
               alt={`${i}_skill`}
             />
           </div>
@@ -120,20 +133,20 @@ const SkillTab = () => {
     </div>
   );
 };
-const ItemTab = (props: { deleteItem: (itemCode:string) => void }) => {
+const ItemTab = (props: { deleteItem: (itemCode: string) => void }) => {
   const itemListAtom = useItemListAtom();
   const deleteItemAtom = useDeleteItemAtom();
   const initList: {
-    [key: string]: { img: string; desc: string; code: string; };
+    [key: string]: { img: string; desc: string; code: string };
   } = {};
 
-  itemListAtom.forEach(e => {
+  itemListAtom.forEach((e) => {
     initList[e.name] = {
       img: `${e.name}.png`,
       desc: e.desc,
-      code: e.code
-    }
-  })
+      code: e.code,
+    };
+  });
 
   const [itemList, setItemList] = useState<{
     [key: string]: { code: string; img: string; desc: string };
@@ -157,6 +170,17 @@ const ItemTab = (props: { deleteItem: (itemCode:string) => void }) => {
     deleteItemAtom(code);
     setItemList(updatedItemList);
   };
+
+  useEffect(() => {
+    itemListAtom.forEach((e) => {
+      initList[e.name] = {
+        img: `${e.name}.png`,
+        desc: e.desc,
+        code: e.code,
+      };
+    });
+    setItemList(initList);
+  }, [itemListAtom]);
 
   return (
     <div className="w-full h-full flex flex-col p-6 bg-transparent text-16">
@@ -192,65 +216,65 @@ const ItemTab = (props: { deleteItem: (itemCode:string) => void }) => {
 };
 
 const SideInterface = (props: ISideInterface) => {
-  const client = useRef<CompatClient | null>(null);
+  // const client = useRef<CompatClient | null>(null);
   const [selectedTab, setSelectedTab] = useState('스탯'); // 초기 탭 설정
   const [selectedTabColor, setSelectedTabColor] = useState('#331812'); // 초기 탭 색상 설정
   // const gameCode = 'AHczIu';
   // const playerCode = 'AHczIu-kCZX8d';
   // 컴포넌트 함수 안에서 가져오기
-  const [getGameCode] = useGameCode(); // getGameCode -> 게임코드
-  const [getPlayerCode] = usePlayerCode(); // getPlayerCode -> 플레이어코드
-  const setStatList = useStatUpAtom();
+  // const [getGameCode] = useGameCode(); // getGameCode -> 게임코드
+  // const [getPlayerCode] = usePlayerCode(); // getPlayerCode -> 플레이어코드
+  // const setStatList = useStatUpAtom();
 
-  useEffect(() => {
-    connectHandler();
-    fetchGetPlayerInfo(getGameCode, getPlayerCode)
-    .then((playerInfo) => {
-      console.log(playerInfo);
-      setStatList({ statPoint: playerInfo.statPoint, statList: playerInfo.statList });
-    });
-    // sendEventHandler();
-  }, []);
+  // useEffect(() => {
+  //   connectHandler();
+  //   fetchGetPlayerInfo(getGameCode, getPlayerCode)
+  //   .then((playerInfo) => {
+  //     console.log(playerInfo);
+  //     setStatList({ statPoint: playerInfo.statPoint, statList: playerInfo.statList });
+  //   });
+  //   // sendEventHandler();
+  // }, []);
 
-  const connectHandler = () => {
-    const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
-    client.current = Stomp.over(() => sock);
+  // const connectHandler = () => {
+  //   const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
+  //   client.current = Stomp.over(() => sock);
 
-    // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
-    // client.current.debug = () => null;
+  // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
+  // client.current.debug = () => null;
 
-    client.current.connect({}, () => {
-      if (client.current == null) {
-        console.log('Error');
-        return;
-      }
+  // client.current.connect({}, () => {
+  //   if (client.current == null) {
+  //     console.log('Error');
+  //     return;
+  //   }
 
-      // 멀티플레이 용
-      // 유저 데이터 업데이트 시 정보 송수신용
-      client.current.subscribe(
-        `/queue/${getPlayerCode}/stat`,
-        (message) => {
-          const playerStat = JSON.parse(message.body);
-          const statList = playerStat.statList;
-          const statPoint = playerStat.statPoint;
+  // 멀티플레이 용
+  // 유저 데이터 업데이트 시 정보 송수신용
+  // client.current.subscribe(
+  //   `/queue/${getPlayerCode}/stat`,
+  //   (message) => {
+  //     const playerStat = JSON.parse(message.body);
+  //     const statList = playerStat.statList;
+  //     const statPoint = playerStat.statPoint;
 
-          // const newStats = statList.map((stat: StatValuesType) => {
-          //   // if (stat.statCode === statCode) {
-          //   //   return { ...stat, statValue: stat.statValue + 1 };
-          //   // }
-          //   // return stat;
-          //   return {
-          //     statCode: stat.statCode,
-          //     statName: stat.statName,
-          //     statValue: stat.statValue
-          //   }
-          // });
-      
-          // setStatList에 새로운 배열을 직접 전달
-          setStatList({ statPoint: statPoint, statList: statList });
-      });
-    });
-  };
+  // const newStats = statList.map((stat: StatValuesType) => {
+  //   // if (stat.statCode === statCode) {
+  //   //   return { ...stat, statValue: stat.statValue + 1 };
+  //   // }
+  //   // return stat;
+  //   return {
+  //     statCode: stat.statCode,
+  //     statName: stat.statName,
+  //     statValue: stat.statValue
+  //   }
+  // });
+
+  // setStatList에 새로운 배열을 직접 전달
+  // setStatList({ statPoint: statPoint, statList: statList });
+  //     });
+  //   });
+  // };
 
   //////////////////////////////////////////////////////////////////////////
   /* 빌드 에러 방지용 임시 주석
@@ -274,18 +298,18 @@ const SideInterface = (props: ISideInterface) => {
   */
   //////////////////////////////////////////////////////////////////////////
 
-  const sendEventStat = (statCode: string) => {
-    if (client.current)
-      client.current.send(
-        `/stat-up/${getGameCode}/${getPlayerCode}/${statCode}`,
-        {}
-      );
-  };
+  // const sendEventStat = (statCode: string) => {
+  //   if (client.current)
+  //     client.current.send(
+  //       `/stat-up/${getGameCode}/${getPlayerCode}/${statCode}`,
+  //       {}
+  //     );
+  // };
 
   const tabContents: Record<string, TabContent> = props.sendChat
     ? {
         스탯: {
-          content: <StatTab sendEventStat={sendEventStat} />,
+          content: <StatTab sendEventStat={props.sendEventStat} />,
           color: '#290E08',
         },
         스킬: {
@@ -303,7 +327,7 @@ const SideInterface = (props: ISideInterface) => {
       }
     : {
         스탯: {
-          content: <StatTab sendEventStat={sendEventStat} />,
+          content: <StatTab sendEventStat={props.sendEventStat} />,
           color: '#331812',
         },
         스킬: {
