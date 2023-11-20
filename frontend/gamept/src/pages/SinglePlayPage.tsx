@@ -314,7 +314,8 @@ const SinglePlayPage = () => {
 
       client.current.subscribe(`/topic/event/${gameCode}`, async (message) => {
         const body = JSON.parse(message.body);
-        localStorage.setItem('monster', body.monster.code);
+        console.log(body);
+        if (body.monster) localStorage.setItem('monster', body.monster.code);
         if (body.event) {
           if (body.event.eventName == '죽음') {
             let str = ``;
