@@ -296,6 +296,16 @@ const SinglePlayPage = () => {
           }
 
           if (body.endYn === 'Y') {
+            const ChoiceFromDB = (await db.getAll())
+              .filter((v) => v.choice !== undefined)
+              .map((e) => e);
+  
+            // 직전 선택지 인덱스 디비에 저장
+            if (ChoiceFromDB.length > 0) {
+              for (let i = 0; i < ChoiceFromDB.length; i++) {
+                await db.deleteRecord(ChoiceFromDB[i].id);
+              }
+            }
             setEvent(null);
           }
         },
@@ -304,7 +314,8 @@ const SinglePlayPage = () => {
 
       client.current.subscribe(`/topic/event/${gameCode}`, async (message) => {
         const body = JSON.parse(message.body);
-        localStorage.setItem('monster', body.monster.code);
+        console.log(body);
+        if (body.monster) localStorage.setItem('monster', body.monster.code);
         if (body.event) {
           if (body.event.eventName == '죽음') {
             let str = ``;
