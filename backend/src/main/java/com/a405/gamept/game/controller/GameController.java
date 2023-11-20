@@ -67,16 +67,22 @@ public class GameController {
     public void playGame(@DestinationVariable String gameCode, @Valid @Payload ActResultGetRequestDto actResultGetRequestDto) {
         ActResultGetResponseDto actResultGetResponseDto = gameService.playAct(actResultGetRequestDto.toCommand(gameCode));
         PlayerStatusGetResponseDto playerStatusGetResponseDto = playerService.getPlayerStatus(PlayerStatusGetCommandDto.of(actResultGetRequestDto.playerCode()));
+        PlayerStatGetResponseDto playerStatGetResponseDto = playerService.getPlayerStat(PlayerStatGetCommandDto.of(gameCode,
+                actResultGetRequestDto.playerCode()));
         webSocket.convertAndSend("/topic/select/"+gameCode, actResultGetResponseDto);
         webSocket.convertAndSendToUser(actResultGetRequestDto.playerCode(), "/status", playerStatusGetResponseDto);
+        webSocket.convertAndSendToUser(actResultGetRequestDto.playerCode(), "/stat", playerStatGetResponseDto);
     }
 
     @MessageMapping("/fight/{gameCode}")
     public void playFight(@DestinationVariable String gameCode, @Valid @Payload FightResultGetRequestDto fightResultGetRequestDto) {
         FightResultGetResponseDto fightResultGetResponseDto = fightService.getFightResult(fightResultGetRequestDto.toCommand(gameCode));
         PlayerStatusGetResponseDto playerStatusGetResponseDto = playerService.getPlayerStatus(PlayerStatusGetCommandDto.of(fightResultGetRequestDto.playerCode()));
+        PlayerStatGetResponseDto playerStatGetResponseDto = playerService.getPlayerStat(PlayerStatGetCommandDto.of(gameCode,
+                fightResultGetRequestDto.playerCode()));
         webSocket.convertAndSend("/topic/fight/" + gameCode, fightResultGetResponseDto);
         webSocket.convertAndSendToUser(fightResultGetRequestDto.playerCode(), "/status", playerStatusGetResponseDto);
+        webSocket.convertAndSendToUser(fightResultGetRequestDto.playerCode(), "/stat", playerStatGetResponseDto);
     }
 
     @PostMapping("/monster")
