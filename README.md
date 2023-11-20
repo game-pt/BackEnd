@@ -27,20 +27,26 @@
 <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=black"/>
 <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white"/>
 <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white"/>
-<img src="https://img.shields.io/badge/Redux-1572B6?style=flat-square&logo=redux&logoColor=white"/>
+**🛠 Jotai**
 
 &nbsp;&nbsp;&nbsp;&nbsp; **🛠 Bacnend Develop** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="https://img.shields.io/badge/java-007396?style=flat-square&logo=java&logoColor=white"/>
 <img src="https://img.shields.io/badge/Spring-6DB33F?style=flat-square&logo=Spring&logoColor=white"/>
 <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=flat-square&logo=Spring Boot&logoColor=yellow"/>
+<img src="https://img.shields.io/badge/Spring Security-6DB33F?style=flat-square&logo=Spring Security&logoColor=yellow"/>
 <img src="https://img.shields.io/badge/MySql-003545?style=flat-square&logo=Mysql&logoColor=white"/>
-<img src="https://img.shields.io/badge/Postman-FF6C37?style=flat-square&logo=Postman&logoColor=white"/><br>
+<img src="https://img.shields.io/badge/redis-E34F26?style=flat-square&logo=redis&logoColor=white"/>
+<img src="https://img.shields.io/badge/Postman-FF6C37?style=flat-square&logo=Postman&logoColor=white"/>
+<br>
 
 &nbsp;&nbsp;&nbsp;&nbsp; **🛠 SCM** <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white"/>
 <img src="https://img.shields.io/badge/Amazon AWS-232F3E?style=flat-square&logo=amazonaws&logoColor=white"/>
+<img src="https://img.shields.io/badge/jenkins-D24939?style=flat-square&logo=jenkins&logoColor=white"/>
+<img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white"/>
+<img src="https://img.shields.io/badge/NginX-009639?style=flat-square&logo=NginX&logoColor=white"/>
 
 ## 깃 컨벤션
 :tada:	프로젝트 시작 <br>
@@ -121,3 +127,4 @@
 </table>
 
 <br>
+
