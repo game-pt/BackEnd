@@ -18,15 +18,21 @@ const DiceModal = (props: IDiceModal) => {
   });
 
   useEffect(() => {
-    setTimeout(() => {
-      setDice({
-        dice1: props.dice1,
-        dice2: props.dice2,
-        dice3: props.dice3,
-      });
-      setThrowDice(true);
-    }, 2000);
-  }, [props])
+    if (!throwDice) {
+      setTimeout(() => {
+        setDice({
+          dice1: props.dice1,
+          dice2: props.dice2,
+          dice3: props.dice3,
+        });
+        setThrowDice(true);
+      }, 2000);
+    }
+  }, [props]);
+
+  useEffect(() => {
+    return () => props.onClose();
+  }, []);
 
   useEffect(() => {
     document.addEventListener('mousedown', handleModalClose);
@@ -48,8 +54,13 @@ const DiceModal = (props: IDiceModal) => {
             dice3={dice.dice3}
           />
         </div>
-        <div className='flex justify-center text-'>
-        <SelectButton width='150px' height='70px' text='확인' onClickEvent={() => props.onClose()} />
+        <div className="flex justify-center text-">
+          <SelectButton
+            width="150px"
+            height="70px"
+            text="확인"
+            onClickEvent={() => props.onClose()}
+          />
         </div>
       </div>
     </div>

@@ -45,12 +45,13 @@ export const initCharacterStatusAtom = atom(
   },
   (_get, set, status: IPlayerStatusResponse) => {
     // 갱신한 객체
+    console.log('범인은 setStatALl');
     const nextStatus = {
       nickname: status.nickname,
       race: status.race.name,
       job: status.job.name,
       imgCode: '',
-      statPoint: 3, // 테스트용
+      statPoint: 0,
       hp: status.hp,
       level: status.level,
       exp: status.exp,
@@ -109,11 +110,11 @@ export const initExtra = atom(
 export const statControlAtom = atom(
   (get) => {
     let statList = get(characterStatusAtom).statList;
-    // const localData = localStorage.getItem('characterStatus');
-    // if (statList.length === 0 && localData) {
-    //   // 새로고침했을 경우 로컬에 저장된 값 불러오기
-    //   statList = JSON.parse(localData).statList;
-    // }
+    const localData = localStorage.getItem('characterStatus');
+    if (statList.length === 0 && localData) {
+      // 새로고침했을 경우 로컬에 저장된 값 불러오기
+      statList = JSON.parse(localData).statList;
+    }
     return statList;
   },
   (
@@ -126,8 +127,9 @@ export const statControlAtom = atom(
     }>
   ) => {
     // 갱신할 객체
+    console.log('범인은 stat');
     const nextStatus = {
-      ...get(characterStatusAtom),
+      ...get(initCharacterStatusAtom),
 
       statList: changedStat.map<{
         statName: string;
@@ -158,7 +160,7 @@ export const profileInterfaceControlAtom = atom(
   },
   (get, set, profileChanged: IProfileInterface) => {
     const nextStatus = {
-      ...get(characterStatusAtom),
+      ...get(initCharacterStatusAtom),
       ...profileChanged,
     };
     setLocal(nextStatus);
@@ -186,7 +188,7 @@ const controlItemListAtom = atom(
     }>
   ) => {
     const nextStatus = {
-      ...get(characterStatusAtom),
+      ...get(initCharacterStatusAtom),
       itemList: changedItemList.map<{
         code: string;
         name: string;
@@ -261,7 +263,7 @@ export const statObjectAtom = atom(
   ) => {
     // 갱신할 객체
     const nextStatus = {
-      ...get(characterStatusAtom),
+      ...get(initCharacterStatusAtom),
       statPoint: changedStat.statPoint,
       statList: changedStat.statList.map<{
         statName: string;
@@ -269,6 +271,7 @@ export const statObjectAtom = atom(
         statCode: string;
       }>((element) => ({ ...element })),
     };
+    console.log("Next Status: ", nextStatus);
     // 로컬에 갱신
     setLocal(nextStatus);
     set(characterStatusAtom, nextStatus);

@@ -1,6 +1,6 @@
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Logo from '@/assets/logo/logo.png';
 import SideInterface from '@/organisms/SideInterface';
 import PromptInterface from '@/organisms/PromptInterface';
@@ -26,6 +26,20 @@ import {
 } from '@/jotai/CharacterStatAtom';
 import axios from 'axios';
 
+const MemoizedDiceModal = React.memo<{
+  dice: IDice;
+  setIsShowDice: (flag: boolean) => void;
+}>(({ dice, setIsShowDice }) => {
+  return (
+    <DiceModal
+      dice1={dice.dice1}
+      dice2={dice.dice2}
+      dice3={dice.dice3}
+      onClose={() => setIsShowDice(false)}
+    />
+  );
+});
+
 const MultiPlayPage = () => {
   const [chat, setChat] = useState<string[] | null>(null);
   const [event, setEvent] = useState<IEventType | null>(null);
@@ -42,22 +56,56 @@ const MultiPlayPage = () => {
   const promptAtom = usePromptAtom();
   const itemUpdateAtom = useUpdateItemListAtom();
   const [status, _setStatus] = useAtom(characterStatusAtom);
-  const gameCode = 'mwAOIT';
-  const playerCode = 'mwAOIT-0lu9wx';
+  const gameCode = 'rUUGH0';
+  const playerCode = 'rUUGH0-WiY7oG';
   const db = useIndexedDB('prompt');
   const navigate = useNavigate();
 
+  const endingEvent = (text: string) => {
+    Swal.fire({
+      title: '죽음',
+      text: `${text}`,
+      width: 600,
+      padding: '2rem',
+      color: '#FBCB73',
+      background: '#240903',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#F0B279',
+      allowEnterKey: true,
+      customClass: {
+        container: 'font-hol',
+        popup: 'rounded-lg',
+        title: 'text-48 mb-8',
+        htmlContainer: 'text-36',
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        disConnected();
+        navigate('/ending');
+      }
+    });
+  };
+
   useEffect(() => {
-    if (event) setBlockInput(true);
-    else setBlockInput(false);
-    if (promptAtom[promptAtom.length - 1][0].role === playerCode)
-      setIsPromptFetching(true);
-  }, [promptAtom, event]);
+    if (event) {
+      console.log(event);
+      setBlockInput(true);
+      if (event.eventName == '죽음') {
+        console.log('Game Over ==== Y');
+        console.log(promptAtom);
+        let str = ``;
+        promptAtom[promptAtom.length - 1].forEach(
+          (e) => (str += `${e.msg + '\n'}`)
+        );
+        endingEvent(str);
+        return;
+      }
+    } else setBlockInput(false);
+  }, [event]);
 
   // 웹소캣 객체 생성
   const connectHandler = () => {
     const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
-    // const sock = new SockJS(`http://70.12.247.95:8080/ws`);
     client.current = Stomp.over(() => sock);
 
     // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
@@ -80,7 +128,7 @@ const MultiPlayPage = () => {
         (message) => {
           const body = JSON.parse(message.body);
 
-          if (body.dice1) {
+          if (body.dice1 && !isShowDice) {
             console.log(body);
             setDice(body);
             setIsShowDice(true);
@@ -109,19 +157,7 @@ const MultiPlayPage = () => {
 
           if (body.gameOverYn === 'Y') {
             console.log('Game Over ==== Y');
-            // 종료 API 호출
-            const ChoiceFromDB = (await db.getAll())
-              .filter((v) => v.choice !== undefined)
-              .map((e) => e);
-
-            // 직전 선택지 인덱스 디비에 저장
-            if (ChoiceFromDB.length > 0) {
-              for (let i = 0; i < ChoiceFromDB.length; i++) {
-                await db.deleteRecord(ChoiceFromDB[i].id);
-              }
-            }
-            setEvent(null);
-            navigate('/ending');
+            endingEvent(body.prompt);
             return;
           }
 
@@ -237,39 +273,15 @@ const MultiPlayPage = () => {
             }
           }
 
-          if (body.endYn === 'Y') {
-            // 종료 API 호출
-            const ChoiceFromDB = (await db.getAll())
-              .filter((v) => v.choice !== undefined)
-              .map((e) => e);
-
-            // 직전 선택지 인덱스 디비에 저장
-            if (ChoiceFromDB.length > 0) {
-              for (let i = 0; i < ChoiceFromDB.length; i++) {
-                await db.deleteRecord(ChoiceFromDB[i].id);
-              }
-            }
+          // 사망 여부 판별
+          if (body.playerHp <= 0) {
             setEvent(null);
+            endingEvent(body.prompt);
+            return;
           }
 
-          // setHP
-          // HP 상태 값 변화
-          if (body.playerHp <= 0) {
-            console.log('Game Over ==== Y');
-            // 종료 API 호출
-            const ChoiceFromDB = (await db.getAll())
-              .filter((v) => v.choice !== undefined)
-              .map((e) => e);
-
-            // 직전 선택지 인덱스 디비에 저장
-            if (ChoiceFromDB.length > 0) {
-              for (let i = 0; i < ChoiceFromDB.length; i++) {
-                await db.deleteRecord(ChoiceFromDB[i].id);
-              }
-            }
+          if (body.endYn === 'Y') {
             setEvent(null);
-            navigate('/ending');
-            return;
           }
         },
         {}
@@ -293,7 +305,19 @@ const MultiPlayPage = () => {
           }
 
           // Event가 있다면
-          if (body.event !== null) {
+          if (body.event !== null && body.event !== undefined) {
+            if (body.event.eventName == '죽음') {
+              console.log('Game Over ==== Y');
+              console.log(promptAtom);
+              let str = ``;
+              promptAtom[promptAtom.length - 1].forEach(
+                (e) => (str += `${e.msg + '\n'}`)
+              );
+              endingEvent(str);
+
+              return;
+            }
+
             setEvent(body.event);
 
             const ChoiceFromDB = (await db.getAll())
@@ -390,12 +414,6 @@ const MultiPlayPage = () => {
         })
       );
     }
-
-    setTimeout(() => {
-      console.log('주사위 값 전송 딜레이');
-    }, 1000);
-
-    return;
   };
 
   const sendPromptHandler = (text: string) => {
@@ -447,16 +465,20 @@ const MultiPlayPage = () => {
         // 전투 이벤트 send
         // 주사위 값 받아와서 모달 보여주기
         getDicesHandler();
-        client.current.send(
-          `/fight/${gameCode}`,
-          {},
-          JSON.stringify({
-            playerCode,
-            actCode: choice.actCode,
-            subtask: checkSub[1],
-            fightingEnermyCode: body.monster ? body.monster.code : null,
-          })
-        );
+        setTimeout(() => {
+          if (client.current) {
+            client.current.send(
+              `/fight/${gameCode}`,
+              {},
+              JSON.stringify({
+                playerCode,
+                actCode: choice.actCode,
+                subtask: checkSub[1],
+                fightingEnermyCode: body.monster ? body.monster.code : null,
+              })
+            );
+          }
+        }, 1000);
         setIsPromptFetching(true);
         setPrompt([
           { msg: `[${choice.actName}]을 선택하겠습니다.`, role: playerCode },
@@ -497,16 +519,20 @@ const MultiPlayPage = () => {
 
       if (event && event.eventName == '전투') {
         getDicesHandler();
-        client.current.send(
-          `/fight/${gameCode}`,
-          {},
-          JSON.stringify({
-            playerCode,
-            actCode: choice.actCode,
-            subtask: choice.subtask,
-            fightingEnermyCode: body.monster ? body.monster.code : null,
-          })
-        );
+        setTimeout(() => {
+          if (client.current) {
+            client.current.send(
+              `/fight/${gameCode}`,
+              {},
+              JSON.stringify({
+                playerCode,
+                actCode: choice.actCode,
+                subtask: choice.subtask,
+                fightingEnermyCode: body.monster ? body.monster.code : null,
+              })
+            );
+          }
+        }, 1000);
 
         setIsPromptFetching(true);
         setPrompt([
@@ -534,14 +560,17 @@ const MultiPlayPage = () => {
       // 위에서 return에 안걸렸다면 일반 선택지 선택한 경우
       // select 채널에 send 해주기
       getDicesHandler();
-      client.current.send(
-        `/select/${gameCode}`,
-        {},
-        JSON.stringify({
-          actCode: choice.actCode,
-          playerCode,
-        })
-      );
+      setTimeout(() => {
+        if (client.current)
+          client.current.send(
+            `/select/${gameCode}`,
+            {},
+            JSON.stringify({
+              actCode: choice.actCode,
+              playerCode,
+            })
+          );
+      }, 1000);
       setIsPromptFetching(true);
       setPrompt([
         { msg: `[${choice.actName}]을 선택하겠습니다.`, role: playerCode },
@@ -559,6 +588,12 @@ const MultiPlayPage = () => {
           message: text,
         })
       );
+  };
+
+  const sendEventStat = (statCode: string) => {
+    if (client.current) {
+      client.current.send(`/stat-up/${gameCode}/${playerCode}/${statCode}`, {});
+    }
   };
 
   const leaveGame = () => {
@@ -583,8 +618,7 @@ const MultiPlayPage = () => {
     }).then((result) => {
       if (result.isDenied) {
         disConnected();
-        db.clear();
-        navigate('/');
+        navigate('/ending');
       }
     });
   };
@@ -665,6 +699,7 @@ const MultiPlayPage = () => {
             sendChat={sendChatHandler}
             chat={chat}
             deleteItem={deleteItem}
+            sendEventStat={sendEventStat}
           />
         </div>
         <ProfileInterface />
@@ -678,18 +713,14 @@ const MultiPlayPage = () => {
           isFetching={isPromptFetching}
           gameType="single"
           block={blockInput}
+          nowPrompt=""
           playerCode={playerCode}
           sendEventHandler={sendEventHandler}
           sendPromptHandler={sendPromptHandler}
         />
       </div>
       {isShowDice && (
-        <DiceModal
-          dice1={dice.dice1}
-          dice2={dice.dice2}
-          dice3={dice.dice3}
-          onClose={() => setIsShowDice(false)}
-        />
+        <MemoizedDiceModal dice={dice} setIsShowDice={setIsShowDice} />
       )}
     </div>
   );

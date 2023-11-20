@@ -19,10 +19,7 @@ const GameModeCard = (props: IGameModeCard) => {
       className=" w-full h-[445px] bg-containerLight rounded-[10px] min-w-[250px] caret-transparent animate-rise hover:animate-bounce"
       onClick={props.onClickEvent}
     >
-      <CardImage
-        url={'./src/assets/' + props.imgUrl}
-        alt={`${props.modeName} 이미지`}
-      />
+      <CardImage url={props.imgUrl} alt={`${props.modeName} 이미지`} />
       <div className="leading-[130px] h-[130px] font-hol text-28 text-primary shadow-lg text-center">
         {props.modeName}
       </div>

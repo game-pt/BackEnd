@@ -27,10 +27,8 @@ const EndingPage = () => {
   const [promptData, setPromptData] = useState<IPromptHistory[][] | null>(null);
   const [isFetching, setIsFetching] = useState<boolean>(true);
 
-  // 웹소캣 객체 생성
   const connectHandler = () => {
     const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
-    // const sock = new SockJS(`http://70.12.247.95:8080/ws`);
     client.current = Stomp.over(() => sock);
 
     // 웹 소켓 연결 정보 콘솔에 안뜨게 하기 >> 코드 프리징 시 주석 풀기
@@ -47,22 +45,25 @@ const EndingPage = () => {
         console.log('Additional details: ' + frame.body);
       };
 
-      // 엔딩 프롬프트 구독
-      client.current.subscribe(
-        `/topic/ending/${gameCode}`,
-        async (message) => {
-          const body = JSON.parse(message.body);
+      client.current.subscribe(`/topic/ending/${gameCode}`, async (message) => {
+        const body = JSON.parse(message.body);
 
-          if (body.content !== undefined && body.role !== undefined) {
-            const prompt = body.content.split('\n').map((e: string) => {
-              return { msg: e, role: body.role };
-            });
+        if (body.content !== undefined && body.role !== undefined) {
+          const prompt = body.content.split('\n').map((e: string) => {
+            return { msg: e, role: body.role };
+          });
 
-            setPromptData([prompt]);
-            setIsFetching(false);
-          }
-        },
-        {}
+          setPromptData([prompt]);
+          setIsFetching(false);
+        }
+      });
+
+      client.current.send(
+        `/ending/${gameCode}`,
+        {},
+        JSON.stringify({
+          playerCode,
+        })
       );
     });
   };
@@ -70,30 +71,22 @@ const EndingPage = () => {
   const handleFinishGame = () => {
     localStorage.removeItem('gameCode');
     localStorage.removeItem('playerCode');
-    // 인덱스db 초기화
+    localStorage.removeItem('characterStatus');
     db.clear();
-    navigate('/createGame');
+    navigate('/');
   };
 
   useEffect(() => {
-    if (client.current === null) {
+    if (client.current === null && gameCode !== '' && playerCode !== '') {
       connectHandler();
-    } else {
-      client.current.send(
-        `/ending/${gameCode}`,
-        {},
-        JSON.stringify({
-          playerCode,
-        })
-      )
     }
-  }, []);
+  }, [gameCode, playerCode]);
 
   return (
     <div className="font-hol relative w-screen h-screen mx-auto bg-backgroundDeep">
       <div className="text-primary flex flex-col items-center w-full h-full gap-10 pt-10">
         <Logo className="relative mx-auto" />
-        <Prompt data={promptData} type="ending" isFetching={isFetching} />
+        <Prompt data={promptData} type="ending" isFetching={isFetching} now='' />
         <SelectButton
           height="70px"
           onClickEvent={handleFinishGame}
