@@ -296,6 +296,16 @@ const SinglePlayPage = () => {
           }
 
           if (body.endYn === 'Y') {
+            const ChoiceFromDB = (await db.getAll())
+              .filter((v) => v.choice !== undefined)
+              .map((e) => e);
+  
+            // 직전 선택지 인덱스 디비에 저장
+            if (ChoiceFromDB.length > 0) {
+              for (let i = 0; i < ChoiceFromDB.length; i++) {
+                await db.deleteRecord(ChoiceFromDB[i].id);
+              }
+            }
             setEvent(null);
           }
         },
