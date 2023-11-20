@@ -17,7 +17,7 @@ const ProfileInterface = () => {
   // const [playerCode] = usePlayerCode();
   // const client = useRef<CompatClient | null>(null);
   // const setProfileStat = useUpdateProfileAtom();
-  console.log('스테이터스', getStatusAtom);
+  // console.log('스테이터스', getStatusAtom);
   // const connectHandler = () => {
   //   const sock = new SockJS(import.meta.env.VITE_SOCKET_URL);
   //   client.current = Stomp.over(() => sock);

@@ -271,6 +271,7 @@ export const statObjectAtom = atom(
         statCode: string;
       }>((element) => ({ ...element })),
     };
+    console.log("Next Status: ", nextStatus);
     // 로컬에 갱신
     setLocal(nextStatus);
     set(characterStatusAtom, nextStatus);
