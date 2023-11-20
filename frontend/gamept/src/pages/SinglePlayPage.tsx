@@ -614,6 +614,8 @@ const SinglePlayPage = () => {
             })
           );
         }
+        setEvent(null);
+        
         return;
       }
 
