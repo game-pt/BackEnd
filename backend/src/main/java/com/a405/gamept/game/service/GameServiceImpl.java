@@ -365,9 +365,9 @@ public class GameServiceImpl implements GameService {
 
         if (playerHp == 0) {
             //죽음
-            prompt.append("HP가 0이 되었다.\n");
-            prompt.append(player.getNickname()).append(" 은 쓰러지고 말았다.\n");
-            prompt.append("눈앞이 깜깜해진다.....\n");
+            prompt.append("HP가 0이 되었다.").append("\n");
+            prompt.append(player.getNickname()).append(" 은 쓰러지고 말았다.").append("\n");
+            prompt.append("눈앞이 깜깜해진다.....").append("\n");
             gameOverYn = "Y";
         } else {
             Event event = act.getEvent();
@@ -399,7 +399,7 @@ public class GameServiceImpl implements GameService {
                 .orElseThrow(() -> new GameException(GameErrorMessage.ACT_STAT_NOT_FOUND));
         StringBuilder result = new StringBuilder();
 
-        result.append("[ ").append(" 스탯 변화 발생 ]\n");
+        result.append("[ ").append(" 스탯 변화 발생 ]").append("\n");
 
         for (ActStat actStat : actStatList) {
             //log.info("관련 스탯은 : "+actStat.getStat().getName());
