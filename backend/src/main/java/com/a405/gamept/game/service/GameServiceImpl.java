@@ -98,25 +98,44 @@ public class GameServiceImpl implements GameService {
         for(Event event : story.getEventList()) {
             eventStrList.add("TRPG 게임은 반드시 " + event.getName() + " 상황이 시작될 때," +
                     "[" + event.getName() + "]라고 출력해주어야 합니다. ");
-            eventStrList.add(event.getName() + " 상황이란," +
-                    "" + event.getPrompt().replace(".", "") + "는 경우를 말합니다.");
+            eventStrList.add(event.getName() + " 상황이란, " +
+                    "" + event.getPrompt() + "\n");
         }
-        String startPrompt =
-                        "당신은 TRPG의 게임 마스터가 되어 나의 대화에 맞춰 이야기를 이어나가야 합니다.\n " +
-                        "나는 판타지 세계의 모험가가 되어 게임을 플레이합니다. \n" +
-                        "TPRG 게임은 주로 대화 형식으로 게임이 이루어집니다. \n" +
-                        "아래에 제시하는 주제, 이벤트, 글자수에 맞춰 이야기를 이어나가 주세요. \n" +
-                        "나의 대답을 당신이 말할 수 없습니다. \n" +
-                        "내가 대답할 수 있는 여지를 주어야 합니다. \n" +
-                        "당신은 선택지를 줄 수 없습니다. \n" +
+
+        /*
+        당신은 TRPG의 게임 마스터가 되어 나의 대화를 참고하여 주도적이고 능동적으로 이야기를 진행시켜야 합니다.
+        나는 판타지 세계의 모험가가 되어 TRPG 게임을 플레이합니다.
+        당신이 대신해서 나의 말이나 대답을 절대 말할 수 없습니다.
+        내가 반드시 대답할 수 있는 여지를 주어야 합니다.
+        당신은 절대로 나에게 선택지를 주지 않아야 합니다.
+        당신은 현재 상황을 자세히 묘사하고 경어를 사용해야 합니다.
+        당신은 TRPG 게임을 진행해가면서 스토리에 따라 당신이 임의로 등장인물을 등장시킬 수 있습니다.
+        TRPG 게임은 주로 게임의 등장인물과 대화를 하거나 상호작용을 하면서 게임이 진행됩니다.
+        TRPG 게임에서 등장하는 인물들은 평어를 사용할 수도 있고, 경어를 사용할 수도 있습니다.
+        아래에 제시하는 주제, 이벤트에 맞춰 이야기를 진행해주세요.
+        첫 시작은 당신이 TRPG 게임의 안내자의 입장이 되어 나를 반겨줍니다.
+         */
+        String settingPrompt =
+                        "Instruction: - Write the narration in Korean and Write the conversation of the characters in double quotes in Korean. - Format the conversation so that there's a single line space preceding and succeeding each dialogue entry.\n" +
+                        "You must become the game master of TRPG and take the initiative and actively advance the story by referring to my dialogue.\n" +
+                        "I play TRPG games as an adventurer in a fantasy world.\n" +
+                        "You can never speak my words or answer for me.\n" +
+                        "I must give myself room to answer.\n" +
+                        "You should never give me a choice.\n" +
+                        "You should describe the current situation in detail and use honorifics.\n" +
+                        "As you progress through the TRPG game, you can randomly introduce characters according to the story.\n" +
+                        "TRPG games are mainly played by talking or interacting with the game characters.\n" +
+                        "Characters in TRPG games may use common words or honorifics.\n" +
+                        "Please proceed with the story according to the topics and events presented below.\n" +
                         String.join("\n", eventStrList) + "\n" +
-                        "첫 시작은 당신이 안내자의 입장이 되어 나와 만난 것을 반겨줍니다.\n" +
-                        "\n주제: " + story.getDesc() + "\n 글자 수 : 최대 100자";
+                        "At the beginning, you welcome me as a guide to the TRPG game.\n" +
+                        "\n주제: " + story.getDesc();
 
         Game game = Game.builder()
                 .code(code)
                 .storyCode(story.getCode())
-                .promptList(setStartPrompt(startPrompt))
+                .settingPrompt(settingPrompt)
+                .promptList(setStartPrompt(settingPrompt))
                 .build();
         ValidateUtil.validate(game);
         gameRedisRepository.save(game);
@@ -127,7 +146,7 @@ public class GameServiceImpl implements GameService {
         return gameSetResponseDto;
     }
 
-    private List<Prompt> setStartPrompt(String memory) {
+    private List<Prompt> setStartPrompt(String settingPrompt) {
         List<Prompt> list = new ArrayList<>();
         list.add(Prompt.builder()
                 .role("user")
@@ -135,7 +154,7 @@ public class GameServiceImpl implements GameService {
                 .build());
         list.add(Prompt.builder()
                 .role("assistant")
-                .content(chatGptClientUtil.getChatGPTResult(memory, list, ""))
+                .content(chatGptClientUtil.getChatGPTResult(settingPrompt, list, ""))
                 .build());
 
         list.remove(0);
@@ -187,7 +206,7 @@ public class GameServiceImpl implements GameService {
         int dice2 = random.nextInt(6) + 1;
         int dice3 = random.nextInt(6) + 1;
         int diceValue = dice1 + dice2 + dice3;
-        log.info(dice1 + "\t" + dice2 + "\t" + dice3 + "\t총합 : " + diceValue);
+        //log.info(dice1 + "\t" + dice2 + "\t" + dice3 + "\t총합 : " + diceValue);
 
         DiceGetResponseDto diceResult = DiceGetResponseDto.of(dice1, dice2, dice3);
 
@@ -277,7 +296,7 @@ public class GameServiceImpl implements GameService {
 
         // 다이스 값 가져오기
         int diceValue = game.getDiceValue();
-        log.info("주사위 값 : "+diceValue);
+        //log.info("주사위 값 : "+diceValue);
 
         //보너스 스탯
         String statCode = act.getStat().getCode();
@@ -296,8 +315,8 @@ public class GameServiceImpl implements GameService {
         int successStd = act.getSuccessStd();
         int playerStd = (diceValue + plusPoint);
 
-        log.info("성공 기준치 : "+successStd);
-        log.info("극적 기준치 : "+extremePoint);
+//        log.info("성공 기준치 : "+successStd);
+//        log.info("극적 기준치 : "+extremePoint);
         //성공, 실패에 따른 진행
         StringBuilder prompt = new StringBuilder();
         //String eventName = act.getEvent().getName();
@@ -321,101 +340,105 @@ public class GameServiceImpl implements GameService {
             bonusPoint = flag ? -1 : 0;
             prompt.append("성공적이지 못한 ");
         }
-        prompt.append(act.getName()).append("를 했다.");
-        log.info(prompt.toString());
+        prompt.append(act.getName()).append("를 했다.").append("\n");
+        //log.info(prompt.toString());
         // ChatGPT에 프롬프트 전송
-        StringBuilder promptResult = new StringBuilder();
-        promptResult.append(prompt).append("\n");
-        String gptPrompt = chatGptClientUtil.getChatGPTResult(game.getMemory(), game.getPromptList(), "플레이어인 " + promptResult.toString());
-        log.info(gptPrompt);
-        promptResult.append(gptPrompt);
+        String gptPrompt = chatGptClientUtil.getChatGPTResult(game.getMemory(), game.getPromptList(), "플레이어인 " + prompt.toString());
+////        log.info(gptPrompt);
+        prompt.append(gptPrompt).append("\n");
 
         // 스탯 변화 진행
-        String tmp = statChane(player, game, act, bonusPoint);
+        int playerHp = player.getHp();
+        Map<String, Integer> playerStat = player.getStat();
+        if(bonusPoint != 0){
+            StatChangeCommandDto statChangeCommandDto = statChane(playerHp, playerStat, act.getCode(), bonusPoint);
+            playerHp = statChangeCommandDto.playerHp();
+            playerStat = statChangeCommandDto.playerStat();
+            prompt.append(statChangeCommandDto.prompt()).append("\n");
+        }
+
+
         // 아이템 획득
         String itemYn = "N";
         String gameOverYn = "N";
         String itemCode = "";
-        if (tmp == null) {
+
+        if (playerHp == 0) {
             //죽음
-            playerRedisRepository.delete(player);
-            gameRedisRepository.delete(game);
-            StringBuilder dead = new StringBuilder();
-            dead.append("HP가 0이 되었다.\n");
-            dead.append(player.getNickname()).append(" 은 쓰러지고 말았다.\n");
-            dead.append("눈앞이 깜깜해진다.....\n");
+            prompt.append("HP가 0이 되었다.").append("\n");
+            prompt.append(player.getNickname()).append(" 은 쓰러지고 말았다.").append("\n");
+            prompt.append("눈앞이 깜깜해진다.....").append("\n");
             gameOverYn = "Y";
         } else {
             Event event = act.getEvent();
-            if ((event.getItemYn() == 'Y' && flag) || event.getCode().equals("EV-005")) {
+            if ((event.getItemYn() == 'Y' && bonusPoint > 0) || event.getCode().equals("EV-005")) {
                 itemYn = "Y";
                 ItemRandomGetCommandDto itemRandomGetCommandDto = getItem(game.getStoryCode(), player);
-                promptResult.append("\n").append(itemRandomGetCommandDto.prompt());
                 itemCode = itemRandomGetCommandDto.itemCode();
+                prompt.append(itemRandomGetCommandDto.prompt());
             }
-            promptResult.append("\n").append(tmp);
         }
 
         game = game.toBuilder()
                 .diceValue(0)
                 .build();
         gameRedisRepository.save(game);
-        return ActResultGetResponseDto.of(actResultGetCommandDto.gameCode(), promptResult.toString(), itemYn, itemCode, gameOverYn);
+        player = player.toBuilder()
+                .hp(playerHp)
+                .stat(playerStat)
+                .newItemCode(itemCode)
+                .build();
+        playerRedisRepository.save(player);
+
+        return ActResultGetResponseDto.of(actResultGetCommandDto.gameCode(), prompt.toString(), itemYn, itemCode, gameOverYn);
     }
 
-    public String statChane(Player player, Game game, Act act, int bonusPoint) {
+    public StatChangeCommandDto statChane(int playerHp, Map<String, Integer> playerStat, String actCode, int bonusPoint) {
         //log.info("상태 변화 진행, 이벤트 : "+act.getEvent().getName()+" 행동 : "+act.getName());
-        List<ActStat> actStatList = actStatRepository.findAllByActCode(act.getCode())
+        List<ActStat> actStatList = actStatRepository.findAllByActCode(actCode)
                 .orElseThrow(() -> new GameException(GameErrorMessage.ACT_STAT_NOT_FOUND));
         StringBuilder result = new StringBuilder();
-        result.append("[ \n").append(" 스탯 변화 발생\n");
+
+        result.append("[ ").append(" 스탯 변화 발생 ]").append("\n");
 
         for (ActStat actStat : actStatList) {
             //log.info("관련 스탯은 : "+actStat.getStat().getName());
             if (actStat.getStat().getCode().equals("STAT-007")) {
                 //log.info("체력 회복 또는 감소");
-                int hp = player.getHp();
-                int maxHp = player.getStat().get("STAT-001") * 10;
+                int maxHp = playerStat.get("STAT-001") * 10;
 
-                hp = Math.min(hp + (bonusPoint * 10), maxHp);
-                player = player.toBuilder().hp(hp).build();
+                playerHp = Math.min(playerHp + (bonusPoint * 10), maxHp);
                 if (bonusPoint > 0) {
-                    result.append("< HP >가 " + bonusPoint * 10 + " 회복 되었습니다.\n");
+                    result.append("< HP >가 " + bonusPoint * 10 + " 회복 되었습니다.").append("\n");
                 } else if (bonusPoint < 0) {
-                    result.append("< HP >가 " + bonusPoint * 10 + " 감소 했습니다.\n");
-                    if (hp + (bonusPoint * 10) <= 0) {
-                        result.append(" ] ");
-                        return result.toString();
+                    result.append("< HP >가 " + bonusPoint * 10 + " 감소 했습니다.").append("\n");
+                    if (playerHp + (bonusPoint * 10) <= 0) {
+                        return StatChangeCommandDto.of(result.toString(), playerHp, playerStat);
                     }
                 }
             } else {
-                log.info("스탯 상승 또는 감소");
+                //log.info("스탯 상승 또는 감소");
                 String statCode = actStat.getStat().getCode();
-                int targetStat = player.getStat().get(statCode);
+                int targetStat = playerStat.get(statCode);
                 int statValue = targetStat + bonusPoint;
                 if (statValue < 0) statValue = 0;
                 else if (statValue > GameData.MAX_STAT) statValue = GameData.MAX_STAT;
 
-                Map<String, Integer> playerStat = player.getStat();
                 playerStat.put(statCode, statValue);
 
                 Stat stat = statRepository.findById(statCode)
                         .orElseThrow(() -> new GameException(GameErrorMessage.STAT_INVALID));
-
-                player.toBuilder().stat(playerStat);
                 if (bonusPoint > 0) {
                     result.append("< ").append(stat.getName()).append(" >").append(" 이/가 +").append(bonusPoint)
-                            .append(" 증가 했습니다.\n");
+                            .append(" 증가 했습니다.").append("\n");
                 } else {
                     result.append("< ").append(stat.getName()).append(" >").append(" 이/가 ").append(bonusPoint)
-                            .append(" 감소 했습니다.\n");
+                            .append(" 감소 했습니다.").append("\n");
                 }
             }
         }
 
-        playerRedisRepository.save(player);
-        result.append(" ]");
-        return result.toString();
+        return StatChangeCommandDto.of(result.toString(), playerHp, playerStat);
     }
 
     public ItemRandomGetCommandDto getItem(String storyCode, Player player) {
@@ -429,10 +452,6 @@ public class GameServiceImpl implements GameService {
         Random random = new Random();
         int index = random.nextInt(itemList.size());
         Item newItem = itemList.get(index);
-        player = player.toBuilder()
-                .newItemCode(newItem.getCode())
-                .build();
-        playerRedisRepository.save(player);
         result.append("< ").append(newItem.getName()).append(" > ").append("이/가 나타났다.");
 
         return ItemRandomGetCommandDto.of(newItem.getCode(), result.toString());

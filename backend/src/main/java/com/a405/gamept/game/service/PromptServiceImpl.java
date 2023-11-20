@@ -37,7 +37,6 @@ import static io.lettuce.core.RedisURI.DEFAULT_TIMEOUT;
 @RequiredArgsConstructor
 @Slf4j
 public class PromptServiceImpl implements PromptService {
-    private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000;
     private final FightService fightService;
     private final EventService eventService;
     private final GameRedisRepository gameRedisRepository;
@@ -46,10 +45,12 @@ public class PromptServiceImpl implements PromptService {
     private final EmitterRepository emitterRepository;
     private final ChatGptClientUtil chatGptClientUtil;
     private final int MAX_PREV_PROMPT_NUMBER = 6;
+    private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000;
 
     @Override
     @Transactional(readOnly = true)
     public PromptGetResponseDto setUserPrompt(PromptResultGetCommandDto promptResultGetCommandDto) throws GameException {
+        log.info("setUserPrompt() 호출");
         ValidateUtil.validate(promptResultGetCommandDto);
         Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
@@ -67,12 +68,14 @@ public class PromptServiceImpl implements PromptService {
                 .build();  // 클라이언트에 보낼 플레이어 입력 프롬프트
         ValidateUtil.validate(promptGetResponseDto);
 
+        log.info("setUserPrompt() 종료");
         return promptGetResponseDto;
     }
 
     @Override
     @Transactional(readOnly = true)
     public PromptResultGetCommandDto getChatGPTPrompt(PromptResultGetCommandDto promptResultGetCommandDto) {
+        log.info("getChatGPTPrompt() 호출");
         Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
         Player player = playerRedisRepository.findById(promptResultGetCommandDto.playerCode())
@@ -83,7 +86,7 @@ public class PromptServiceImpl implements PromptService {
         // promptInput = eventService.pickAtRandomEvent(game, promptInput);
 
         if (30 <= game.getTurn()) {  // 마왕 등장 처리 로직
-            promptInput += "[전투] 갑자기... 마왕 '우서기우스'라는 자가 나에게 전투를 걸어왔다. [전투]을 앞에 붙여 얘기하세요.";
+            promptInput += "[전투] 갑자기... 마왕 '우서기우스'라는 자가 나에게 전투를 걸어왔다. [전투]를 앞에 붙여 얘기하세요.";
         } else if (game.getEventCnt() < 10) {
             promptInput += insertEventPrompt(game.getStoryCode(), game.getEventRate());
         }
@@ -91,12 +94,14 @@ public class PromptServiceImpl implements PromptService {
         promptResultGetCommandDto = promptResultGetCommandDto.toBuilder().prompt(promptInput).build();
         ValidateUtil.validate(promptResultGetCommandDto);
 
+        log.info("getChatGPTPrompt() 종료");
         return promptResultGetCommandDto;
     }
 
     @Override
     @Transactional
     public PromptResultGetResponseDto getPrmoptResult(PromptResultGetCommandDto promptResultGetCommandDto, String responsePrompt) {
+        log.info("getPromptResult() 호출");
         Game game = gameRedisRepository.findById(promptResultGetCommandDto.gameCode())
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
         // Player 객체
@@ -133,18 +138,22 @@ public class PromptServiceImpl implements PromptService {
             // 텍스트에서 가장 마지막에 등장한 이벤트의 인덱스
             int eventIndex = eventService.findLastEventInText(eventList, responsePrompt);
             event = (0 <= eventIndex) ? eventList.get(eventIndex) : null;
+        } else if (30 <= game.getTurn()) {
+            event = eventRepository.findById("EV-001")
+                    .orElseThrow(() -> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
         }
 
         double eventRate = game.getEventRate();
+        int eventCnt = game.getEventCnt();
         if (event == null) {  // 이벤트 발생하지 않았을 경우
             eventRate += 0.05;  // 이벤트 발생 확률 5% 상승
         } else {
             eventRate = 0.00;  // 이벤트 발생 확률 0%로 초기화
-            eventRate += 1;  // 이벤트 발생 횟수 + 1
+            eventCnt += 1;  // 이벤트 발생 횟수 + 1
         }
 
         MonsterGetResponseDto monsterGetResponseDto = null;
-        if (game.getTurn() < 30  // 이벤트가 마왕 처치일 경우
+        if (30 <= game.getTurn()  // 이벤트가 마왕 처치일 경우
                 || (event != null && event.getCode().equals("EV-001"))) {  // 이벤트가 전투일 경우
             monsterGetResponseDto = fightService.getMonster(MonsterSetCommandDto.builder()
                     .gameCode(game.getCode())
@@ -154,6 +163,7 @@ public class PromptServiceImpl implements PromptService {
         }
 
         gameRedisRepository.save(game.toBuilder()
+                .eventCnt(eventCnt)
                 .eventRate(eventRate)
                 .promptList(game.getPromptList())
                 .turn(game.getTurn() + 1)
@@ -164,10 +174,12 @@ public class PromptServiceImpl implements PromptService {
         PromptResultGetResponseDto promptResultGetResponseDto = PromptResultGetResponseDto.builder()
                 .gameCode(game.getCode())
                 // .prompt(responsePrompt)
-                .event(EventGetResponseDto.from(event))
+                .event((event != null)? EventGetResponseDto.from(event) : null)
                 .monster(monsterGetResponseDto)
                 .build();
         ValidateUtil.validate(promptResultGetResponseDto);
+
+        log.info("getPromptResult() 종료");
         return promptResultGetResponseDto;
     }
 
@@ -209,7 +221,10 @@ public class PromptServiceImpl implements PromptService {
     @Override
     @Transactional
     public SseEmitter subscribeEmitter(String gameCode) {
-        SseEmitter emitter = createEmitter(gameCode);
+        SseEmitter emitter = emitterRepository.get(gameCode);
+        if (emitter == null) {
+            emitter = createEmitter(gameCode);
+        }
 
         sendToClient(gameCode, "EventStream Created. [gameCode=" + gameCode + "]");
         return emitter;
@@ -229,12 +244,14 @@ public class PromptServiceImpl implements PromptService {
 
     @Override
     public String sendPrompt(String gameCode, String inputPrompt) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-
         Game game = gameRedisRepository.findById(gameCode)
                 .orElseThrow(() -> new GameException(GameErrorMessage.GAME_NOT_FOUND));
         SseEmitter emitter = emitterRepository.get(gameCode);
-        String outputPrompt = chatGptClientUtil.enterPromptForSse(emitter, inputPrompt, game.getMemory(), game.getPromptList());
+        if (emitter == null) {
+            createEmitter(game.getCode());
+        }
+        String outputPrompt = chatGptClientUtil.enterPromptForSse(emitter, inputPrompt, game.getSettingPrompt(), game.getMemory(), game.getPromptList());
+        log.info("ChatGPT Result: " + outputPrompt);
 
         return outputPrompt;
     }
@@ -312,7 +329,8 @@ public class PromptServiceImpl implements PromptService {
             for (Event event : eventList) {
                 sum += event.getWeight();
                 if (random < sum) {  // 확률에 해당할 경우
-                    return "\n" + event.getPrompt();
+                    return "\n" + event.getPrompt()
+                            + "\n[" + event.getName() + "]를 앞에 붙여 얘기하세요.";
                 }
             }
         }

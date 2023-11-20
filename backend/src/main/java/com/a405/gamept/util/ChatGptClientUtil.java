@@ -145,12 +145,14 @@ public class ChatGptClientUtil {
     public String getChatGPTResult(String memory, List<Prompt> promptList, String eventPrompt) {
         List<Prompt> sendList = new ArrayList<>();
 
-        // 메모리 프롬프트 삽입
-        sendList.add(Prompt.builder()
-                .role("system")
-                .content(memory)
-                .build());
-        
+        if (memory != null || !memory.equals("")) {
+            // 메모리 프롬프트 삽입
+            sendList.add(Prompt.builder()
+                    .role("system")
+                    .content(memory)
+                    .build());
+        }
+
         // user인지를 구분하는 로직
         for(Prompt prompt : promptList) {
             sendList.add(Prompt.builder()
@@ -176,6 +178,7 @@ public class ChatGptClientUtil {
                 .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(map)))
                 .build();
 
+        // log.info("느려!!");
         HttpResponse<String> response = null;  // Response 받을 변수
         try {
             response = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
@@ -185,6 +188,7 @@ public class ChatGptClientUtil {
             log.info("ChatGPT result: " + jsonNode.get("choices").get(0).get("message").get("content").asText());
 
             // ChatGPT 응답 content 반환
+            // log.info("됐다!!");
             return jsonNode.get("choices").get(0).get("message").get("content").asText();
         } catch (RuntimeException | IOException | InterruptedException e) {
             log.error(e.getMessage());
@@ -192,7 +196,7 @@ public class ChatGptClientUtil {
         }
     }
 
-    public String enterPromptForSse(SseEmitter emitter, String prompt, String memory, List<Prompt> promptList) throws JsonProcessingException {
+    public String enterPromptForSse(SseEmitter emitter, String prompt, String settingPrompt, String memory, List<Prompt> promptList) throws JsonProcessingException {
         int mSize = 1;
         if (prompt != null && !prompt.equals("")) mSize++;
         if (memory != null && !memory.equals("")) mSize++;
@@ -200,11 +204,12 @@ public class ChatGptClientUtil {
         ChatGptMessage[] messages = new ChatGptMessage[mSize];
 
         int mIndex = 0;
-        messages[mIndex++] = new ChatGptMessage("system", PROMPT_FOR_SETTING);
+        if (settingPrompt != null && !settingPrompt.equals(""))
+            messages[mIndex++] = new ChatGptMessage("system", settingPrompt);
         if (memory != null && !memory.equals(""))
             messages[mIndex++] = new ChatGptMessage("system", memory);
         for (Prompt prevPrompt : promptList) {
-            messages[mIndex++] = new ChatGptMessage(prevPrompt.getRole(), prevPrompt.getContent());
+            messages[mIndex++] = new ChatGptMessage(prevPrompt.getRole().equals("assistant") ? "assistant" : "user", prevPrompt.getContent());
         }
         if (prompt != null && !prompt.equals(""))
             messages[mIndex++] = new ChatGptMessage("user", prompt);
@@ -212,7 +217,7 @@ public class ChatGptClientUtil {
         ObjectMapper mapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-        ChatGptForStreamRequestDto chatGptRequestDtoForStream = new ChatGptForStreamRequestDto(model, messages, 1, 1024, true);
+        ChatGptForStreamRequestDto chatGptRequestDtoForStream = new ChatGptForStreamRequestDto(model, messages, 0.6, 1024, true);
 
         String input = mapper.writeValueAsString(chatGptRequestDtoForStream);
         StringBuilder outputSB = new StringBuilder();
@@ -220,12 +225,14 @@ public class ChatGptClientUtil {
 //        SseEmitter emitter = new SseEmitter((long) (5 * 60 * 1000));
         WebClient client = WebClient.create();
 
+        // log.info("느려!!");
         client.post().uri(uri)
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + key)
                 .body(BodyInserters.fromValue(chatGptRequestDtoForStream))
                 .exchangeToFlux(response -> response.bodyToFlux(String.class))
                 .doOnNext(line -> {
+                    // log.info(line);
                     try {
                         if (line.equals("[DONE]")) {
 //                            emitter.complete();
@@ -246,6 +253,7 @@ public class ChatGptClientUtil {
 //                .doOnComplete(emitter::complete)
                 .blockLast();
 
+        // log.info("됐다!!");
         return outputSB.toString();
     }
 
