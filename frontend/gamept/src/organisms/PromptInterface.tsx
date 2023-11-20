@@ -13,7 +13,6 @@ const PromptInterface = (props: IPromptInterface) => {
 
   const sendEvent = (e: IActsType) => {
     if (props.sendEventHandler) props.sendEventHandler(e);
-    console.log(e);
   };
 
   const sendPrompt = () => {

@@ -102,11 +102,8 @@ const SinglePlayPage = () => {
 
   useEffect(() => {
     if (event) {
-      console.log(event);
       setBlockInput(true);
       if (event.eventName == '죽음') {
-        console.log('Game Over ==== Y');
-        console.log(promptAtom);
         let str = ``;
         promptAtom[promptAtom.length - 1].forEach(
           (e) => (str += `${e.msg + '\n'}`)
@@ -127,7 +124,6 @@ const SinglePlayPage = () => {
 
     client.current.connect({}, () => {
       if (client.current == null) {
-        console.log('Error');
         return;
       }
 
@@ -141,14 +137,12 @@ const SinglePlayPage = () => {
         const playerStat = JSON.parse(message.body);
         const statList = playerStat.statList;
         const statPoint = playerStat.statPoint;
-        console.log(playerStat);
         setStatList({ statPoint: statPoint, statList: statList });
       });
 
       // ProfileInterface
       client.current.subscribe(`/queue/${playerCode}/status`, (message) => {
         const body = JSON.parse(message.body);
-        console.log(body);
         setProfileStat(body as IProfileInterface);
       });
 
@@ -159,7 +153,6 @@ const SinglePlayPage = () => {
           const body = JSON.parse(message.body);
 
           if (body.dice1 && !isShowDice) {
-            console.log(body);
             setDice(body);
             setIsShowDice(true);
           }
@@ -173,7 +166,6 @@ const SinglePlayPage = () => {
         async (message) => {
           const body = JSON.parse(message.body);
 
-          console.log(body);
           // setBlockChoice(false);
 
           if (body.prompt !== undefined) {
@@ -187,7 +179,6 @@ const SinglePlayPage = () => {
           }
 
           if (body.gameOverYn === 'Y') {
-            console.log('Game Over ==== Y');
             let str = ``;
             promptAtom[promptAtom.length - 1].forEach(
               (e) => (str += `${e.msg + '\n'}`)
@@ -214,7 +205,6 @@ const SinglePlayPage = () => {
               ],
             });
 
-            console.log('Item 획득');
             const ChoiceFromDB = (await db.getAll())
               .filter((v) => v.choice !== undefined)
               .map((e) => e);
@@ -282,8 +272,6 @@ const SinglePlayPage = () => {
         async (message) => {
           const body = JSON.parse(message.body);
 
-          console.log(body);
-          console.log(event);
           // setBlockChoice(false);
 
           if (body.prompt !== undefined) {
@@ -316,12 +304,9 @@ const SinglePlayPage = () => {
 
       client.current.subscribe(`/topic/event/${gameCode}`, async (message) => {
         const body = JSON.parse(message.body);
-        console.log(body);
         localStorage.setItem('monster', body.monster.code);
         if (body.event) {
           if (body.event.eventName == '죽음') {
-            console.log('Game Over ==== Y');
-            console.log(promptAtom);
             let str = ``;
             promptAtom[promptAtom.length - 1].forEach(
               (e) => (str += `${e.msg + '\n'}`)
@@ -357,8 +342,6 @@ const SinglePlayPage = () => {
         async (message) => {
           const body = JSON.parse(message.body);
 
-          console.log(body);
-
           if (body.role !== playerCode) {
             const prompt = body.content.split('\n').map((e: string) => {
               return { msg: e, role: body.role };
@@ -379,7 +362,6 @@ const SinglePlayPage = () => {
 
       client.current.subscribe(`/queue/${playerCode}/item`, async (message) => {
         const body = JSON.parse(message.body);
-        console.log(body);
         itemUpdateAtom(body);
         // setBlockChoice(false);
         setEvent(null);
@@ -517,8 +499,6 @@ const SinglePlayPage = () => {
   const sendEventHandler = async (choice: IActsType) => {
     // 주사위 돌리고 난 후
     // 선택지 선택 요청
-    console.log(choice);
-    console.log(promptAtom);
     const monster = localStorage.getItem('monster');
     // 사용자가 선택한 선택지 송신 메서드
     if (client.current) {
@@ -557,7 +537,6 @@ const SinglePlayPage = () => {
 
       // subtask가 있다면
       if (choice.subtask !== 'NONE') {
-        console.log(event);
         // 아이템 subtask인데 현재 가진 아이템 개수가 0이라면 에러 출력
         if (choice.subtask === 'ITEM' && status.itemList.length === 0) {
           Swal.fire({
@@ -710,7 +689,6 @@ const SinglePlayPage = () => {
       eventSource.current = new EventSource(
         `${import.meta.env.VITE_SERVER_URL}/prompt/subscribe/${gameCode}`
       );
-      console.log(eventSource.current);
 
       if (eventSource.current) {
         eventSource.current.addEventListener('sse', (message) => {
@@ -737,7 +715,6 @@ const SinglePlayPage = () => {
       if (playerCode === '' || gameCode === '') return;
       try {
         await fetchGetPlayerInfo(gameCode, playerCode).then((playerInfo) => {
-          console.log(playerInfo);
           setStatList({
             statPoint: playerInfo.statPoint,
             statList: playerInfo.statList,
@@ -781,11 +758,9 @@ const SinglePlayPage = () => {
     }
 
     const initializeEvent = async () => {
-      console.log("initializeEvent")
       const ChoiceFromDB = (await db.getAll())
         .filter((v) => v.choice !== undefined)
         .map((e) => e);
-      console.log(ChoiceFromDB);
       // 직전 선택지 인덱스 디비에 저장
       if (ChoiceFromDB.length > 0) {
         setEvent(ChoiceFromDB[0].choice);
