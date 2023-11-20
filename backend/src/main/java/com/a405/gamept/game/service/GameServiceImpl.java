@@ -338,8 +338,8 @@ public class GameServiceImpl implements GameService {
         String itemCode = "";
         if (tmp == null) {
             //죽음
-            playerRedisRepository.delete(player);
-            gameRedisRepository.delete(game);
+            // playerRedisRepository.delete(player);
+            // gameRedisRepository.delete(game);
             StringBuilder dead = new StringBuilder();
             dead.append("HP가 0이 되었다.\n");
             dead.append(player.getNickname()).append(" 은 쓰러지고 말았다.\n");
