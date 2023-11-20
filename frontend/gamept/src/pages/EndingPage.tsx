@@ -14,18 +14,16 @@ import { useIndexedDB } from 'react-indexed-db-hook';
 import { useEffect, useRef, useState } from 'react';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-// import { useGameCode } from '@/hooks/useGameCode';
-// import { usePlayerCode } from '@/hooks/usePlayerCode';
+import { useGameCode } from '@/hooks/useGameCode';
+import { usePlayerCode } from '@/hooks/usePlayerCode';
 import { IPromptHistory } from '@/types/components/Prompt.types';
 
 const EndingPage = () => {
   const db = useIndexedDB('prompt');
   const client = useRef<CompatClient | null>(null);
   const navigate = useNavigate();
-  // const [gameCode] = useGameCode();
-  // const [playerCode] = usePlayerCode();
-  const gameCode = 'rUUGH0';
-  const playerCode = 'rUUGH0-WiY7oG';
+  const [gameCode] = useGameCode();
+  const [playerCode] = usePlayerCode();
   const [promptData, setPromptData] = useState<IPromptHistory[][] | null>(null);
   const [isFetching, setIsFetching] = useState<boolean>(true);
 
@@ -79,10 +77,10 @@ const EndingPage = () => {
   };
 
   useEffect(() => {
-    if (client.current === null) {
+    if (client.current === null && gameCode !== '' && playerCode !== '') {
       connectHandler();
     }
-  }, []);
+  }, [gameCode, playerCode]);
 
   return (
     <div className="font-hol relative w-screen h-screen mx-auto bg-backgroundDeep">

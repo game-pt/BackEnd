@@ -141,13 +141,14 @@ const SinglePlayPage = () => {
         const playerStat = JSON.parse(message.body);
         const statList = playerStat.statList;
         const statPoint = playerStat.statPoint;
-
+        console.log(playerStat);
         setStatList({ statPoint: statPoint, statList: statList });
       });
 
       // ProfileInterface
       client.current.subscribe(`/queue/${playerCode}/status`, (message) => {
         const body = JSON.parse(message.body);
+        console.log(body);
         setProfileStat(body as IProfileInterface);
       });
 
@@ -297,9 +298,9 @@ const SinglePlayPage = () => {
 
           // 직전 선택지 인덱스 디비에 저장
           if (ChoiceFromDB.length === 0) {
-            await db.add({ choice: body });
+            await db.add({ choice: event });
           } else if (ChoiceFromDB.length <= 1) {
-            await db.update({ choice: body, id: ChoiceFromDB[0].id });
+            await db.update({ choice: event, id: ChoiceFromDB[0].id });
           } else {
             for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
               await db.deleteRecord(ChoiceFromDB[i].id);
@@ -590,6 +591,8 @@ const SinglePlayPage = () => {
         if (event?.eventCode)
           getSubtaskHandler(event.eventCode, choice.subtask);
 
+        setEvent(null);
+
         return;
       }
 
@@ -712,7 +715,6 @@ const SinglePlayPage = () => {
   }, [nowPrompt, finishPrompt]);
 
   useEffect(() => {
-    console.log(promptAtom);
     const connetEventSource = () => {
       eventSource.current = new EventSource(
         `${import.meta.env.VITE_SERVER_URL}/prompt/subscribe/${gameCode}`
@@ -755,8 +757,6 @@ const SinglePlayPage = () => {
             import.meta.env.VITE_SERVER_URL
           }/prompt?gameCode=${gameCode}&playerCode=${playerCode}`
         );
-
-        console.log(res.data, promptAtom);
 
         res.data.forEach((e: { role: string; content: string }) => {
           const arr = e.content.split('\n').map((v) => {
