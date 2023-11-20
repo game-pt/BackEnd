@@ -130,7 +130,7 @@ public class PromptServiceImpl implements PromptService {
 
         // EventCommandDto eventCommandDto = eventService.checkEventInPrompt(game, responsePrompt);
         Event event = null;
-//        if (game.getEventCnt() < 10/*EVENT_MAX_COUNT*/ && game.getTurn() < 30) {  // 대화 30턴 미만, 이벤트 발생 횟수 10번 미만일 경우
+        if (game.getEventCnt() < 10/*EVENT_MAX_COUNT*/ && game.getTurn() < 30) {  // 대화 30턴 미만, 이벤트 발생 횟수 10번 미만일 경우
             // 스토리 코드에 따른 이벤트 리스트
             List<Event> eventList = eventRepository.findAllByStoryCode(game.getStoryCode())
                     .orElseThrow(() -> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
@@ -138,12 +138,9 @@ public class PromptServiceImpl implements PromptService {
             // 텍스트에서 가장 마지막에 등장한 이벤트의 인덱스
             int eventIndex = eventService.findLastEventInText(eventList, responsePrompt);
             event = (0 <= eventIndex) ? eventList.get(eventIndex) : null;
-//        }
-
-        if (game.getEventCnt() >= 10 || game.getTurn() >= 30) {
-            if (!event.getName().equals("죽음")) {
-                event = null;
-            }
+        } else if (30 <= game.getTurn()) {
+            event = eventRepository.findById("EV-001")
+                    .orElseThrow(() -> new GameException(GameErrorMessage.EVENT_NOT_FOUND));
         }
 
         double eventRate = game.getEventRate();
@@ -156,7 +153,7 @@ public class PromptServiceImpl implements PromptService {
         }
 
         MonsterGetResponseDto monsterGetResponseDto = null;
-        if (game.getTurn() < 30  // 이벤트가 마왕 처치일 경우
+        if (30 <= game.getTurn()  // 이벤트가 마왕 처치일 경우
                 || (event != null && event.getCode().equals("EV-001"))) {  // 이벤트가 전투일 경우
             monsterGetResponseDto = fightService.getMonster(MonsterSetCommandDto.builder()
                     .gameCode(game.getCode())
