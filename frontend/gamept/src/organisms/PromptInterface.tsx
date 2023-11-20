@@ -43,11 +43,11 @@ const PromptInterface = (props: IPromptInterface) => {
         />
       )}
       <div className="w-full h-[250px] flex justify-center self-center">
-        <ChoiceGroup
+        {!props.blockChoice && <ChoiceGroup
           data={props.event && props.event.acts}
           gameType={props.gameType}
           onClickEvent={sendEvent}
-        />
+        />}
       </div>
       <div className="absolute inset-x-0 bottom-0">
         <Input

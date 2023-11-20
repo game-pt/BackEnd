@@ -16,7 +16,6 @@ import { usePromptAtom } from '@/jotai/PromptAtom';
 import {
   IEventType,
   IActsType,
-  IGetPromptType,
   ISubtaskType,
 } from '@/types/components/Prompt.types';
 import DiceModal from '@/organisms/DiceModal';
@@ -49,6 +48,7 @@ const MemoizedDiceModal = React.memo<{
 const SinglePlayPage = () => {
   const [event, setEvent] = useState<IEventType | null>(null);
   const [blockInput, setBlockInput] = useState<boolean>(false);
+  const [blockChoice, _setBlockChoice] = useState<boolean>(false);
   const [isPromptFetching, setIsPromptFetching] = useState<boolean>(false);
   const [isShowDice, setIsShowDice] = useState<boolean>(false);
   const [dice, setDice] = useState<IDice>({
@@ -174,6 +174,7 @@ const SinglePlayPage = () => {
           const body = JSON.parse(message.body);
 
           console.log(body);
+          // setBlockChoice(false);
 
           if (body.prompt !== undefined) {
             // 원본 데이터와 프롬프트 구분
@@ -250,7 +251,7 @@ const SinglePlayPage = () => {
       // 하위 선택지 조회 데이터 송수신용
       client.current.subscribe(
         `/topic/subtask/${gameCode}`,
-        (message) => {
+        async (message) => {
           // 하위 선택지 요청에 대한 데이터가 들어온다면
           // 선택지에다가 하위 선택지로 업데이트를 해줘야한다.
           const body = JSON.parse(message.body);
@@ -262,13 +263,14 @@ const SinglePlayPage = () => {
               subtask: `isSubTask_${e.code.split('-')[0]}`,
             };
           });
+          // setBlockChoice(false);
 
           // event 상태를 업데이트
           // acts 부분만 body로 변경
           setEvent((prevEvent) => {
             if (prevEvent !== null) {
               return { ...prevEvent, acts: newActs };
-            } else return null;
+            } else return { acts: newActs };
           });
         },
         {}
@@ -281,6 +283,8 @@ const SinglePlayPage = () => {
           const body = JSON.parse(message.body);
 
           console.log(body);
+          console.log(event);
+          // setBlockChoice(false);
 
           if (body.prompt !== undefined) {
             // 원본 데이터와 프롬프트 구분
@@ -290,21 +294,6 @@ const SinglePlayPage = () => {
 
             setPrompt(prompt);
             setIsPromptFetching(false);
-          }
-
-          const ChoiceFromDB = (await db.getAll())
-            .filter((v) => v.choice !== undefined)
-            .map((e) => e);
-
-          // 직전 선택지 인덱스 디비에 저장
-          if (ChoiceFromDB.length === 0) {
-            await db.add({ choice: event });
-          } else if (ChoiceFromDB.length <= 1) {
-            await db.update({ choice: event, id: ChoiceFromDB[0].id });
-          } else {
-            for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
-              await db.deleteRecord(ChoiceFromDB[i].id);
-            }
           }
 
           // 사망 여부 판별
@@ -328,6 +317,7 @@ const SinglePlayPage = () => {
       client.current.subscribe(`/topic/event/${gameCode}`, async (message) => {
         const body = JSON.parse(message.body);
         console.log(body);
+        localStorage.setItem('monster', body.monster.code);
         if (body.event) {
           if (body.event.eventName == '죽음') {
             console.log('Game Over ==== Y');
@@ -341,6 +331,7 @@ const SinglePlayPage = () => {
             return;
           }
 
+          // setBlockChoice(false);
           setEvent(body.event);
 
           const ChoiceFromDB = (await db.getAll())
@@ -349,9 +340,9 @@ const SinglePlayPage = () => {
 
           // 직전 선택지 인덱스 디비에 저장
           if (ChoiceFromDB.length === 0) {
-            await db.add({ choice: body });
+            await db.add({ choice: body.event });
           } else if (ChoiceFromDB.length <= 1) {
-            await db.update({ choice: body, id: ChoiceFromDB[0].id });
+            await db.update({ choice: body.event, id: ChoiceFromDB[0].id });
           } else {
             for (let i = 0; i < ChoiceFromDB.length - 1; i++) {
               await db.deleteRecord(ChoiceFromDB[i].id);
@@ -390,12 +381,12 @@ const SinglePlayPage = () => {
         const body = JSON.parse(message.body);
         console.log(body);
         itemUpdateAtom(body);
+        // setBlockChoice(false);
         setEvent(null);
         const ChoiceFromDB = (await db.getAll())
           .filter((v) => v.choice !== undefined)
           .map((e) => e);
 
-        // 직전 선택지 인덱스 디비에 저장
         if (ChoiceFromDB.length > 0) {
           for (let i = 0; i < ChoiceFromDB.length; i++) {
             await db.deleteRecord(ChoiceFromDB[i].id);
@@ -509,7 +500,7 @@ const SinglePlayPage = () => {
     }
   };
 
-  const getSubtaskHandler = (eventCode: string, subtask: string) => {
+  const getSubtaskHandler = async (eventCode: string, subtask: string) => {
     if (client.current) {
       client.current.send(
         `/subtask/${gameCode}`,
@@ -528,13 +519,9 @@ const SinglePlayPage = () => {
     // 선택지 선택 요청
     console.log(choice);
     console.log(promptAtom);
+    const monster = localStorage.getItem('monster');
     // 사용자가 선택한 선택지 송신 메서드
     if (client.current) {
-      // 직전 응답 Body 기록 가져오기
-      const body: IGetPromptType = (await db.getAll())
-        .filter((v) => v.choice !== undefined)
-        .map((e) => e.choice)[0];
-
       const checkSub = choice.subtask.split('_');
       // SubTask를 선택했다면
       if (checkSub.length > 1 && checkSub[0] === 'isSubTask') {
@@ -551,12 +538,16 @@ const SinglePlayPage = () => {
                 playerCode,
                 actCode: choice.actCode,
                 subtask: checkSub[1],
-                fightingEnermyCode: body.monster ? body.monster.code : null,
+                fightingEnermyCode: monster,
               })
             );
           }
         }, 1000);
         setIsPromptFetching(true);
+        const saveEvent = (await db.getAll())
+        .filter((v) => v.choice !== undefined)
+        .map((e) => e.choice);
+        setEvent(saveEvent[saveEvent.length - 1]);
         setPrompt([
           { msg: `[${choice.actName}]을 선택하겠습니다.`, role: playerCode },
         ]);
@@ -607,7 +598,7 @@ const SinglePlayPage = () => {
                 playerCode,
                 actCode: choice.actCode,
                 subtask: choice.subtask,
-                fightingEnermyCode: body.monster ? body.monster.code : null,
+                fightingEnermyCode: monster
               })
             );
           }
@@ -790,14 +781,14 @@ const SinglePlayPage = () => {
     }
 
     const initializeEvent = async () => {
+      console.log("initializeEvent")
       const ChoiceFromDB = (await db.getAll())
         .filter((v) => v.choice !== undefined)
         .map((e) => e);
-
+      console.log(ChoiceFromDB);
       // 직전 선택지 인덱스 디비에 저장
       if (ChoiceFromDB.length > 0) {
-        setEvent(ChoiceFromDB[0].choice.event);
-        console.log(ChoiceFromDB[0].choice);
+        setEvent(ChoiceFromDB[0].choice);
       }
     };
     if (eventSource.current === null && gameCode !== '') {
@@ -837,6 +828,7 @@ const SinglePlayPage = () => {
           isFetching={isPromptFetching}
           gameType="single"
           block={blockInput}
+          blockChoice={blockChoice}
           playerCode={playerCode}
           nowPrompt={nowPrompt}
           setNowPrompt={setNowPrompt}
